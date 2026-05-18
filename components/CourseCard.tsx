@@ -11,8 +11,8 @@ export function CourseCard({ slot }: Props) {
   const c = useSpark((s) => s.menu[slot]);
   const dailyEntry = useSpark((s) => s.user.dailyEntry);
   const toggleBinary = useSpark((s) => s.toggleBinary);
-  const setNumericSheetKey = useSpark((s) => s.setNumericSheetKey ?? (() => {}));
-  const setWorkoutSheetCourse = useSpark((s) => s.setWorkoutSheetCourse ?? (() => {}));
+  const setNumericSheetKey = useSpark((s) => s.setNumericSheetKey);
+  const setWorkoutSheetCourse = useSpark((s) => s.setWorkoutSheetCourse);
   const openWorkoutSheet = useUi((s) => s.openWorkoutSheet);
   const openNumericSheet = useUi((s) => s.openNumericSheet);
 

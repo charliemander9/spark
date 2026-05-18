@@ -1,14 +1,14 @@
 'use client';
 
-import { useSpark, useSparkActions } from '@/lib/storeActions';
-import { useSpark as useStore } from '@/lib/store';
+import { useSparkActions } from '@/lib/storeActions';
+import { useSpark } from '@/lib/store';
 import { dailyQuote, greeting, gearSvg, todayLabel } from '@/lib/helpers';
 import { TONE_COPY } from '@/lib/data';
 import { CourseCard } from '../CourseCard';
 import { DailyGate } from '../DailyGate';
 
 export function Home() {
-  const user = useStore((s) => s.user);
+  const user = useSpark((s) => s.user);
   const tone = TONE_COPY[user.tone];
   const [g, name] = greeting(user.name);
   const openSettings = useSparkActions('openSettings');
