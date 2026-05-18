@@ -2,6 +2,7 @@
 
 import { useSpark } from '@/lib/store';
 import { PRESETS, CATEGORIES } from '@/lib/data';
+import { CustomBuilder } from './CustomBuilder';
 
 export function ChallengePicker() {
   const setScreen = useSpark((s) => s.setScreen);
@@ -56,11 +57,11 @@ export function ChallengePicker() {
                   );
                 })}
               </div>
+            ) : selected ? (
+              <CustomBuilder />
             ) : (
               <div className="preset-checks">
-                <div className="preset-check-item muted">
-                  {selected ? 'Build it on the next push — coming soon.' : 'Tap to choose three categories'}
-                </div>
+                <div className="preset-check-item muted">Tap to choose three categories</div>
               </div>
             )}
           </button>

@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { useUi } from '@/lib/storeActions';
 import { gearSvg } from '@/lib/helpers';
 import { VIDEOS, type VideoCard } from '@/lib/data';
@@ -8,7 +7,7 @@ import { VIDEOS, type VideoCard } from '@/lib/data';
 export function Discover() {
   const openSettings = useUi((s) => s.openSettings);
 
-  // Mix all categories together, round-robin, so the feed feels varied
+  // Mix all categories together, round-robin
   const cards: VideoCard[] = [];
   const cats = ['active', 'endurance', 'strength', 'recomp'];
   let i = 0, added = true;

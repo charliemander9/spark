@@ -1,7 +1,6 @@
 // Static catalogs — categories, presets, suggestions, mock data.
-// Ported from the HTML prototype.
 
-import type { Category, CategoryId, Preset, PresetId } from './types';
+import type { Category, CategoryId, Preset } from './types';
 
 export const CATEGORIES: Record<CategoryId, Category> = {
   workout: {
@@ -147,7 +146,6 @@ export const SUGGESTED_FOLLOWS = [
   { name: 'Lena T.', initials: 'LT', sub: 'Sober · 365 day streak' },
 ];
 
-// Discover feed — real fitness journeys grouped by track
 export interface VideoCard {
   author: string;
   initials: string;
@@ -163,13 +161,13 @@ export const VIDEOS: Record<string, VideoCard[]> = {
     { author: 'Theo R.', initials: 'TR', title: 'From sedentary to daily mover',          note: 'the first 7 days are the hardest',     img: 'linear-gradient(160deg,#2e2818 0%,#7a6238 60%,#dcb968 100%)' },
   ],
   endurance: [
-    { author: 'Aria L.', initials: 'AL', title: 'Couch to marathon at 38',                note: 'two years, one 5K at a time',          img: 'linear-gradient(160deg,#103040 0%,#1f5878 60%,#65a0c6 100%)' },
-    { author: 'Theo R.', initials: 'TR', title: 'How I learned to love running',          note: 'the first 10 minutes always lies',     img: 'linear-gradient(160deg,#243a50 0%,#3a6a96 60%,#80b0d5 100%)' },
+    { author: 'Aria L.',  initials: 'AL', title: 'Couch to marathon at 38',                note: 'two years, one 5K at a time',          img: 'linear-gradient(160deg,#103040 0%,#1f5878 60%,#65a0c6 100%)' },
+    { author: 'Theo R.',  initials: 'TR', title: 'How I learned to love running',          note: 'the first 10 minutes always lies',     img: 'linear-gradient(160deg,#243a50 0%,#3a6a96 60%,#80b0d5 100%)' },
     { author: 'Devon M.', initials: 'DM', title: 'Open-water swimming saved my mornings', note: 'cold water, clear head',                img: 'linear-gradient(160deg,#082030 0%,#155068 60%,#5090b8 100%)' },
   ],
   strength: [
     { author: 'Jess K.',   initials: 'JK', title: 'From bodyweight to double-bodyweight deadlift', note: 'two years of slow, stubborn lifting', img: 'linear-gradient(160deg,#2e2920 0%,#7a6440 60%,#D4AF6E 100%)' },
-    { author: 'Marcus J.', initials: 'MJ', title: 'Shoulders that don\'t ache anymore',            note: 'small accessory work every session', img: 'linear-gradient(160deg,#3a3220 0%,#8a7038 60%,#dcb968 100%)' },
+    { author: 'Marcus J.', initials: 'MJ', title: "Shoulders that don't ache anymore",            note: 'small accessory work every session',  img: 'linear-gradient(160deg,#3a3220 0%,#8a7038 60%,#dcb968 100%)' },
   ],
   recomp: [
     { author: 'Lena T.',  initials: 'LT', title: 'Down 30 pounds — what actually worked', note: 'consistency over intensity',           img: 'linear-gradient(160deg,#2a2820 0%,#7a6c40 60%,#d8c074 100%)' },
@@ -177,7 +175,6 @@ export const VIDEOS: Record<string, VideoCard[]> = {
   ],
 };
 
-// Friends — buddy circle + feed
 export interface BuddyMock {
   name: string;
   initials: string;
@@ -209,16 +206,16 @@ export interface FriendPostMock {
 }
 
 export const FRIENDS_FEED: FriendPostMock[] = [
-  { name: 'Riley',  initials: 'R', avaColor: 'terra', when: '12 min ago', streak: 14,  state: 'fire', type: 'photo',
-    course: 'OUTSIDE', caption: 'Beach run at sunrise. Cold, then warm. Two down today.',
+  { name: 'Riley',  initials: 'R', avaColor: 'terra', when: '12 min ago', streak: 14,  state: 'fire',  type: 'photo',
+    course: 'OUTSIDE',   caption: 'Beach run at sunrise. Cold, then warm. Two down today.',
     bg: 'linear-gradient(160deg,#0c2438 0%,#1a4870 60%,#5a90b8 100%)' },
-  { name: 'Maya',   initials: 'M', avaColor: 'sage',  when: '1 hr ago',   streak: 47,  state: 'fire', type: 'reflection',
+  { name: 'Maya',   initials: 'M', avaColor: 'sage',  when: '1 hr ago',   streak: 47,  state: 'fire',  type: 'reflection',
     course: 'WORKOUT',
     reflection: 'Heavy back day. Pulled a new PR. Hands are wrecked but I feel taller. Outside session after work.' },
   { name: 'Jordan', initials: 'J', avaColor: 'rose',  when: '3 hr ago',   streak: 2,   state: 'frost', type: 'photo',
     course: '10K STEPS', caption: 'Walked to the coffee shop and back. Halfway there already.',
     bg: 'linear-gradient(160deg,#2e2818 0%,#a05c34 60%,#E8896F 100%)' },
   { name: 'Sam',    initials: 'S', avaColor: 'sage',  when: 'Yesterday',  streak: 121, state: 'fire',  type: 'photo',
-    course: 'OUTSIDE', caption: 'Surf check at 6am. Ocean was glassy. One workout outdoor — done.',
+    course: 'OUTSIDE',   caption: 'Surf check at 6am. Ocean was glassy. One workout outdoor — done.',
     bg: 'linear-gradient(160deg,#1c3548 0%,#2d6a95 60%,#7AB6D8 100%)' },
 ];
