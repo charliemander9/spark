@@ -4,13 +4,17 @@ import { useSpark } from '@/lib/store';
 import type { Screen } from '@/lib/types';
 import { ONB_ORDER } from '@/lib/data';
 import { Welcome } from './onboarding/Welcome';
+import { ChallengePicker } from './onboarding/ChallengePicker';
+import { Privacy } from './onboarding/Privacy';
+import { Buddies } from './onboarding/Buddies';
+import { FindFriends } from './onboarding/FindFriends';
 
 export function OnboardingFlow() {
   const screen = useSpark((s) => s.screen);
   const setScreen = useSpark((s) => s.setScreen);
   const privacy = useSpark((s) => s.user.privacy);
 
-  const idx = ONB_ORDER.indexOf(screen as typeof ONB_ORDER[number]);
+  const idx = ONB_ORDER.indexOf(screen as (typeof ONB_ORDER)[number]);
   const total = privacy === 'private' ? ONB_ORDER.length - 1 : ONB_ORDER.length;
 
   return (
@@ -34,29 +38,10 @@ export function OnboardingFlow() {
       </div>
 
       {screen === 'onb-welcome' && <Welcome />}
-      {screen === 'onb-challenge' && <Placeholder title="Choose your 75" next="onb-privacy" />}
-      {screen === 'onb-privacy' && <Placeholder title="Who can see your posts?" next="onb-buddies" />}
-      {screen === 'onb-buddies' && <Placeholder title="Your accountability circle" next="onb-find" />}
-      {screen === 'onb-find' && <Placeholder title="Find your community" next="app" finish />}
-    </div>
-  );
-}
-
-function Placeholder({ title, next, finish }: { title: string; next: Screen; finish?: boolean }) {
-  const setScreen = useSpark((s) => s.setScreen);
-  return (
-    <div className="onb-q">
-      <h1>{title}</h1>
-      <p className="lede">This screen will be ported in the next push.</p>
-      <div style={{ flex: 1 }} />
-      <div className="onb-stick">
-        <button
-          className="btn btn-accent btn-lg btn-block"
-          onClick={() => setScreen(next)}
-        >
-          {finish ? 'Start' : 'Continue'}
-        </button>
-      </div>
+      {screen === 'onb-challenge' && <ChallengePicker />}
+      {screen === 'onb-privacy' && <Privacy />}
+      {screen === 'onb-buddies' && <Buddies />}
+      {screen === 'onb-find' && <FindFriends />}
     </div>
   );
 }

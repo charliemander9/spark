@@ -4,7 +4,7 @@ import { create } from 'zustand';
 import { CATEGORIES, PRESETS } from './data';
 import type {
   CheckIn, CustomDraftSlot, DiaryEntry, Menu, Photo, Screen, SlotKey, Tab, User,
-  CalendarDay,
+  CalendarDay, WorkoutDetails,
 } from './types';
 
 interface SparkState {
@@ -46,11 +46,14 @@ interface SparkState {
   setCustomDraft: (d: CustomDraftSlot[]) => void;
   patchCustomSlot: (i: number, patch: Partial<CustomDraftSlot> & { config?: Partial<CustomDraftSlot['config']> }) => void;
 
+  setWorkoutSheetCourse: (k: SlotKey | null) => void;
+  setNumericSheetKey: (k: SlotKey | null) => void;
+
   pickCheckIn: (key: SlotKey, picked: number | null) => void;
   completeCourse: (key: SlotKey) => void;
   toggleBinary: (key: SlotKey) => void;
   setCheckInValue: (key: SlotKey, value: number, source: string | null) => void;
-  saveWorkoutDetails: (key: SlotKey, details: CheckIn['details']) => void;
+  saveWorkoutDetails: (key: SlotKey, details: WorkoutDetails) => void;
 
   setDailyEntry: (entry: User['dailyEntry']) => void;
   pushDiary: (e: DiaryEntry) => void;
@@ -142,6 +145,8 @@ export const useSpark = create<SparkState>((set, get) => ({
   setTab: (t) => set({ tab: t }),
   setUser: (patch) => set((st) => ({ user: { ...st.user, ...patch } })),
   setMenu: (m) => set({ menu: m }),
+  setWorkoutSheetCourse: (k) => set({ workoutSheetCourse: k }),
+  setNumericSheetKey: (k) => set({ numericSheetKey: k }),
 
   applyPreset: (id) => {
     const preset = PRESETS[id];
@@ -158,7 +163,6 @@ export const useSpark = create<SparkState>((set, get) => ({
       };
     });
     set({ menu: m, user: { ...get().user, preset: id } });
-    // seed custom draft from preset too
     set({ customDraft: preset.slots.map((s) => ({ categoryId: s.cat, config: { ...s.config }, label: s.label })) });
   },
 
@@ -172,7 +176,7 @@ export const useSpark = create<SparkState>((set, get) => ({
       let label = d.label || '';
       if (!label) {
         if (cat.type === 'workout')  label = d.config.mustBeOutdoors ? 'Outside Workout' : 'Workout';
-        else if (cat.type === 'numeric') label = (cat.fmt?.(d.config.goal ?? cat.defaultGoal ?? 0) ?? '').replace(/,000$/, 'K') + ' ' + cat.label;
+        else if (cat.type === 'numeric') label = (cat.fmt?.(d.config.goal ?? cat.defaultGoal ?? 0) ?? '') + '';
         else if (cat.type === 'custom')  label = d.config.label || 'Custom';
         else label = cat.label;
       }
@@ -223,10 +227,8 @@ export const useSpark = create<SparkState>((set, get) => ({
   }),
 
   toggleBinary: (key) => set((st) => {
-    if (!st.user.dailyEntry) return st;
     const cur = st.menu[key];
     if (!cur.completed) {
-      // fire completeCourse equivalent
       const next: CheckIn = { ...cur, completed: true };
       const m = { ...st.menu, [key]: next };
       const allDone = m.appetizer.completed && m.main.completed && m.treat.completed;
@@ -251,14 +253,39 @@ export const useSpark = create<SparkState>((set, get) => ({
     const cur = st.menu[key];
     const goal = cur.config.goal ?? CATEGORIES[cur.category].defaultGoal ?? 0;
     const hit = value >= goal;
-    return {
-      menu: { ...st.menu, [key]: { ...cur, value, source, completed: hit } },
-    };
+    const m = { ...st.menu, [key]: { ...cur, value, source, completed: hit } };
+    const allDone = m.appetizer.completed && m.main.completed && m.treat.completed;
+    const u = { ...st.user };
+    let cal = st.calendar;
+    if (hit && allDone) {
+      u.streak += 1;
+      cal = { ...cal, [u.day]: { w1: true, w2: true, steps: true } };
+      if (u.day >= 75) return { menu: m, user: u, calendar: cal, day75Celebrate: true };
+      u.day += 1;
+      m.appetizer.completed = false;
+      m.main.completed = false;
+      m.treat.completed = false;
+    }
+    return { menu: m, user: u, calendar: cal };
   }),
 
-  saveWorkoutDetails: (key, details) => set((st) => ({
-    menu: { ...st.menu, [key]: { ...st.menu[key], details, completed: true } },
-  })),
+  saveWorkoutDetails: (key, details) => set((st) => {
+    const cur = st.menu[key];
+    const m = { ...st.menu, [key]: { ...cur, details, completed: true } };
+    const allDone = m.appetizer.completed && m.main.completed && m.treat.completed;
+    const u = { ...st.user };
+    let cal = st.calendar;
+    if (allDone) {
+      u.streak += 1;
+      cal = { ...cal, [u.day]: { w1: true, w2: true, steps: true } };
+      if (u.day >= 75) return { menu: m, user: u, calendar: cal, day75Celebrate: true };
+      u.day += 1;
+      m.appetizer.completed = false;
+      m.main.completed = false;
+      m.treat.completed = false;
+    }
+    return { menu: m, user: u, calendar: cal };
+  }),
 
   setDailyEntry: (entry) => set((st) => ({ user: { ...st.user, dailyEntry: entry } })),
 

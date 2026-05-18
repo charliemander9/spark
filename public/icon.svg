@@ -1,60 +1,22 @@
-<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Spark — Day 75">
-  <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#F8F1DD"/>
-      <stop offset="1" stop-color="#EAE0C0"/>
-    </linearGradient>
-    <linearGradient id="bolt" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#FFD55E"/>
-      <stop offset="1" stop-color="#F0B82E"/>
-    </linearGradient>
-    <filter id="boltShadow" x="-15%" y="-15%" width="130%" height="130%">
-      <feGaussianBlur in="SourceAlpha" stdDeviation="14"/>
-      <feOffset dx="0" dy="8" result="off"/>
-      <feFlood flood-color="#7a5a10" flood-opacity="0.18"/>
-      <feComposite in2="off" operator="in"/>
-      <feMerge>
-        <feMergeNode/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
-  </defs>
+<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Spark — 75">
+  <!-- cream rounded square -->
+  <rect width="1024" height="1024" rx="224" fill="#F4ECD6"/>
 
-  <!-- rounded square background (cream paper) -->
-  <rect width="1024" height="1024" rx="224" fill="url(#bg)"/>
+  <!-- lightning bolt -->
+  <path d="M 640 80 L 340 540 L 480 540 L 380 944 L 700 460 L 560 460 L 740 80 Z"
+        fill="#F5C842"/>
 
-  <!-- subtle paper texture rays -->
-  <g opacity="0.05">
-    <circle cx="220" cy="240" r="360" fill="#1E6091"/>
-    <circle cx="820" cy="820" r="320" fill="#1E6091"/>
-  </g>
-
-  <!-- lightning bolt behind, slightly rotated for energy -->
-  <g transform="translate(0, 0) rotate(-4 512 512)" filter="url(#boltShadow)">
-    <path d="M 615 110
-             L 360 540
-             L 510 540
-             L 380 914
-             L 690 470
-             L 540 470
-             L 720 110 Z"
-          fill="url(#bolt)"/>
-  </g>
-
-  <!-- 75 numeral, ocean blue, italic serif, layered on top -->
-  <g>
-    <text x="512" y="630"
-          text-anchor="middle"
-          font-family="'Fraunces', 'Times New Roman', Georgia, serif"
-          font-style="italic"
-          font-size="540"
-          font-weight="600"
-          fill="#1E6091"
-          letter-spacing="-12">75</text>
-  </g>
-
-  <!-- tiny spark dots for energy -->
-  <circle cx="180" cy="160" r="14" fill="#FF6B47" opacity="0.85"/>
-  <circle cx="880" cy="200" r="10" fill="#1E6091" opacity="0.7"/>
-  <circle cx="860" cy="880" r="16" fill="#F5C842" opacity="0.85"/>
+  <!-- 75 with cream halo for legibility against the bolt -->
+  <text x="512" y="555"
+        text-anchor="middle"
+        dominant-baseline="central"
+        font-family="'Fraunces', 'Times New Roman', Georgia, serif"
+        font-style="italic"
+        font-size="460"
+        font-weight="700"
+        stroke="#FCF7E8"
+        stroke-width="56"
+        paint-order="stroke fill"
+        fill="#1E6091"
+        letter-spacing="-10">75</text>
 </svg>

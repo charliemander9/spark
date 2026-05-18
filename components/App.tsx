@@ -3,21 +3,45 @@
 import { useSpark } from '@/lib/store';
 import { PhoneFrame } from './PhoneFrame';
 import { OnboardingFlow } from './OnboardingFlow';
-import { ComingSoon } from './ComingSoon';
+import { TabBar } from './TabBar';
+import { Home } from './tabs/Home';
+import { Discover } from './tabs/Discover';
+import { Capture } from './tabs/Capture';
+import { Friends } from './tabs/Friends';
+import { Profile } from './tabs/Profile';
+import { Day75 } from './Day75';
+import { SettingsSheet } from './sheets/SettingsSheet';
+import { WorkoutSheet } from './sheets/WorkoutSheet';
+import { NumericSheet } from './sheets/NumericSheet';
+import { DailySheet } from './sheets/DailySheet';
 
 export function App() {
   const screen = useSpark((s) => s.screen);
+  const tab = useSpark((s) => s.tab);
   const day75 = useSpark((s) => s.day75Celebrate);
+
+  const inOnboarding = screen.startsWith('onb-');
 
   return (
     <PhoneFrame>
-      {screen.startsWith('onb-') ? (
+      {inOnboarding ? (
         <OnboardingFlow />
       ) : day75 ? (
-        <ComingSoon title="Day 75" body="Celebration screen comes online in the next push." />
+        <Day75 />
       ) : (
-        <ComingSoon title="App tabs" body="Home / Discover / Capture / Friends / Profile coming online in the next push. The onboarding flow + Welcome screen are wired up — try going back to Welcome to test the flow." />
+        <>
+          {tab === 'home' && <Home />}
+          {tab === 'discover' && <Discover />}
+          {tab === 'capture' && <Capture />}
+          {tab === 'friends' && <Friends />}
+          {tab === 'foryou' && <Profile />}
+        </>
       )}
+      {!inOnboarding && !day75 && <TabBar />}
+      <SettingsSheet />
+      <WorkoutSheet />
+      <NumericSheet />
+      <DailySheet />
     </PhoneFrame>
   );
 }
