@@ -25,6 +25,7 @@ export function Profile() {
   const openSettings = useUi((s) => s.openSettings);
   const openInviteSheet = useUi((s) => s.openInviteSheet);
   const openViewer = useUi((s) => s.openViewer);
+  const openFriendList = useUi((s) => s.openFriendList);
 
   const [activeTab, setActiveTab] = useState<ProfileTab>('all');
   const [editingBio, setEditingBio] = useState(false);
@@ -122,18 +123,27 @@ export function Profile() {
           <h1>{user.name}</h1>
           <div className="prof-handle">@{handleFromName(user.name)}</div>
           <div className="prof-stats-inline">
-            <div className="psi">
+            <button
+              className="psi"
+              onClick={() => openFriendList('following')}
+            >
               <span className="v">{user.follows.length}</span>
               <span className="l">following</span>
-            </div>
-            <div className="psi">
+            </button>
+            <button
+              className="psi"
+              onClick={() => openFriendList('followers')}
+            >
               <span className="v">{user.buddies.length}</span>
               <span className="l">followers</span>
-            </div>
-            <div className="psi">
+            </button>
+            <button
+              className="psi"
+              onClick={() => openFriendList('nudges')}
+            >
               <span className="v">0</span>
               <span className="l">nudges</span>
-            </div>
+            </button>
           </div>
         </div>
       </div>

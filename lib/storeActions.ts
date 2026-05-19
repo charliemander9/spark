@@ -20,6 +20,8 @@ export interface ViewerEntry {
   streak?: number;
 }
 
+export type FriendListMode = 'following' | 'followers' | 'nudges';
+
 interface UiState {
   settingsOpen: boolean;
   workoutSheetOpen: boolean;
@@ -27,6 +29,7 @@ interface UiState {
   dailySheetOpen: boolean;
   inviteSheetOpen: boolean;
   viewerEntry: ViewerEntry | null;
+  friendListMode: FriendListMode | null;
 
   openSettings: () => void;
   closeSettings: () => void;
@@ -40,6 +43,8 @@ interface UiState {
   closeInviteSheet: () => void;
   openViewer: (entry: ViewerEntry) => void;
   closeViewer: () => void;
+  openFriendList: (mode: FriendListMode) => void;
+  closeFriendList: () => void;
 }
 
 const useUi = create<UiState>((set) => ({
@@ -49,6 +54,7 @@ const useUi = create<UiState>((set) => ({
   dailySheetOpen: false,
   inviteSheetOpen: false,
   viewerEntry: null,
+  friendListMode: null,
   openSettings: () => set({ settingsOpen: true }),
   closeSettings: () => set({ settingsOpen: false }),
   openWorkoutSheet: () => set({ workoutSheetOpen: true }),
@@ -61,6 +67,8 @@ const useUi = create<UiState>((set) => ({
   closeInviteSheet: () => set({ inviteSheetOpen: false }),
   openViewer: (entry) => set({ viewerEntry: entry }),
   closeViewer: () => set({ viewerEntry: null }),
+  openFriendList: (mode) => set({ friendListMode: mode }),
+  closeFriendList: () => set({ friendListMode: null }),
 }));
 
 // Small typed accessor for convenience:
