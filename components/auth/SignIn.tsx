@@ -1,27 +1,17 @@
 'use client';
 
 import { useState } from 'react';
-import { sendOtp, verifyOtp, signInAnon } from '@/lib/auth';
+import { sendOtp, verifyOtp } from '@/lib/auth';
 
-type Step = 'name' | 'email' | 'code';
+type Step = 'email' | 'code';
 
 export function SignIn() {
-  const [step, setStep] = useState<Step>('name');
-  const [name, setName] = useState('');
+  const [step, setStep] = useState<Step>('email');
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
   const [info, setInfo] = useState('');
-
-  const handleGuestStart = async () => {
-    setErr('');
-    setBusy(true);
-    const { error } = await signInAnon(name.trim());
-    setBusy(false);
-    if (error) setErr(error);
-    // success → auth listener in App.tsx takes over
-  };
 
   const handleSendCode = async () => {
     setErr('');
@@ -51,7 +41,7 @@ export function SignIn() {
         </div>
         <div className="brand-flourish" />
 
-        {step === 'name' && (
+        {step === 'email' && (
           <>
             <p
               className="lede"
@@ -60,61 +50,17 @@ export function SignIn() {
               Seventy-five days, every morning, the habits you choose — held by
               the community who shows up with you.
             </p>
-
-            <div style={{ width: '100%', marginTop: 18 }}>
-              <input
-                type="text"
-                autoComplete="given-name"
-                placeholder="Your first name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && name.trim().length >= 2)
-                    handleGuestStart();
-                }}
-                style={{
-                  width: '100%',
-                  padding: '14px 16px',
-                  background: 'var(--surface)',
-                  border: '1px solid var(--border)',
-                  borderRadius: 14,
-                  fontFamily: "'Fraunces',serif",
-                  fontSize: 17,
-                  color: 'var(--ink)',
-                  textAlign: 'center',
-                }}
-              />
-            </div>
-
-            <div style={{ flex: 1 }} />
-            <button
-              className="btn btn-accent btn-lg btn-block"
-              disabled={name.trim().length < 2 || busy}
-              onClick={handleGuestStart}
-            >
-              {busy ? 'Starting…' : "Let's go"}
-            </button>
-            <button
-              className="btn btn-ghost btn-block"
-              style={{ marginTop: 6, fontSize: 13 }}
-              onClick={() => {
-                setErr('');
-                setStep('email');
+            <p
+              style={{
+                marginTop: 10,
+                fontSize: 12.5,
+                color: 'var(--ink-3)',
+                fontFamily: "'Inter',sans-serif",
+                textAlign: 'center',
               }}
             >
-              Sign in with email instead
-            </button>
-          </>
-        )}
-
-        {step === 'email' && (
-          <>
-            <p
-              className="lede"
-              style={{ marginTop: 18, maxWidth: 320, textAlign: 'center' }}
-            >
-              Sign in with your email. We&apos;ll send a 6-digit code — no
-              password to remember.
+              Sign in with your email — we&apos;ll send a 6-digit code. No
+              password. Your data follows you across devices.
             </p>
 
             <div style={{ width: '100%', marginTop: 18 }}>
@@ -150,16 +96,6 @@ export function SignIn() {
               onClick={handleSendCode}
             >
               {busy ? 'Sending…' : 'Send Code'}
-            </button>
-            <button
-              className="btn btn-ghost btn-block"
-              style={{ marginTop: 6, fontSize: 13 }}
-              onClick={() => {
-                setErr('');
-                setStep('name');
-              }}
-            >
-              ← Back to quick start
             </button>
           </>
         )}

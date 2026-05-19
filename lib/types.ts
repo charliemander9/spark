@@ -125,7 +125,7 @@ export interface CustomDraftSlot {
 }
 
 export type Screen =
-  | 'onb-welcome' | 'onb-challenge' | 'onb-privacy' | 'onb-buddies'
+  | 'onb-welcome' | 'onb-name' | 'onb-challenge' | 'onb-privacy' | 'onb-buddies'
   | 'app';
 
 export type Tab = 'home' | 'discover' | 'journal' | 'friends' | 'foryou';
