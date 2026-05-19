@@ -46,6 +46,7 @@ export function Friends() {
   // Local reactions store — postId → { fire?: bool, heart?: bool, clap?: bool }
   // (Would move to DB in a future push.)
   const [reactions, setReactions] = useState<Record<string, Record<string, boolean>>>({});
+  const [cheerMessage, setCheerMessage] = useState('');
 
   const toggleReaction = (postId: string, kind: string) => {
     setReactions((prev) => {
@@ -111,13 +112,16 @@ export function Friends() {
 
   const sendCheer = async () => {
     if (!confirm) return;
+    const text = cheerMessage.trim() || 'Cheering you on today 🔥';
     if (confirm.friendId.startsWith('demo-')) {
       setConfirm(null);
+      setCheerMessage('');
       setTimeout(() => alert('Sent.'), 80);
       return;
     }
-    const { error } = await sendNudge(confirm.friendId, 'Cheering you on today 🔥');
+    const { error } = await sendNudge(confirm.friendId, text);
     setConfirm(null);
+    setCheerMessage('');
     if (error) setTimeout(() => alert(error), 80);
     else setTimeout(() => alert('Sent.'), 80);
   };
@@ -359,15 +363,24 @@ export function Friends() {
         <div className="modal-bd open" onClick={() => setConfirm(null)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <h3>
-              <em>Send {confirm.name} a cheer</em>
+              <em>Cheer {confirm.name}</em>
             </h3>
-            <p>A small &quot;I see you doing this — keep going&quot; note?</p>
+            <p>Write a quick note — or just send the default.</p>
+            <textarea
+              className="cheer-input"
+              placeholder="Cheering you on today 🔥"
+              value={cheerMessage}
+              onChange={(e) => setCheerMessage(e.target.value.slice(0, 200))}
+              rows={2}
+              autoFocus
+            />
+            <div className="cheer-count">{cheerMessage.length}/200</div>
             <div className="row">
-              <button className="btn btn-secondary" onClick={() => setConfirm(null)}>
-                Not now
+              <button className="btn btn-secondary" onClick={() => { setConfirm(null); setCheerMessage(''); }}>
+                Cancel
               </button>
               <button className="btn btn-accent" onClick={sendCheer}>
-                Yes, send
+                Send
               </button>
             </div>
           </div>

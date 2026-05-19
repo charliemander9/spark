@@ -1930,6 +1930,33 @@ p { line-height: 1.55; color: var(--ink-3); font-size: 14.5px; }
   margin-top: 1px;
 }
 
+/* ============ CHEER MODAL INPUT ============ */
+.cheer-input {
+  width: 100%;
+  margin-top: 8px;
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-family: 'Fraunces', serif;
+  font-size: 14.5px;
+  color: var(--ink);
+  resize: vertical;
+  min-height: 48px;
+}
+.cheer-input:focus {
+  outline: none;
+  border-color: var(--terracotta);
+}
+.cheer-count {
+  text-align: right;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  color: var(--ink-3);
+  margin-top: 4px;
+  margin-bottom: 6px;
+}
+
 /* ============ FRIEND LIST SHEET ============ */
 .friend-list {
   display: flex;
