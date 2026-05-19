@@ -2106,6 +2106,25 @@ p { line-height: 1.55; color: var(--ink-3); font-size: 14.5px; }
   background-size: cover;
   background-position: center;
   background-color: var(--surface-2);
+  position: relative;
+  overflow: hidden;
+}
+.bp-photo-video video {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+.bp-play-overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(0,0,0,0.18);
+  pointer-events: none;
+}
+.bp-play-overlay svg {
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5));
 }
 .bp-caption {
   padding: 10px 14px 14px;
@@ -2961,6 +2980,14 @@ p { line-height: 1.55; color: var(--ink-3); font-size: 14.5px; }
   font-size: 10px;
   display: grid; place-items: center;
   padding-left: 1px;
+  z-index: 2;
+}
+.photo-tile-video {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
 }
 
 /* ============ STEPS METER (on course card) ============ */

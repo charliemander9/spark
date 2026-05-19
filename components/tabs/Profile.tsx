@@ -128,23 +128,46 @@ export function Profile() {
         </div>
       ) : (
         <div className="prof-grid">
-          {filtered.map((d) => (
-            <div
-              key={d.id}
-              className={'prof-tile ' + d.type + (d.id === newestId ? ' new' : '')}
-              style={d.type === 'reflection' ? undefined : { backgroundImage: d.bg }}
-            >
-              {d.type === 'reflection' && (
-                <div className="pt-body">{d.body}</div>
-              )}
-              {d.type === 'video' && (
-                <div className="pt-play" />
-              )}
-              {d.photos && d.photos.length > 1 && (
-                <div className="pt-multi">⊞ {d.photos.length}</div>
-              )}
-            </div>
-          ))}
+          {filtered.map((d) => {
+            const m = d.bg?.match(/url\("?([^"]+)"?\)/);
+            const rawUrl = m ? m[1] : null;
+            const isRealVideo =
+              d.type === 'video' && rawUrl && rawUrl.startsWith('blob:');
+            return (
+              <div
+                key={d.id}
+                className={'prof-tile ' + d.type + (d.id === newestId ? ' new' : '')}
+                style={
+                  d.type === 'reflection' || isRealVideo
+                    ? undefined
+                    : { backgroundImage: d.bg }
+                }
+              >
+                {isRealVideo && (
+                  <video
+                    src={rawUrl!}
+                    muted
+                    playsInline
+                    preload="metadata"
+                    style={{
+                      position: 'absolute',
+                      inset: 0,
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                    }}
+                  />
+                )}
+                {d.type === 'reflection' && (
+                  <div className="pt-body">{d.body}</div>
+                )}
+                {d.type === 'video' && <div className="pt-play" />}
+                {d.photos && d.photos.length > 1 && (
+                  <div className="pt-multi">⊞ {d.photos.length}</div>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
       <div style={{ height: 20 }} />

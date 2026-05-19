@@ -19,6 +19,7 @@ interface FeedItem {
   bg: string;            // gradient or url() for the photo
   caption: string;
   isYou?: boolean;
+  isVideo?: boolean;
 }
 
 // Mock photos used for demo friends so the feed isn't gradient-only.
@@ -121,11 +122,15 @@ export function Friends() {
       bg: todayEntry.bg || DEMO_BGS[0],
       caption: todayEntry.body || (todayEntry.type === 'reflection' ? '' : 'Today.'),
       isYou: true,
+      isVideo: todayEntry.type === 'video',
     });
   }
 
   friends.forEach((f, i) => {
     if (!f.todayEntry) return;
+    const demoVideo =
+      f.id.startsWith('demo-') &&
+      Boolean((f.todayEntry as any).isVideo);
     feed.push({
       id: f.id,
       name: f.name,
@@ -135,9 +140,12 @@ export function Friends() {
       day: f.day,
       bg: DEMO_BGS[i % DEMO_BGS.length],
       caption:
-        f.todayEntry.type === 'journal' && f.todayEntry.body
+        f.todayEntry.body
           ? f.todayEntry.body
+          : demoVideo
+          ? 'Posted a video.'
           : 'Posted a photo.',
+      isVideo: demoVideo,
     });
   });
 
@@ -265,7 +273,7 @@ export function Friends() {
                 )}
               </header>
 
-              <div className="bp-photo" style={{ backgroundImage: p.bg }} />
+              <BPPhoto bg={p.bg} isVideo={p.isVideo} />
 
               {p.caption && (
                 <div className="bp-caption">
@@ -298,5 +306,42 @@ export function Friends() {
 
       <div style={{ height: 20 }} />
     </>
+  );
+}
+
+/**
+ * BeReal-post photo block — handles three cases:
+ *  - real video file the user uploaded (blob: url) → renders <video>
+ *  - gradient bg → renders a div with backgroundImage
+ *  - demo "video" (gradient + play overlay)
+ */
+function BPPhoto({ bg, isVideo }: { bg: string; isVideo?: boolean }) {
+  const m = bg.match(/url\("?([^"]+)"?\)/);
+  const rawUrl = m ? m[1] : null;
+  const isRealVideo = isVideo && rawUrl && rawUrl.startsWith('blob:');
+
+  if (isRealVideo) {
+    return (
+      <div className="bp-photo bp-photo-video">
+        <video src={rawUrl!} muted playsInline preload="metadata" />
+        <div className="bp-play-overlay">
+          <svg viewBox="0 0 24 24" width={26} height={26} fill="white">
+            <path d="M8 5v14l11-7L8 5z" />
+          </svg>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bp-photo" style={{ backgroundImage: bg }}>
+      {isVideo && (
+        <div className="bp-play-overlay">
+          <svg viewBox="0 0 24 24" width={26} height={26} fill="white">
+            <path d="M8 5v14l11-7L8 5z" />
+          </svg>
+        </div>
+      )}
+    </div>
   );
 }

@@ -4,6 +4,7 @@ import { useSparkActions, useUi } from '@/lib/storeActions';
 import { useSpark } from '@/lib/store';
 import { dailyQuote, greeting, gearSvg, todayLabel } from '@/lib/helpers';
 import { TONE_COPY } from '@/lib/data';
+import type { DiaryEntry } from '@/lib/types';
 import { CourseCard } from '../CourseCard';
 
 export function Home() {
@@ -59,15 +60,7 @@ export function Home() {
       ) : (
         <div className="daily-saved" onClick={openDailySheet}>
           <div className="ds-left">
-            {todayEntry?.type === 'photo' && todayEntry.bg ? (
-              <div className="ds-thumb" style={{ backgroundImage: todayEntry.bg }} />
-            ) : todayEntry?.type === 'video' && todayEntry.bg ? (
-              <div className="ds-thumb video" style={{ backgroundImage: todayEntry.bg }}>
-                <div className="ds-play" />
-              </div>
-            ) : (
-              <div className="ds-thumb journal">✎</div>
-            )}
+            <DSThumb entry={todayEntry} />
           </div>
           <div className="ds-body">
             <div className="ds-tag">Today's Entry</div>
@@ -95,5 +88,44 @@ export function Home() {
       <CourseCard slot="main" />
       <CourseCard slot="treat" />
     </>
+  );
+}
+
+function DSThumb({ entry }: { entry: DiaryEntry | undefined }) {
+  if (!entry) return <div className="ds-thumb journal">✎</div>;
+  if (entry.type === 'reflection' || !entry.bg)
+    return <div className="ds-thumb journal">✎</div>;
+  const m = entry.bg.match(/url\("?([^"]+)"?\)/);
+  const rawUrl = m ? m[1] : null;
+  const isRealVideo =
+    entry.type === 'video' && rawUrl && rawUrl.startsWith('blob:');
+  if (isRealVideo) {
+    return (
+      <div className="ds-thumb video">
+        <video
+          src={rawUrl!}
+          muted
+          playsInline
+          preload="metadata"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            borderRadius: 12,
+          }}
+        />
+        <div className="ds-play" />
+      </div>
+    );
+  }
+  return (
+    <div
+      className={'ds-thumb' + (entry.type === 'video' ? ' video' : '')}
+      style={{ backgroundImage: entry.bg }}
+    >
+      {entry.type === 'video' && <div className="ds-play" />}
+    </div>
   );
 }

@@ -160,27 +160,40 @@ export function DailySheet() {
             </button>
           ) : (
             <div className="photo-carousel">
-              {photos.map((p, i) => (
+              {photos.map((p, i) => {
+                const m = p.bg.match(/url\("?([^"]+)"?\)/);
+                const rawUrl = m ? m[1] : null;
+                return (
                 <div
                   key={i}
                   className="photo-tile"
-                  style={{ backgroundImage: p.bg }}
+                  style={p.type === 'video' ? undefined : { backgroundImage: p.bg }}
                 >
-                  {p.type === 'video' && (
-                    <div className="photo-video-badge">▶</div>
+                  {p.type === 'video' && rawUrl && (
+                    <>
+                      <video
+                        src={rawUrl}
+                        muted
+                        playsInline
+                        preload="metadata"
+                        className="photo-tile-video"
+                      />
+                      <div className="photo-video-badge">▶</div>
+                    </>
                   )}
                   <button
                     className="photo-remove"
                     onClick={() => {
-                      const m = p.bg.match(/url\("?(blob:[^"]+)"?\)/);
-                      if (m) URL.revokeObjectURL(m[1]);
+                      if (rawUrl && rawUrl.startsWith('blob:'))
+                        URL.revokeObjectURL(rawUrl);
                       setPhotos(photos.filter((_, j) => j !== i));
                     }}
                   >
                     ×
                   </button>
                 </div>
-              ))}
+                );
+              })}
               {photos.length < 5 && (
                 <button
                   className="photo-tile add"
