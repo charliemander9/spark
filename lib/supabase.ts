@@ -14,8 +14,34 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-export const supabase: SupabaseClient | null =
-  url && anonKey ? createClient(url, anonKey) : null;
+// Validate the URL so a malformed env var degrades to local mode instead of
+// crashing the build during static-page generation.
+function looksLikeUrl(value: string | undefined): value is string {
+  if (!value) return false;
+  try {
+    const u = new URL(value);
+    return u.protocol === 'http:' || u.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
+const configured = looksLikeUrl(url) && !!anonKey;
+
+if (!configured && typeof window !== 'undefined') {
+  if (url || anonKey) {
+    // Only log on the client — and only if the user actually set something.
+    // eslint-disable-next-line no-console
+    console.warn(
+      '[Spark] Supabase env vars look wrong. Expected URL like ' +
+        'https://xxxx.supabase.co and a separate anon key. Running in local mode.',
+    );
+  }
+}
+
+export const supabase: SupabaseClient | null = configured
+  ? createClient(url!, anonKey!)
+  : null;
 
 export const hasSupabase = !!supabase;
 
