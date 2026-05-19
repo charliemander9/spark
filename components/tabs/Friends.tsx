@@ -43,8 +43,22 @@ export function Friends() {
   const [nudges, setNudges] = useState<IncomingNudge[]>([]);
   const [loading, setLoading] = useState(hasSupabase);
   const [confirm, setConfirm] = useState<{ friendId: string; name: string } | null>(null);
+  // Local reactions store — postId → { fire?: bool, heart?: bool, clap?: bool }
+  // (Would move to DB in a future push.)
+  const [reactions, setReactions] = useState<Record<string, Record<string, boolean>>>({});
 
-  const friends: FriendSummary[] = demoMode
+  const toggleReaction = (postId: string, kind: string) => {
+    setReactions((prev) => {
+      const cur = prev[postId] ?? {};
+      return { ...prev, [postId]: { ...cur, [kind]: !cur[kind] } };
+    });
+  };
+
+  // Always layer demo friends in for visual richness when the user doesn't have
+  // their own friends yet. The toggle on Profile controls whether DEMO_DIARY is
+  // injected into the user's own diary, not whether demo people show up here.
+  const showDemoFriends = demoMode || realFriends.length === 0;
+  const friends: FriendSummary[] = showDemoFriends
     ? [
         ...realFriends,
         ...DEMO_FRIENDS.map(
@@ -304,6 +318,38 @@ export function Friends() {
                   <b>{p.name.toLowerCase()}</b> {p.caption}
                 </div>
               )}
+
+              <div className="bp-reactions">
+                {(['fire', 'heart', 'clap'] as const).map((kind) => {
+                  const active = reactions[p.id]?.[kind];
+                  const emoji =
+                    kind === 'fire' ? '🔥' : kind === 'heart' ? '❤️' : '👏';
+                  // Demo baseline so reactions look populated; +1 if user tapped
+                  const baseline =
+                    p.id.startsWith('demo-')
+                      ? ((p.id.charCodeAt(p.id.length - 1) +
+                          kind.charCodeAt(0)) %
+                          18) +
+                        2
+                      : 0;
+                  const count = baseline + (active ? 1 : 0);
+                  return (
+                    <button
+                      key={kind}
+                      className={'bp-react' + (active ? ' active' : '')}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleReaction(p.id, kind);
+                      }}
+                    >
+                      <span className="bp-react-emoji">{emoji}</span>
+                      {count > 0 && (
+                        <span className="bp-react-count">{count}</span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
             </article>
           ))}
         </div>

@@ -47,7 +47,7 @@ export function SignIn() {
     <div className="onb">
       <div className="onb-hero">
         <div className="brand">
-          Good <span className="brand-bolt">⚡</span> Morning
+          Good<span className="brand-bolt">⚡</span>Morning
         </div>
         <div className="brand-flourish" />
 
@@ -57,8 +57,8 @@ export function SignIn() {
               className="lede"
               style={{ marginTop: 18, maxWidth: 320, textAlign: 'center' }}
             >
-              Good Morning! Seventy-five days, every day, the habits you choose
-              — held by the community who show up with you.
+              Seventy-five days, every morning, the habits you choose — held by
+              the community who shows up with you.
             </p>
 
             <div style={{ width: '100%', marginTop: 18 }}>

@@ -13,10 +13,14 @@ export function Media({
   bg,
   isVideo,
   alt,
+  controls,
+  autoPlay,
 }: {
   bg?: string;
   isVideo?: boolean;
   alt?: string;
+  controls?: boolean;
+  autoPlay?: boolean;
 }) {
   if (!bg) return null;
 
@@ -44,9 +48,12 @@ export function Media({
     return (
       <video
         src={url}
-        muted
+        muted={!controls}
         playsInline
         preload="metadata"
+        controls={controls}
+        autoPlay={autoPlay}
+        loop={!controls}
         style={{
           position: 'absolute',
           inset: 0,

@@ -6,6 +6,7 @@ import { useUi } from '@/lib/storeActions';
 import { gearSvg } from '@/lib/helpers';
 import { updateProfile } from '@/lib/profile';
 import { hasSupabase } from '@/lib/supabase';
+import { uploadAvatar } from '@/lib/storage';
 import { Media } from '../Media';
 import type { DiaryEntry } from '@/lib/types';
 
@@ -37,16 +38,32 @@ export function Profile() {
     if (hasSupabase) updateProfile({ bio: trimmed });
   };
 
-  const onAvatarFile = (files: FileList | null) => {
+  const onAvatarFile = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
     const f = files[0];
     if (!f.type.startsWith('image/')) {
       alert('Please pick an image file.');
       return;
     }
-    const url = URL.createObjectURL(f);
-    setUser({ avatarUrl: url });
+    // Show the local preview immediately so the UI is responsive
+    const localUrl = URL.createObjectURL(f);
+    setUser({ avatarUrl: localUrl });
     if (avatarInputRef.current) avatarInputRef.current.value = '';
+
+    // Upload to storage in the background. When it returns, swap in the
+    // permanent URL so it survives reloads and other devices.
+    if (hasSupabase) {
+      const { url, error } = await uploadAvatar(f);
+      if (error) {
+        // eslint-disable-next-line no-console
+        console.warn('[GoodMorning] avatar upload failed:', error);
+        return;
+      }
+      if (url) {
+        setUser({ avatarUrl: url });
+        await updateProfile({ avatar_url: url } as any);
+      }
+    }
   };
 
   return (

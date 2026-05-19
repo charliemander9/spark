@@ -46,14 +46,12 @@ export function EntryViewer() {
           </div>
         ) : (
           <div className="ev-media">
-            <Media bg={entry.bg} isVideo={entry.isVideo} />
-            {entry.isVideo && (
-              <div className="ev-play-overlay">
-                <svg viewBox="0 0 24 24" width={48} height={48} fill="white">
-                  <path d="M8 5v14l11-7L8 5z" />
-                </svg>
-              </div>
-            )}
+            <Media
+              bg={entry.bg}
+              isVideo={entry.isVideo}
+              controls={entry.isVideo}
+              autoPlay={entry.isVideo}
+            />
           </div>
         )}
 

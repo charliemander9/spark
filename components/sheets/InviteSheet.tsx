@@ -26,7 +26,7 @@ export function InviteSheet() {
   const origin = typeof window !== 'undefined' ? window.location.origin : '';
   const inviteUrl = origin && myCode ? `${origin}/?invite=${myCode}` : origin;
   const inviteText =
-    `Join me on GM ⚡ — my invite code is ${myCode}.\n${inviteUrl}`;
+    `Join me on GoodMorning ⚡ — my invite code is ${myCode}.\n${inviteUrl}`;
 
   const handleAdd = async () => {
     setBusy(true);
@@ -63,7 +63,7 @@ export function InviteSheet() {
     if (typeof navigator !== 'undefined' && (navigator as any).share) {
       try {
         await (navigator as any).share({
-          title: 'Join me on GM',
+          title: 'Join me on GoodMorning',
           text: inviteText,
           url: inviteUrl,
         });

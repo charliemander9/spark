@@ -33,7 +33,7 @@ if (!configured && typeof window !== 'undefined') {
     // Only log on the client — and only if the user actually set something.
     // eslint-disable-next-line no-console
     console.warn(
-      '[GM] Supabase env vars look wrong. Expected URL like ' +
+      '[GoodMorning] Supabase env vars look wrong. Expected URL like ' +
         'https://xxxx.supabase.co and a separate anon key. Running in local mode.',
     );
   }
@@ -51,6 +51,7 @@ export interface ProfileRow {
   email: string | null;   // null for anonymous users
   name: string;
   bio: string | null;
+  avatar_url: string | null;
   created_at: string;
   day: number;
   streak: number;

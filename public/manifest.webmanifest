@@ -1,7 +1,7 @@
 {
-  "name": "GOODMORNING",
-  "short_name": "GOODMORNING",
-  "description": "GM. Seventy-five days, every morning, the habits you choose.",
+  "name": "GoodMorning",
+  "short_name": "GoodMorning",
+  "description": "Seventy-five days, every morning, the habits you choose.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

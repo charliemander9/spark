@@ -4,8 +4,12 @@ import { useEffect, useRef, useState } from 'react';
 import { useSpark } from '@/lib/store';
 import { useUi } from '@/lib/storeActions';
 import { saveDailyEntryToDb } from '@/lib/dailyEntry';
+import { uploadEntryFile } from '@/lib/storage';
 import { Media } from '../Media';
 import type { Photo } from '@/lib/types';
+
+// Photo + underlying File so we can upload to storage on save
+type LocalPhoto = Photo & { file?: File };
 
 // Random placeholder so users get an example of what to write.
 const CAPTION_EXAMPLES = [
@@ -23,7 +27,7 @@ export function DailySheet() {
   const setDailyEntry = useSpark((s) => s.setDailyEntry);
   const pushDiary = useSpark((s) => s.pushDiary);
 
-  const [photos, setPhotos] = useState<Photo[]>([]);
+  const [photos, setPhotos] = useState<LocalPhoto[]>([]);
   const [caption, setCaption] = useState('');
   const [busy, setBusy] = useState(false);
   const [placeholder, setPlaceholder] = useState(CAPTION_EXAMPLES[0]);
@@ -41,7 +45,7 @@ export function DailySheet() {
   const onFiles = (files: FileList | null) => {
     if (!files || files.length === 0) return;
     const room = 5 - photos.length;
-    const picked: Photo[] = [];
+    const picked: LocalPhoto[] = [];
     for (let i = 0; i < Math.min(files.length, room); i++) {
       const f = files[i];
       const url = URL.createObjectURL(f);
@@ -49,6 +53,7 @@ export function DailySheet() {
       picked.push({
         type: isVideo ? 'video' : 'photo',
         bg: `url("${url}")`,
+        file: f,
       });
     }
     setPhotos([...photos, ...picked]);
@@ -94,21 +99,44 @@ export function DailySheet() {
     }
 
     setDailyEntry({ type: dbType, savedAt: Date.now() });
+    const localPhotos = photos;
     setPhotos([]);
     setCaption('');
     setBusy(false);
     close();
 
-    // Best-effort DB sync — fire-and-forget. If it fails, we log but the user
-    // is already unlocked and the entry is saved locally.
-    saveDailyEntryToDb(dbType, text || null, photos.map((p) => p.bg)).then(
-      ({ error }) => {
+    // Best-effort persistence — fires async. First, upload each File to
+    // Supabase Storage so we get permanent URLs that survive reloads. Then
+    // save the entry row referencing those URLs. If anything fails, the user
+    // is already unlocked locally.
+    (async () => {
+      const dateStr = new Date().toISOString().slice(0, 10);
+      const photoUrls: string[] = [];
+      for (let i = 0; i < localPhotos.length; i++) {
+        const p = localPhotos[i];
+        if (!p.file) {
+          photoUrls.push(p.bg);
+          continue;
+        }
+        const { url, error } = await uploadEntryFile(p.file, dateStr, i);
         if (error) {
           // eslint-disable-next-line no-console
-          console.warn('[GM] daily entry sync failed:', error);
+          console.warn('[GoodMorning] photo upload failed:', error);
+          photoUrls.push(p.bg); // keep the blob fallback locally
+        } else if (url) {
+          photoUrls.push(`url("${url}")`);
         }
-      },
-    );
+      }
+      const { error } = await saveDailyEntryToDb(
+        dbType,
+        text || null,
+        photoUrls,
+      );
+      if (error) {
+        // eslint-disable-next-line no-console
+        console.warn('[GoodMorning] daily entry sync failed:', error);
+      }
+    })();
   };
 
   if (!open) return null;

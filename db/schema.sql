@@ -11,6 +11,7 @@ create table if not exists public.profiles (
   email        text,                       -- nullable: anonymous users have no email
   name         text not null,
   bio          text,                       -- short user-editable bio
+  avatar_url   text,                       -- profile photo (Supabase Storage URL)
   created_at   timestamptz default now() not null,
 
   day          int  default 1  not null,

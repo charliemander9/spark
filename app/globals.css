@@ -522,9 +522,54 @@ p { line-height: 1.55; color: var(--ink-3); font-size: 14.5px; }
   display: inline-block;
   color: #F5C842;
   font-style: normal;
-  font-size: 0.7em;
-  transform: translateY(-2px);
+  font-size: 0.55em;
+  transform: translateY(-3px);
   filter: drop-shadow(0 2px 4px rgba(245,200,66,0.4));
+  margin: 0 -2px;
+}
+
+/* Welcome / intro explainer block */
+.welcome-explainer {
+  width: 100%;
+  margin-top: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.we-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+.we-num {
+  width: 28px; height: 28px;
+  background: var(--terracotta);
+  color: var(--bg-2);
+  border-radius: 50%;
+  display: grid; place-items: center;
+  font-family: 'Fraunces', serif;
+  font-size: 14px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.we-body b {
+  display: block;
+  font-family: 'Fraunces', serif;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink);
+}
+.we-body small {
+  display: block;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  color: var(--ink-3);
+  line-height: 1.45;
+  margin-top: 2px;
 }
 .brand-flourish {
   width: 60px; height: 1px;
@@ -2316,7 +2361,7 @@ p { line-height: 1.55; color: var(--ink-3); font-size: 14.5px; }
   filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5));
 }
 .bp-caption {
-  padding: 10px 14px 14px;
+  padding: 10px 14px 6px;
   font-family: 'Fraunces', serif;
   font-size: 14.5px;
   line-height: 1.45;
@@ -2328,6 +2373,34 @@ p { line-height: 1.55; color: var(--ink-3); font-size: 14.5px; }
   margin-right: 4px;
   font-style: normal;
 }
+.bp-reactions {
+  display: flex;
+  gap: 6px;
+  padding: 6px 12px 14px;
+}
+.bp-react {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-2);
+  transition: transform .07s, background .15s, border-color .15s;
+  cursor: pointer;
+}
+.bp-react:active { transform: scale(0.94); }
+.bp-react.active {
+  background: var(--neon-coral-soft);
+  border-color: var(--neon-coral);
+  color: var(--neon-coral);
+}
+.bp-react-emoji { font-size: 14px; line-height: 1; }
+.bp-react-count { font-feature-settings: 'tnum'; }
 
 /* ============ PROFILE — IG / TikTok style ============ */
 .prof-head {
