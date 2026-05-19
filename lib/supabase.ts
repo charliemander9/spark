@@ -50,6 +50,7 @@ export interface ProfileRow {
   id: string;             // matches auth.users.id
   email: string | null;   // null for anonymous users
   name: string;
+  bio: string | null;
   created_at: string;
   day: number;
   streak: number;

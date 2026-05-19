@@ -21,7 +21,7 @@ export interface Category {
 }
 
 export type PresetId =
-  | '75-hard-lite' | 'runner' | 'endurance' | 'move-more'
+  | '75-hard' | '75-hard-lite' | 'runner' | 'endurance' | 'move-more'
   | 'recomp' | 'reset' | 'recovery' | 'custom';
 
 export interface PresetSlot {
@@ -78,6 +78,8 @@ export interface DailyEntry { type: DailyMode; savedAt: number; }
 
 export interface User {
   name: string;
+  bio: string;                 // user-editable bio shown on Profile
+  avatarUrl: string | null;    // optional uploaded profile picture (blob URL or http URL)
   privacy: Privacy;
   tone: Tone;
   buddies: Buddy[];

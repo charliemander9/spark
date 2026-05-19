@@ -2311,6 +2311,80 @@ p { line-height: 1.55; color: var(--ink-3); font-size: 14.5px; }
   font-weight: 400;
   flex-shrink: 0;
   box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+  position: relative;
+  overflow: hidden;
+}
+.prof-ava-button {
+  cursor: pointer;
+  border: none;
+  padding: 0;
+  transition: transform .08s;
+}
+.prof-ava-button:active { transform: scale(0.97); }
+.prof-ava-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.prof-ava-edit {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 24px;
+  height: 24px;
+  background: var(--terracotta);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--surface);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+/* Editable bio block */
+.prof-bio-text {
+  font-family: 'Fraunces', serif;
+  font-size: 14px;
+  color: var(--ink-2, var(--ink));
+  font-style: italic;
+  cursor: pointer;
+  padding: 4px 0;
+  min-height: 24px;
+  white-space: pre-wrap;
+}
+.prof-bio-text:active { opacity: 0.7; }
+.prof-bio-placeholder {
+  color: var(--ink-3);
+  font-style: italic;
+}
+.prof-bio-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.prof-bio-edit textarea {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--surface);
+  border: 1px solid var(--terracotta);
+  border-radius: 12px;
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: 14px;
+  color: var(--ink);
+  resize: vertical;
+  min-height: 56px;
+}
+.prof-bio-edit-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.prof-bio-count {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  color: var(--ink-3);
 }
 .prof-name-block { flex: 1; min-width: 0; }
 .prof-name-block h1 {

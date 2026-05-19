@@ -138,6 +138,8 @@ export const useSpark = create<SparkState>((set, get) => ({
 
   user: {
     name: 'Charlie',
+    bio: '',
+    avatarUrl: null,
     privacy: 'friends',
     tone: 'balanced',
     buddies: [],

@@ -44,6 +44,7 @@ export function App() {
       if (profile) {
         setUser({
           name: profile.name,
+          bio: profile.bio ?? '',
           tone: profile.tone,
           privacy: profile.privacy,
           day: profile.day,

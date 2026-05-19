@@ -21,12 +21,6 @@ export const CATEGORIES: Record<CategoryId, Category> = {
     fmt: (n) => n + ' oz',
     supportsSync: true,
   },
-  sleep: {
-    id: 'sleep', label: 'Sleep', type: 'numeric',
-    ringColor: '#9D8FD9', unit: 'hours', defaultGoal: 8,
-    range: [6, 10], step: 0.5,
-    fmt: (n) => n + ' hrs',
-  },
   alcohol: {
     id: 'alcohol', label: 'No Alcohol', type: 'binary',
     ringColor: '#E8896F', desc: 'Stay alcohol-free today.',
@@ -41,6 +35,12 @@ export const CATEGORIES: Record<CategoryId, Category> = {
     range: [5, 30], step: 1,
     fmt: (n) => n + ' pages',
   },
+  sleep: {
+    id: 'sleep', label: 'Sleep', type: 'numeric',
+    ringColor: '#9D8FD9', unit: 'hours', defaultGoal: 8,
+    range: [6, 10], step: 0.5,
+    fmt: (n) => n + ' hrs',
+  },
   custom: {
     id: 'custom', label: 'Custom', type: 'custom',
     ringColor: '#E66EAE', desc: 'Define your own check-in.',
@@ -52,6 +52,17 @@ export const PRESETS: Record<string, Preset> = {
     label: 'Build my own',
     desc: 'Pick three from the catalog. Mix and match.',
     slots: null,
+  },
+  '75-hard': {
+    label: '75 Hard',
+    desc: 'The original — 5 rules. Two workouts, gallon of water, 10 pages, diet.',
+    slots: [
+      { cat: 'workout',     label: 'Workout 1',       config: { mustBeOutdoors: false, minDuration: 45 } },
+      { cat: 'workout',     label: 'Outside Workout', config: { mustBeOutdoors: true,  minDuration: 45 } },
+      { cat: 'water',       label: 'Gallon of Water', config: { goal: 128 } },
+      { cat: 'reading',     label: '10 Pages',        config: { goal: 10 } },
+      { cat: 'alcohol',     label: 'No Alcohol',      config: {} },
+    ],
   },
   '75-hard-lite': {
     label: '75 Hard Lite',

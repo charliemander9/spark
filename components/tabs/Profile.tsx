@@ -1,9 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useSpark } from '@/lib/store';
 import { useUi } from '@/lib/storeActions';
 import { gearSvg } from '@/lib/helpers';
+import { updateProfile } from '@/lib/profile';
+import { hasSupabase } from '@/lib/supabase';
 import type { DiaryEntry } from '@/lib/types';
 
 type ProfileTab = 'all' | 'photos' | 'journal';
@@ -15,13 +17,36 @@ export function Profile() {
   const demoMode = useSpark((s) => s.demoMode);
   const loadDemo = useSpark((s) => s.loadDemo);
   const clearDemo = useSpark((s) => s.clearDemo);
+  const setUser = useSpark((s) => s.setUser);
   const openSettings = useUi((s) => s.openSettings);
   const openInviteSheet = useUi((s) => s.openInviteSheet);
   const openViewer = useUi((s) => s.openViewer);
 
   const [activeTab, setActiveTab] = useState<ProfileTab>('all');
+  const [editingBio, setEditingBio] = useState(false);
+  const [bioDraft, setBioDraft] = useState(user.bio);
+  const avatarInputRef = useRef<HTMLInputElement | null>(null);
 
   const filtered = filterDiary(diary, activeTab);
+
+  const saveBio = () => {
+    const trimmed = bioDraft.trim();
+    setUser({ bio: trimmed });
+    setEditingBio(false);
+    if (hasSupabase) updateProfile({ bio: trimmed });
+  };
+
+  const onAvatarFile = (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    const f = files[0];
+    if (!f.type.startsWith('image/')) {
+      alert('Please pick an image file.');
+      return;
+    }
+    const url = URL.createObjectURL(f);
+    setUser({ avatarUrl: url });
+    if (avatarInputRef.current) avatarInputRef.current.value = '';
+  };
 
   return (
     <>
@@ -43,7 +68,29 @@ export function Profile() {
       </div>
 
       <div className="prof-head">
-        <div className="prof-ava">{(user.name[0] || 'C').toUpperCase()}</div>
+        <button
+          className="prof-ava prof-ava-button"
+          onClick={() => avatarInputRef.current?.click()}
+          aria-label="Change profile picture"
+        >
+          {user.avatarUrl ? (
+            <img src={user.avatarUrl} alt={user.name} className="prof-ava-img" />
+          ) : (
+            (user.name[0] || 'C').toUpperCase()
+          )}
+          <span className="prof-ava-edit">
+            <svg viewBox="0 0 24 24" width={12} height={12} fill="white">
+              <path d="M3 17.5V21h3.5l11-11-3.5-3.5-11 11zm17.7-13.3a1 1 0 0 0 0-1.4l-2.5-2.5a1 1 0 0 0-1.4 0L15 1.9 18.6 5.5l2.1-2z" />
+            </svg>
+          </span>
+        </button>
+        <input
+          ref={avatarInputRef}
+          type="file"
+          accept="image/*"
+          style={{ display: 'none' }}
+          onChange={(e) => onAvatarFile(e.target.files)}
+        />
         <div className="prof-name-block">
           <h1>{user.name}</h1>
           <div className="prof-handle">@{handleFromName(user.name)}</div>
@@ -64,32 +111,89 @@ export function Profile() {
         </div>
       </div>
 
+      <div className="prof-bio">
+        {editingBio ? (
+          <div className="prof-bio-edit">
+            <textarea
+              value={bioDraft}
+              onChange={(e) => setBioDraft(e.target.value.slice(0, 140))}
+              placeholder="A line about you, your goals, your vibe."
+              maxLength={140}
+              autoFocus
+              rows={2}
+            />
+            <div className="prof-bio-edit-row">
+              <span className="prof-bio-count">{bioDraft.length}/140</span>
+              <div>
+                <button
+                  className="btn btn-secondary"
+                  style={{ padding: '8px 14px', fontSize: 12.5 }}
+                  onClick={() => {
+                    setBioDraft(user.bio);
+                    setEditingBio(false);
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="btn btn-accent"
+                  style={{ padding: '8px 14px', fontSize: 12.5, marginLeft: 6 }}
+                  onClick={saveBio}
+                >
+                  Save
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <p
+            className="prof-bio-text"
+            onClick={() => {
+              setBioDraft(user.bio);
+              setEditingBio(true);
+            }}
+          >
+            {user.bio || (
+              <span className="prof-bio-placeholder">
+                Tap to add a bio — what are you here for?
+              </span>
+            )}
+          </p>
+        )}
+      </div>
+
       <div className="prof-streak-row">
         <div className="prof-streak-chip">
           <span>🔥</span>
-          <span><b>{user.streak}</b> day streak</span>
+          <span>
+            <b>{user.streak}</b> day streak
+          </span>
         </div>
         <div className="prof-streak-chip">
           <span>📅</span>
-          <span>Day <b>{user.day}</b> of 75</span>
+          <span>
+            Day <b>{user.day}</b> of 75
+          </span>
         </div>
         <div className="prof-streak-chip">
           <span>📷</span>
-          <span><b>{diary.length}</b> entries</span>
+          <span>
+            <b>{diary.length}</b> entries
+          </span>
         </div>
-      </div>
-
-      <div className="prof-bio">
-        <p>
-          {bioFor(user.preset, user.day, user.streak)}
-        </p>
       </div>
 
       <div className="prof-actions">
         <button className="btn btn-secondary" onClick={openInviteSheet}>
           Share my code
         </button>
-        <button className="btn btn-secondary" onClick={openSettings}>
+        <button
+          className="btn btn-secondary"
+          onClick={() => {
+            setBioDraft(user.bio);
+            setEditingBio(true);
+          }}
+        >
           Edit profile
         </button>
       </div>
@@ -200,25 +304,11 @@ export function Profile() {
 
 function filterDiary(diary: DiaryEntry[], tab: ProfileTab): DiaryEntry[] {
   if (tab === 'all') return diary;
-  if (tab === 'photos') return diary.filter((d) => d.type === 'photo' || d.type === 'video');
+  if (tab === 'photos')
+    return diary.filter((d) => d.type === 'photo' || d.type === 'video');
   return diary.filter((d) => d.type === 'reflection');
 }
 
 function handleFromName(name: string): string {
   return (name || 'you').toLowerCase().replace(/[^a-z0-9]/g, '');
-}
-
-function bioFor(preset: string, day: number, streak: number): string {
-  const labels: Record<string, string> = {
-    '75-hard-lite': '75 Hard Lite',
-    runner: 'Runner',
-    endurance: 'Endurance',
-    'move-more': 'Move More',
-    recomp: 'Recomp',
-    reset: 'Reset',
-    recovery: 'Recovery',
-    custom: 'Custom 75',
-  };
-  const presetName = labels[preset] ?? preset;
-  return `${presetName} · Day ${day} of 75 · ${streak} day streak`;
 }

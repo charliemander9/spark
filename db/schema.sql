@@ -10,6 +10,7 @@ create table if not exists public.profiles (
   id           uuid references auth.users on delete cascade primary key,
   email        text,                       -- nullable: anonymous users have no email
   name         text not null,
+  bio          text,                       -- short user-editable bio
   created_at   timestamptz default now() not null,
 
   day          int  default 1  not null,
