@@ -12,8 +12,12 @@ export function Profile() {
   const user = useSpark((s) => s.user);
   const diary = useSpark((s) => s.diary);
   const newestId = useSpark((s) => s.newestDiaryId);
+  const demoMode = useSpark((s) => s.demoMode);
+  const loadDemo = useSpark((s) => s.loadDemo);
+  const clearDemo = useSpark((s) => s.clearDemo);
   const openSettings = useUi((s) => s.openSettings);
   const openInviteSheet = useUi((s) => s.openInviteSheet);
+  const openViewer = useUi((s) => s.openViewer);
 
   const [activeTab, setActiveTab] = useState<ProfileTab>('all');
 
@@ -24,6 +28,12 @@ export function Profile() {
       <div className="appbar">
         <div></div>
         <div className="right">
+          <button
+            className={'demo-btn' + (demoMode ? ' on' : '')}
+            onClick={() => (demoMode ? clearDemo() : loadDemo())}
+          >
+            {demoMode ? '× Demo on' : '✨ Load demo'}
+          </button>
           <button
             className="iconbtn"
             onClick={openSettings}
@@ -141,6 +151,19 @@ export function Profile() {
                   d.type === 'reflection' || isRealVideo
                     ? undefined
                     : { backgroundImage: d.bg }
+                }
+                onClick={() =>
+                  openViewer({
+                    authorName: user.name,
+                    authorInitials: (user.name[0] || '?').toUpperCase(),
+                    when: `${d.day} · ${d.date}`,
+                    bg: d.bg,
+                    isVideo: d.type === 'video',
+                    isJournal: d.type === 'reflection',
+                    body: d.body,
+                    day: user.day,
+                    streak: user.streak,
+                  })
                 }
               >
                 {isRealVideo && (

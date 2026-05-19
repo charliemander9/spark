@@ -3,12 +3,30 @@
 
 import { create } from 'zustand';
 
+export interface ViewerEntry {
+  authorName: string;
+  authorInitials: string;
+  /** "Just now", "Today", "May 12" */
+  when: string;
+  /** "url('blob:...')" or "linear-gradient(...)" */
+  bg?: string;
+  /** True if `bg` points to a video file */
+  isVideo?: boolean;
+  /** Caption / journal body */
+  body?: string;
+  /** Pure journal entry — no photo */
+  isJournal?: boolean;
+  day?: number;
+  streak?: number;
+}
+
 interface UiState {
   settingsOpen: boolean;
   workoutSheetOpen: boolean;
   numericSheetOpen: boolean;
   dailySheetOpen: boolean;
   inviteSheetOpen: boolean;
+  viewerEntry: ViewerEntry | null;
 
   openSettings: () => void;
   closeSettings: () => void;
@@ -20,6 +38,8 @@ interface UiState {
   closeDailySheet: () => void;
   openInviteSheet: () => void;
   closeInviteSheet: () => void;
+  openViewer: (entry: ViewerEntry) => void;
+  closeViewer: () => void;
 }
 
 const useUi = create<UiState>((set) => ({
@@ -28,6 +48,7 @@ const useUi = create<UiState>((set) => ({
   numericSheetOpen: false,
   dailySheetOpen: false,
   inviteSheetOpen: false,
+  viewerEntry: null,
   openSettings: () => set({ settingsOpen: true }),
   closeSettings: () => set({ settingsOpen: false }),
   openWorkoutSheet: () => set({ workoutSheetOpen: true }),
@@ -38,6 +59,8 @@ const useUi = create<UiState>((set) => ({
   closeDailySheet: () => set({ dailySheetOpen: false }),
   openInviteSheet: () => set({ inviteSheetOpen: true }),
   closeInviteSheet: () => set({ inviteSheetOpen: false }),
+  openViewer: (entry) => set({ viewerEntry: entry }),
+  closeViewer: () => set({ viewerEntry: null }),
 }));
 
 // Small typed accessor for convenience:

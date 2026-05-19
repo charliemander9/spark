@@ -1885,6 +1885,155 @@ p { line-height: 1.55; color: var(--ink-3); font-size: 14.5px; }
   margin-top: 1px;
 }
 
+/* ============ ENTRY VIEWER — IG-style fullscreen ============ */
+.ev-bd {
+  position: absolute;
+  inset: 0;
+  background: rgba(20, 14, 8, 0.85);
+  backdrop-filter: blur(10px);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: ev-fade-in .18s ease-out;
+}
+@keyframes ev-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.ev-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  color: white;
+  font-size: 24px;
+  line-height: 0;
+  font-weight: 300;
+  display: grid; place-items: center;
+  z-index: 2;
+  transition: transform .07s, background .15s;
+}
+.ev-close:active {
+  transform: scale(0.94);
+  background: rgba(255, 255, 255, 0.32);
+}
+.ev-card {
+  width: 100%;
+  max-width: 420px;
+  max-height: 88%;
+  background: var(--surface);
+  border-radius: 20px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: ev-scale-in .22s cubic-bezier(.2,.85,.3,1);
+}
+@keyframes ev-scale-in {
+  from { transform: scale(0.94); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
+}
+.ev-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+}
+.ev-ava {
+  width: 40px; height: 40px;
+  background: linear-gradient(160deg, var(--terracotta) 0%, var(--clay) 100%);
+  color: var(--bg-2);
+  border-radius: 50%;
+  display: grid; place-items: center;
+  font-family: 'Fraunces', serif;
+  font-size: 17px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+.ev-id { flex: 1; min-width: 0; }
+.ev-name {
+  font-family: 'Fraunces', serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--ink);
+}
+.ev-sub {
+  font-family: 'Inter', sans-serif;
+  font-size: 11.5px;
+  color: var(--ink-3);
+  margin-top: 1px;
+}
+.ev-media {
+  position: relative;
+  aspect-ratio: 1;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+.ev-photo {
+  width: 100%; height: 100%;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+.ev-video {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  background: black;
+}
+.ev-play-overlay {
+  position: absolute; inset: 0;
+  display: grid; place-items: center;
+  background: rgba(0,0,0,0.25);
+  pointer-events: none;
+}
+.ev-play-overlay svg {
+  filter: drop-shadow(0 3px 8px rgba(0,0,0,0.6));
+}
+.ev-journal {
+  padding: 24px 26px;
+  position: relative;
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  background: linear-gradient(160deg, #fff6e6 0%, #f5ecd6 100%);
+}
+.ev-journal .ev-quote {
+  position: absolute;
+  top: 6px; left: 10px;
+  font-family: 'Fraunces', serif;
+  font-size: 80px;
+  color: var(--terracotta);
+  opacity: 0.18;
+  font-style: italic;
+  line-height: 1;
+}
+.ev-journal p {
+  font-family: 'Fraunces', serif;
+  font-size: 18px;
+  line-height: 1.5;
+  color: var(--ink);
+  font-style: italic;
+  position: relative;
+  z-index: 1;
+}
+.ev-caption {
+  padding: 14px 16px 18px;
+  font-family: 'Fraunces', serif;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--ink);
+}
+.ev-caption b {
+  font-weight: 500;
+  color: var(--terracotta);
+  margin-right: 4px;
+  font-style: normal;
+}
+
 /* ============ SETTINGS HEAD + DEMO BUTTON ============ */
 .settings-head {
   display: flex;
@@ -1982,7 +2131,10 @@ p { line-height: 1.55; color: var(--ink-3); font-size: 14.5px; }
   border-radius: 4px;
   overflow: hidden;
   background-color: var(--surface-2);
+  cursor: pointer;
+  transition: transform .07s;
 }
+.explore-tile:active { transform: scale(0.98); }
 .explore-tile.tall {
   grid-row: span 2;
   aspect-ratio: unset;
@@ -2282,7 +2434,10 @@ p { line-height: 1.55; color: var(--ink-3); font-size: 14.5px; }
   background-color: var(--surface-2);
   border-radius: 4px;
   overflow: hidden;
+  cursor: pointer;
+  transition: transform .07s;
 }
+.prof-tile:active { transform: scale(0.98); }
 .prof-tile.reflection {
   background: linear-gradient(160deg, #fff6e6 0%, #f5ecd6 100%);
   padding: 8px 9px;

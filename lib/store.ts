@@ -106,14 +106,8 @@ const defaultCalendar: Record<number, CalendarDay> = {
   12: { w1: true, w2: true,  steps: true  },
 };
 
-const defaultDiary: DiaryEntry[] = [
-  { id:'d1', day:'M',  date:'May 12', course:'main',      type:'photo', bg:'linear-gradient(160deg,#1c3548 0%,#2d6a95 60%,#7AB6D8 100%)' },
-  { id:'d2', day:'T',  date:'May 13', course:'treat',     type:'reflection',
-    body:'Hit 13K today without trying. Walked the long way home from the lift session. Legs heavy but light, somehow.' },
-  { id:'d3', day:'W',  date:'May 14', course:'appetizer', type:'video', bg:'linear-gradient(160deg,#2e2a18 0%,#7c6c30 60%,#F5C842 100%)' },
-  { id:'d4', day:'W',  date:'May 14', course:'main',      type:'video', bg:'linear-gradient(160deg,#0c2438 0%,#1a4870 60%,#5a90b8 100%)' },
-  { id:'d5', day:'Th', date:'May 15', course:'appetizer', type:'photo', bg:'linear-gradient(160deg,#3a2818 0%,#a05c34 60%,#E8896F 100%)' },
-];
+// Empty by default — populated only when the user posts or loads demo.
+const defaultDiary: DiaryEntry[] = [];
 
 export const useSpark = create<SparkState>((set, get) => ({
   screen: 'onb-welcome',

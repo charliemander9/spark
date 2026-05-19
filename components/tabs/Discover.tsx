@@ -8,6 +8,7 @@ import { DEMO_DISCOVER, DISCOVER_FILTERS } from '@/lib/data';
 
 export function Discover() {
   const openSettings = useUi((s) => s.openSettings);
+  const openViewer = useUi((s) => s.openViewer);
   const demoMode = useSpark((s) => s.demoMode);
   const [filter, setFilter] = useState<string>('For you');
   const [query, setQuery] = useState('');
@@ -89,6 +90,18 @@ export function Discover() {
               key={p.id}
               className={'explore-tile' + (i % 7 === 1 ? ' tall' : '')}
               style={{ backgroundImage: p.bg }}
+              onClick={() =>
+                openViewer({
+                  authorName: p.name,
+                  authorInitials: p.initials,
+                  when: p.tag,
+                  bg: p.bg,
+                  isVideo: p.isVideo,
+                  body: p.caption,
+                  day: p.day,
+                  streak: p.streak,
+                })
+              }
             >
               {p.isVideo && (
                 <div className="et-play">

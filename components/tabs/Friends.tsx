@@ -33,6 +33,7 @@ const DEMO_BGS = [
 export function Friends() {
   const openSettings = useUi((s) => s.openSettings);
   const openInviteSheet = useUi((s) => s.openInviteSheet);
+  const openViewer = useUi((s) => s.openViewer);
   const demoMode = useSpark((s) => s.demoMode);
   const user = useSpark((s) => s.user);
   const diary = useSpark((s) => s.diary);
@@ -273,7 +274,23 @@ export function Friends() {
                 )}
               </header>
 
-              <BPPhoto bg={p.bg} isVideo={p.isVideo} />
+              <div
+                onClick={() =>
+                  openViewer({
+                    authorName: p.name,
+                    authorInitials: p.initials,
+                    when: p.when,
+                    bg: p.bg,
+                    isVideo: p.isVideo,
+                    body: p.caption,
+                    day: p.day,
+                    streak: p.streak,
+                  })
+                }
+                style={{ cursor: 'pointer' }}
+              >
+                <BPPhoto bg={p.bg} isVideo={p.isVideo} />
+              </div>
 
               {p.caption && (
                 <div className="bp-caption">
