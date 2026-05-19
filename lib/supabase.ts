@@ -48,7 +48,7 @@ export const hasSupabase = !!supabase;
 // Database types — kept in sync with db/schema.sql
 export interface ProfileRow {
   id: string;             // matches auth.users.id
-  email: string;
+  email: string | null;   // null for anonymous users
   name: string;
   created_at: string;
   day: number;
@@ -57,6 +57,7 @@ export interface ProfileRow {
   preset: string;
   tone: 'feather' | 'balanced' | 'rock';
   privacy: 'private' | 'friends' | 'open';
+  onboarded: boolean;
   invite_code: string;
 }
 

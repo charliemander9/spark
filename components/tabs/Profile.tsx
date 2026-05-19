@@ -153,10 +153,16 @@ function handleFromName(name: string): string {
 }
 
 function bioFor(preset: string, day: number, streak: number): string {
-  const presetName = preset === '75-hard-lite' ? '75 Hard Lite' :
-                     preset === 'endurance' ? 'Endurance' :
-                     preset === 'recomp' ? 'Recomp' :
-                     preset === 'recovery' ? 'Recovery' :
-                     preset === 'custom' ? 'Custom 75' : preset;
+  const labels: Record<string, string> = {
+    '75-hard-lite': '75 Hard Lite',
+    runner: 'Runner',
+    endurance: 'Endurance',
+    'move-more': 'Move More',
+    recomp: 'Recomp',
+    reset: 'Reset',
+    recovery: 'Recovery',
+    custom: 'Custom 75',
+  };
+  const presetName = labels[preset] ?? preset;
   return `${presetName} · Day ${day} of 75 · ${streak} day streak`;
 }

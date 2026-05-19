@@ -50,20 +50,38 @@ export const CATEGORIES: Record<CategoryId, Category> = {
 export const PRESETS: Record<string, Preset> = {
   '75-hard-lite': {
     label: '75 Hard Lite',
-    desc: 'Two workouts and 10,000 steps. The default.',
+    desc: 'Two workouts, 10K steps. The classic.',
     slots: [
       { cat: 'workout', label: 'Workout 1',       config: { mustBeOutdoors: false, minDuration: 45 } },
       { cat: 'workout', label: 'Outside Workout', config: { mustBeOutdoors: true,  minDuration: 45 } },
       { cat: 'steps',   label: '10K Steps',       config: { goal: 10000 } },
     ],
   },
+  runner: {
+    label: 'Runner',
+    desc: 'Run, log miles, hit your steps.',
+    slots: [
+      { cat: 'workout', label: 'Run',         config: { mustBeOutdoors: true,  minDuration: 30 } },
+      { cat: 'workout', label: 'Strength',    config: { mustBeOutdoors: false, minDuration: 30 } },
+      { cat: 'steps',   label: '12K Steps',   config: { goal: 12000 } },
+    ],
+  },
   endurance: {
     label: 'Endurance',
-    desc: 'Cardio, long walks, plenty of water.',
+    desc: 'Long cardio, big steps, hydrate hard.',
     slots: [
-      { cat: 'workout', label: 'Cardio',      config: { mustBeOutdoors: false, minDuration: 45 } },
-      { cat: 'steps',   label: '12K Steps',   config: { goal: 12000 } },
-      { cat: 'water',   label: '80 oz Water', config: { goal: 80 } },
+      { cat: 'workout', label: 'Cardio',      config: { mustBeOutdoors: false, minDuration: 60 } },
+      { cat: 'steps',   label: '15K Steps',   config: { goal: 15000 } },
+      { cat: 'water',   label: '100 oz Water', config: { goal: 100 } },
+    ],
+  },
+  'move-more': {
+    label: 'Move More',
+    desc: 'One workout, big steps, no booze.',
+    slots: [
+      { cat: 'workout', label: 'Workout',     config: { mustBeOutdoors: false, minDuration: 30 } },
+      { cat: 'steps',   label: '10K Steps',   config: { goal: 10000 } },
+      { cat: 'alcohol', label: 'No Alcohol',  config: {} },
     ],
   },
   recomp: {
@@ -73,6 +91,15 @@ export const PRESETS: Record<string, Preset> = {
       { cat: 'workout',     label: 'Workout',      config: { mustBeOutdoors: false, minDuration: 45 } },
       { cat: 'steps',       label: '10K Steps',    config: { goal: 10000 } },
       { cat: 'cleanEating', label: 'Clean Eating', config: {} },
+    ],
+  },
+  reset: {
+    label: 'Reset',
+    desc: 'No drinks, clean eating, daily walk.',
+    slots: [
+      { cat: 'alcohol',     label: 'No Alcohol',   config: {} },
+      { cat: 'cleanEating', label: 'Clean Eating', config: {} },
+      { cat: 'steps',       label: '8K Steps',     config: { goal: 8000 } },
     ],
   },
   recovery: {

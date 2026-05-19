@@ -77,7 +77,7 @@ export function Home() {
       )}
 
       <div className="daily-prompt">
-        <div className="tag">⚡ Today's Hype</div>
+        <div className="tag">Today's Motivation</div>
         <div className="serif-quote">"{dailyQuote()}"</div>
       </div>
 

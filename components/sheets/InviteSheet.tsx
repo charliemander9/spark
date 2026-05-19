@@ -5,7 +5,7 @@ import { useUi } from '@/lib/storeActions';
 import { getMyInviteCode, addFriendByCode } from '@/lib/friends';
 
 /**
- * Shows the signed-in user's invite code + an input to enter someone else's.
+ * Shows the signed-in user's invite code + ways to share it.
  */
 export function InviteSheet() {
   const open = useUi((s) => s.inviteSheetOpen);
@@ -23,6 +23,11 @@ export function InviteSheet() {
     getMyInviteCode().then((c) => setMyCode(c ?? '—'));
   }, [open]);
 
+  const origin = typeof window !== 'undefined' ? window.location.origin : '';
+  const inviteUrl = origin && myCode ? `${origin}/?invite=${myCode}` : origin;
+  const inviteText =
+    `Join me on GM ⚡ — my invite code is ${myCode}.\n${inviteUrl}`;
+
   const handleAdd = async () => {
     setBusy(true);
     setMsg(null);
@@ -35,13 +40,48 @@ export function InviteSheet() {
     }
   };
 
-  const copy = () => {
-    if (!myCode) return;
+  const copyCode = () => {
+    if (!myCode || myCode === '—') return;
     if (typeof navigator !== 'undefined' && navigator.clipboard) {
       navigator.clipboard.writeText(myCode);
-      setMsg({ text: 'Copied.', kind: 'ok' });
+      setMsg({ text: 'Code copied.', kind: 'ok' });
       setTimeout(() => setMsg(null), 1500);
     }
+  };
+
+  const copyLink = () => {
+    if (!myCode || myCode === '—') return;
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(inviteText);
+      setMsg({ text: 'Invite link copied. Paste it anywhere.', kind: 'ok' });
+      setTimeout(() => setMsg(null), 2000);
+    }
+  };
+
+  const shareNative = async () => {
+    if (!myCode || myCode === '—') return;
+    if (typeof navigator !== 'undefined' && (navigator as any).share) {
+      try {
+        await (navigator as any).share({
+          title: 'Join me on GM',
+          text: inviteText,
+          url: inviteUrl,
+        });
+      } catch {
+        // user dismissed — ignore
+      }
+    } else {
+      // Fallback for browsers without Web Share — drop to copy
+      copyLink();
+    }
+  };
+
+  const textInvite = () => {
+    if (!myCode || myCode === '—') return;
+    // `sms:&body=...` opens iOS Messages with the body prefilled, contact picker
+    // appears so you pick who to send to.
+    const smsUrl = `sms:&body=${encodeURIComponent(inviteText)}`;
+    window.location.href = smsUrl;
   };
 
   if (!open) return null;
@@ -52,7 +92,7 @@ export function InviteSheet() {
       <div className="sheet open">
         <div className="sheet-handle" />
         <h2>
-          <em>Friends</em>
+          <em>Invite a friend</em>
         </h2>
 
         <div className="form-section">
@@ -83,7 +123,7 @@ export function InviteSheet() {
               {myCode || '—'}
             </span>
             <button
-              onClick={copy}
+              onClick={copyCode}
               style={{
                 padding: '10px 16px',
                 background: 'var(--ink)',
@@ -97,26 +137,55 @@ export function InviteSheet() {
               Copy
             </button>
           </div>
-          <small
-            style={{
-              fontFamily: "'Fraunces',serif",
-              fontStyle: 'italic',
-              fontSize: 12.5,
-              color: 'var(--muted)',
-              marginTop: 6,
-            }}
-          >
-            Share this with a friend. When they paste it on their phone, you'll
-            connect.
-          </small>
-        </div>
-
-        <div className="form-divider">
-          <span>or</span>
         </div>
 
         <div className="form-section">
-          <label>Enter their code</label>
+          <label>Share an invite link</label>
+          <div className="invite-actions">
+            <button className="inv-action primary" onClick={textInvite}>
+              <div className="inv-ico">
+                <svg viewBox="0 0 24 24" width={20} height={20} fill="none" stroke="currentColor" strokeWidth={1.7}>
+                  <path d="M21 11.5c0 4.14-4.03 7.5-9 7.5a9.7 9.7 0 0 1-3.6-.69L3 20l1.27-3.62A7.5 7.5 0 0 1 3 11.5C3 7.36 7.03 4 12 4s9 3.36 9 7.5z" strokeLinejoin="round"/>
+                </svg>
+              </div>
+              <div className="inv-body">
+                <b>Send a text</b>
+                <small>Opens Messages with the link prefilled</small>
+              </div>
+            </button>
+            <button className="inv-action" onClick={shareNative}>
+              <div className="inv-ico">
+                <svg viewBox="0 0 24 24" width={20} height={20} fill="none" stroke="currentColor" strokeWidth={1.7}>
+                  <path d="M12 4v12M8 8l4-4 4 4" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M4 14v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+              <div className="inv-body">
+                <b>Share…</b>
+                <small>Messages, mail, AirDrop, anywhere</small>
+              </div>
+            </button>
+            <button className="inv-action" onClick={copyLink}>
+              <div className="inv-ico">
+                <svg viewBox="0 0 24 24" width={20} height={20} fill="none" stroke="currentColor" strokeWidth={1.7}>
+                  <path d="M10 14a3.5 3.5 0 0 0 5 0l3-3a3.5 3.5 0 0 0-5-5l-1 1" strokeLinecap="round"/>
+                  <path d="M14 10a3.5 3.5 0 0 0-5 0l-3 3a3.5 3.5 0 0 0 5 5l1-1" strokeLinecap="round"/>
+                </svg>
+              </div>
+              <div className="inv-body">
+                <b>Copy invite link</b>
+                <small>Paste it in DMs, group chats, anywhere</small>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <div className="form-divider">
+          <span>or enter their code</span>
+        </div>
+
+        <div className="form-section">
+          <label>Their code</label>
           <input
             type="text"
             placeholder="ABC123"

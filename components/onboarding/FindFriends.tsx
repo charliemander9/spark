@@ -2,6 +2,8 @@
 
 import { useSpark } from '@/lib/store';
 import { SUGGESTED_FOLLOWS } from '@/lib/data';
+import { updateProfile } from '@/lib/profile';
+import { hasSupabase } from '@/lib/supabase';
 
 export function FindFriends() {
   const follows = useSpark((s) => s.user.follows);
@@ -15,7 +17,10 @@ export function FindFriends() {
     });
   };
 
-  const finish = () => setScreen('app');
+  const finish = () => {
+    if (hasSupabase) updateProfile({ onboarded: true });
+    setScreen('app');
+  };
 
   return (
     <div className="onb-q">

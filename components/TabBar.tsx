@@ -1,6 +1,7 @@
 'use client';
 
 import { useSpark } from '@/lib/store';
+import { useUi } from '@/lib/storeActions';
 import type { Tab } from '@/lib/types';
 
 const TABS: { id: Tab; label: string; icon: JSX.Element }[] = [
@@ -27,11 +28,10 @@ const TABS: { id: Tab; label: string; icon: JSX.Element }[] = [
     id: 'journal',
     label: 'Journal',
     icon: (
-      // Book / journal icon
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6}>
-        <path d="M4 4.5A1.5 1.5 0 0 1 5.5 3H18a2 2 0 0 1 2 2v14.5a.5.5 0 0 1-.5.5H6a2 2 0 0 1-2-2V4.5z" strokeLinejoin="round" />
-        <path d="M4 18a2 2 0 0 1 2-2h14" strokeLinecap="round" />
-        <path d="M8 7h7M8 10h7" strokeLinecap="round" />
+      // Open journal icon
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}>
+        <path d="M12 5.5C10 4 7 4 4.5 4.5v14c2.5-.5 5.5-.5 7.5 1V5.5z" strokeLinejoin="round" />
+        <path d="M12 5.5C14 4 17 4 19.5 4.5v14c-2.5-.5-5.5-.5-7.5 1V5.5z" strokeLinejoin="round" />
       </svg>
     ),
   },
@@ -62,18 +62,46 @@ const TABS: { id: Tab; label: string; icon: JSX.Element }[] = [
 export function TabBar() {
   const tab = useSpark((s) => s.tab);
   const setTab = useSpark((s) => s.setTab);
+  const dailyEntry = useSpark((s) => s.user.dailyEntry);
+  const openDailySheet = useUi((s) => s.openDailySheet);
+
+  const handleTabPress = (id: Tab) => {
+    // Home is always reachable. Other tabs require today's entry first.
+    if (id === 'home' || dailyEntry) {
+      setTab(id);
+      return;
+    }
+    setTab('home');
+    setTimeout(() => openDailySheet(), 60);
+  };
 
   return (
     <nav className="tabbar">
       {TABS.map((t) => {
+        const isJournal = t.id === 'journal';
         const isActive = tab === t.id;
+        const isLocked = !dailyEntry && t.id !== 'home';
         return (
           <button
             key={t.id}
-            className={'tab' + (isActive ? ' active' : '')}
-            onClick={() => setTab(t.id)}
+            className={
+              'tab' +
+              (isActive ? ' active' : '') +
+              (isJournal ? ' tab-journal' : '') +
+              (isLocked ? ' locked' : '')
+            }
+            onClick={() => handleTabPress(t.id)}
           >
-            <span className="tab-ico">{t.icon}</span>
+            <span className="tab-ico">
+              {t.icon}
+              {isLocked && (
+                <span className="tab-lock" aria-hidden>
+                  <svg viewBox="0 0 24 24" width={10} height={10} fill="currentColor">
+                    <path d="M12 1a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2h-1V6a5 5 0 0 0-5-5zm-3 8V6a3 3 0 0 1 6 0v3H9z"/>
+                  </svg>
+                </span>
+              )}
+            </span>
             <span className="tab-label">{t.label}</span>
           </button>
         );

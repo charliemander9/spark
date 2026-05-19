@@ -109,7 +109,7 @@ export function Friends() {
         </div>
       )}
 
-      {loading ? (
+      {loading && !demoMode && friends.length === 0 ? (
         <div className="empty-tab"><div className="icon">⏳</div><p>Loading friends…</p></div>
       ) : friends.length === 0 ? (
         <div className="empty-tab">

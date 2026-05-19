@@ -30,21 +30,24 @@ export async function signOut(): Promise<void> {
 }
 
 // Anonymous sign-in — no email, no code. Creates a real Supabase user
-// account that can add friends, send nudges, etc. Display name is captured
-// so friends see something recognizable instead of a UUID.
+// account that can add friends, send nudges, etc. Display name is passed via
+// user_metadata so the on-signup trigger reads it directly (otherwise the
+// profile row is created with the 'Friend' fallback before we can patch).
 export async function signInAnon(
   displayName: string,
 ): Promise<{ error?: string }> {
   if (!supabase) return { error: 'Backend not configured' };
-  const { data, error } = await supabase.auth.signInAnonymously();
+  const name = displayName.trim() || 'Friend';
+  const { data, error } = await supabase.auth.signInAnonymously({
+    options: { data: { name } },
+  });
   if (error) return { error: error.message };
-  // The profiles row is auto-created by a trigger on auth.users insert. Patch
-  // in the display name so the friend list shows it.
+  // Belt-and-suspenders — also patch the profile in case the trigger races.
   const userId = data.user?.id;
-  if (userId && displayName.trim()) {
+  if (userId) {
     await supabase
       .from('profiles')
-      .update({ name: displayName.trim() })
+      .update({ name })
       .eq('id', userId);
   }
   return {};

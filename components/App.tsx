@@ -48,10 +48,16 @@ export function App() {
           freezes: profile.freezes,
           preset: profile.preset,
         });
+        // New users — first sign-in, no onboarding yet — see the setup flow.
+        // Existing users skip straight to the app.
+        if (profile.onboarded) {
+          setScreen('app');
+        } else {
+          setScreen('onb-challenge');
+        }
+      } else {
+        setScreen('app');
       }
-      // Returning users with a Supabase profile skip onboarding. They can re-run
-      // it from Settings → "Restart setup" if they want.
-      setScreen('app');
     };
 
     // Initial session

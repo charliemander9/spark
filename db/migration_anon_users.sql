@@ -1,12 +1,21 @@
 -- ============================================================
--- Migration: allow anonymous users (no email) to sign up
--- Paste into Supabase SQL Editor → Run
+-- Migration: anonymous users + onboarded flag
+-- Paste into Supabase SQL Editor → Run.
+-- Safe to re-run.
 -- ============================================================
 
--- 1. Allow profiles.email to be NULL
+-- 1. Allow profiles.email to be NULL (anon users have no email)
 alter table public.profiles alter column email drop not null;
 
--- 2. Update the trigger so it picks a sensible default name when there's no email
+-- 2. Add onboarded flag so we can tell new users from returning ones
+alter table public.profiles
+  add column if not exists onboarded boolean default false not null;
+
+-- 3. Mark every existing user as already onboarded so they don't get bounced
+-- back into the welcome flow.
+update public.profiles set onboarded = true where onboarded = false;
+
+-- 4. Update the auto-create-profile trigger so it handles anon users (no email)
 create or replace function public.handle_new_user()
 returns trigger as $$
 begin

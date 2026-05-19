@@ -767,11 +767,7 @@ p { line-height: 1.55; color: var(--ink-3); font-size: 14.5px; }
   border: 1px solid var(--border);
   border-radius: 16px;
 }
-.daily-prompt .tag {
-  color: var(--neon-coral);
-  font-weight: 800;
-  letter-spacing: 0.18em;
-}
+.daily-prompt .tag { color: var(--terracotta); }
 .daily-prompt .serif-quote { margin-top: 8px; }
 
 .home-hero .date {
@@ -1580,6 +1576,20 @@ p { line-height: 1.55; color: var(--ink-3); font-size: 14.5px; }
   transition: color .2s;
 }
 .tab.active { color: var(--ink); }
+.tab.locked { opacity: 0.4; }
+.tab.locked.tab-journal { opacity: 0.55; }
+.tab .tab-ico { position: relative; }
+.tab-lock {
+  position: absolute;
+  bottom: -2px; right: -6px;
+  width: 14px; height: 14px;
+  background: var(--ink);
+  color: var(--bg-2);
+  border-radius: 50%;
+  display: grid; place-items: center;
+  border: 1.5px solid var(--bg-2);
+}
+.tab-lock svg { width: 7px; height: 7px; }
 .tab .tab-ico { width: 22px; height: 22px; display: grid; place-items: center; }
 .tab .tab-ico svg { width: 22px; height: 22px; }
 .tab-capture {
@@ -1594,6 +1604,25 @@ p { line-height: 1.55; color: var(--ink-3); font-size: 14.5px; }
 .tab-capture .tab-ico { width: 24px; height: 24px; }
 .tab-capture .tab-label { display: none; }
 .tab-capture:active { transform: scale(0.95); }
+
+/* Prominent center Journal tab — yellow circle, raised */
+.tab-journal {
+  flex: 0 0 54px; height: 54px;
+  background: var(--honey);
+  color: var(--ink) !important;
+  border-radius: 50%;
+  margin: -14px 4px 0;
+  padding: 0; justify-content: center;
+  box-shadow: 0 6px 16px rgba(245,200,66,0.45);
+  transition: transform .07s;
+}
+.tab-journal .tab-ico { width: 26px; height: 26px; }
+.tab-journal .tab-ico svg { width: 26px; height: 26px; }
+.tab-journal .tab-label { display: none; }
+.tab-journal:active { transform: scale(0.94); }
+.tab-journal.active {
+  box-shadow: 0 6px 22px rgba(245,200,66,0.7), 0 0 0 3px rgba(255,255,255,0.7);
+}
 
 /* ---------- bottom sheet ---------- */
 .sheet-bd {
@@ -1777,6 +1806,58 @@ p { line-height: 1.55; color: var(--ink-3); font-size: 14.5px; }
   transition: transform .07s;
 }
 .daily-gate button:active { transform: scale(0.97); }
+
+/* ============ INVITE ACTIONS ============ */
+.invite-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.inv-action {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+  transition: transform .07s, background .15s, border-color .15s;
+}
+.inv-action:active { transform: scale(0.99); background: var(--surface-2); }
+.inv-action.primary {
+  background: linear-gradient(135deg, var(--neon-coral) 0%, #FF8B5C 100%);
+  border-color: transparent;
+  color: var(--bg-2);
+}
+.inv-action.primary .inv-body small { color: rgba(252,247,232,0.85); }
+.inv-action .inv-ico {
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  background: var(--surface-2);
+  display: grid; place-items: center;
+  color: var(--ink);
+  flex-shrink: 0;
+}
+.inv-action.primary .inv-ico {
+  background: rgba(255,255,255,0.22);
+  color: var(--bg-2);
+}
+.inv-action .inv-body b {
+  display: block;
+  font-family: 'Fraunces', serif;
+  font-size: 15.5px;
+  font-weight: 500;
+}
+.inv-action .inv-body small {
+  display: block;
+  font-family: 'Inter', sans-serif;
+  font-size: 11.5px;
+  color: var(--ink-3);
+  margin-top: 1px;
+}
 
 /* ============ SETTINGS HEAD + DEMO BUTTON ============ */
 .settings-head {
@@ -2786,7 +2867,7 @@ p { line-height: 1.55; color: var(--ink-3); font-size: 14.5px; }
 /* ============ PROFILE CALENDAR ============ */
 .profile-calendar {
   margin: 0 22px 24px;
-  padding: 18px 16px 14px;
+  padding: 18px 12px 14px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 18px;
@@ -2853,6 +2934,10 @@ p { line-height: 1.55; color: var(--ink-3); font-size: 14.5px; }
 }
 .cal-ring-svg {
   display: block;
+  width: 78%;
+  max-width: 30px;
+  aspect-ratio: 1;
+  height: auto;
 }
 .cal-day-num {
   font-family: 'Fraunces', serif;

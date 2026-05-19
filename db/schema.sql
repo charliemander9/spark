@@ -18,6 +18,7 @@ create table if not exists public.profiles (
   preset       text default '75-hard-lite' not null,
   tone         text default 'balanced' not null check (tone in ('feather','balanced','rock')),
   privacy      text default 'friends'  not null check (privacy in ('private','friends','open')),
+  onboarded    boolean default false not null,
 
   invite_code  text default upper(substr(md5(random()::text), 1, 6)) not null unique
 );

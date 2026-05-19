@@ -20,7 +20,9 @@ export interface Category {
   supportsSync?: boolean;
 }
 
-export type PresetId = '75-hard-lite' | 'endurance' | 'recomp' | 'recovery' | 'custom';
+export type PresetId =
+  | '75-hard-lite' | 'runner' | 'endurance' | 'move-more'
+  | 'recomp' | 'reset' | 'recovery' | 'custom';
 
 export interface PresetSlot {
   cat: CategoryId;

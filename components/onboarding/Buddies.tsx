@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { useSpark } from '@/lib/store';
+import { updateProfile } from '@/lib/profile';
+import { hasSupabase } from '@/lib/supabase';
 
 export function Buddies() {
   const buddies = useSpark((s) => s.user.buddies);
@@ -13,8 +15,12 @@ export function Buddies() {
   const [draft, setDraft] = useState('');
 
   const finish = () => {
-    if (privacy === 'private') setScreen('app');
-    else setScreen('onb-find');
+    if (privacy === 'private') {
+      if (hasSupabase) updateProfile({ onboarded: true });
+      setScreen('app');
+    } else {
+      setScreen('onb-find');
+    }
   };
 
   return (

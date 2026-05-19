@@ -77,7 +77,7 @@ function RingSvg({ data }: { data: CalendarDay | undefined }) {
   const flags = data ? [data.w1, data.w2, data.steps] : [false, false, false];
 
   return (
-    <svg className="cal-ring-svg" viewBox="0 0 32 32" width={32} height={32}>
+    <svg className="cal-ring-svg" viewBox="0 0 32 32">
       {radii.map((r, i) => (
         <circle
           key={'bg' + i}
