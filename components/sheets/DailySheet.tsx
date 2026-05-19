@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useSpark } from '@/lib/store';
 import { useUi } from '@/lib/storeActions';
 import { MOCK_PHOTOS } from '@/lib/data';
+import { saveDailyEntryToDb } from '@/lib/dailyEntry';
 import type { Photo } from '@/lib/types';
 
 export function DailySheet() {
@@ -16,7 +17,7 @@ export function DailySheet() {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [body, setBody] = useState('');
 
-  const save = () => {
+  const save = async () => {
     if (mode === 'photo' && photos.length === 0) {
       alert('Add a photo or switch to journal');
       return;
@@ -25,7 +26,20 @@ export function DailySheet() {
       alert('Write a few words or switch to photo');
       return;
     }
-    const d = new Date(2026, 4, 15);
+
+    // Persist to Supabase (no-op in local mode)
+    const { error } = await saveDailyEntryToDb(
+      mode,
+      mode === 'journal' ? body.trim() : null,
+      mode === 'photo' ? photos.map((p) => p.bg) : [],
+    );
+    if (error) {
+      alert('Could not save: ' + error);
+      return;
+    }
+
+    // Mirror to local store so the rest of the app updates immediately
+    const d = new Date();
     const days = ['Su','M','T','W','Th','F','Sa'];
     const id = 'daily_' + Date.now();
     if (mode === 'photo') {

@@ -5,8 +5,6 @@
 -- ============================================================
 
 -- 1. TABLES ---------------------------------------------------
--- All tables first, then policies. RLS rules below reference these
--- across each other, so they all need to exist before policies are defined.
 
 create table if not exists public.profiles (
   id           uuid references auth.users on delete cascade primary key,
@@ -14,7 +12,6 @@ create table if not exists public.profiles (
   name         text not null,
   created_at   timestamptz default now() not null,
 
-  -- Challenge state
   day          int  default 1  not null,
   streak       int  default 0  not null,
   freezes      int  default 2  not null,
@@ -22,7 +19,6 @@ create table if not exists public.profiles (
   tone         text default 'balanced' not null check (tone in ('feather','balanced','rock')),
   privacy      text default 'friends'  not null check (privacy in ('private','friends','open')),
 
-  -- 6-character invite code for adding friends
   invite_code  text default upper(substr(md5(random()::text), 1, 6)) not null unique
 );
 
@@ -65,25 +61,19 @@ alter table public.nudges        enable row level security;
 
 
 -- 3. POLICIES -------------------------------------------------
--- DROP first, then CREATE — makes the file safe to re-run.
 
--- profiles
+-- profiles: any signed-in user can SEE basic profile info (needed for
+-- invite-code lookups). Sensitive stuff (entries, nudges) is locked down below.
 drop policy if exists "profiles_select_own_and_friends" on public.profiles;
-create policy "profiles_select_own_and_friends" on public.profiles
-  for select using (
-    auth.uid() = id
-    or exists (
-      select 1 from public.friendships f
-      where (f.user_a = auth.uid() and f.user_b = profiles.id)
-         or (f.user_b = auth.uid() and f.user_a = profiles.id)
-    )
-  );
+drop policy if exists "profiles_select_authenticated" on public.profiles;
+create policy "profiles_select_authenticated" on public.profiles
+  for select using (auth.role() = 'authenticated');
 
 drop policy if exists "profiles_update_own" on public.profiles;
 create policy "profiles_update_own" on public.profiles
   for update using (auth.uid() = id);
 
--- friendships
+-- friendships: see + edit only the ones you're part of
 drop policy if exists "friendships_select_own" on public.friendships;
 create policy "friendships_select_own" on public.friendships
   for select using (auth.uid() in (user_a, user_b));
@@ -96,7 +86,7 @@ drop policy if exists "friendships_delete_own" on public.friendships;
 create policy "friendships_delete_own" on public.friendships
   for delete using (auth.uid() in (user_a, user_b));
 
--- daily_entries
+-- daily_entries: see your own + friends'; write only your own
 drop policy if exists "entries_select_own_and_friends" on public.daily_entries;
 create policy "entries_select_own_and_friends" on public.daily_entries
   for select using (
@@ -111,6 +101,10 @@ create policy "entries_select_own_and_friends" on public.daily_entries
 drop policy if exists "entries_insert_own" on public.daily_entries;
 create policy "entries_insert_own" on public.daily_entries
   for insert with check (auth.uid() = user_id);
+
+drop policy if exists "entries_update_own" on public.daily_entries;
+create policy "entries_update_own" on public.daily_entries
+  for update using (auth.uid() = user_id);
 
 -- nudges
 drop policy if exists "nudges_select_own" on public.nudges;
@@ -127,7 +121,6 @@ create policy "nudges_update_received" on public.nudges
 
 
 -- 4. AUTO-CREATE PROFILE ON SIGN-UP ---------------------------
--- When someone signs up via Supabase Auth, automatically make their profile row.
 
 create or replace function public.handle_new_user()
 returns trigger as $$

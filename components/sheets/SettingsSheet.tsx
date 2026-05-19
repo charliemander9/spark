@@ -2,10 +2,14 @@
 
 import { useSpark } from '@/lib/store';
 import { useUi } from '@/lib/storeActions';
+import { signOut } from '@/lib/auth';
+import { updateProfile } from '@/lib/profile';
+import { hasSupabase } from '@/lib/supabase';
 
 export function SettingsSheet() {
   const open = useUi((s) => s.settingsOpen);
   const close = useUi((s) => s.closeSettings);
+  const openInviteSheet = useUi((s) => s.openInviteSheet);
   const user = useSpark((s) => s.user);
   const setUser = useSpark((s) => s.setUser);
   const setScreen = useSpark((s) => s.setScreen);
@@ -20,6 +24,20 @@ export function SettingsSheet() {
       <div className="sheet open">
         <div className="sheet-handle" />
         <h2><em>Settings</em></h2>
+
+        <div
+          className="set-row nav-row"
+          onClick={() => {
+            close();
+            openInviteSheet();
+          }}
+        >
+          <div className="body">
+            <b>Invite a friend</b>
+            <small>Show your code · add someone by theirs</small>
+          </div>
+          <div className="arrow">›</div>
+        </div>
 
         <div
           className="set-row nav-row"
@@ -69,6 +87,10 @@ export function SettingsSheet() {
           <input
             value={user.name}
             onChange={(e) => setUser({ name: e.target.value || 'You' })}
+            onBlur={(e) => {
+              const v = e.target.value.trim();
+              if (v && hasSupabase) updateProfile({ name: v });
+            }}
             style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--ink)', padding: '8px 12px', borderRadius: 999, width: 130, textAlign: 'right', fontSize: 13, fontFamily: "'Fraunces',serif" }}
           />
         </div>
@@ -173,6 +195,25 @@ export function SettingsSheet() {
             Restart
           </button>
         </div>
+
+        {hasSupabase && (
+          <div className="set-row">
+            <div className="body">
+              <b>Sign out</b>
+              <small>End this session on this device</small>
+            </div>
+            <button
+              className="btn btn-secondary"
+              style={{ padding: '9px 16px', fontSize: 12.5 }}
+              onClick={async () => {
+                close();
+                await signOut();
+              }}
+            >
+              Sign out
+            </button>
+          </div>
+        )}
 
         <div style={{ height: 30 }} />
       </div>

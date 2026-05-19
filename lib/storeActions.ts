@@ -8,6 +8,7 @@ interface UiState {
   workoutSheetOpen: boolean;
   numericSheetOpen: boolean;
   dailySheetOpen: boolean;
+  inviteSheetOpen: boolean;
 
   openSettings: () => void;
   closeSettings: () => void;
@@ -17,6 +18,8 @@ interface UiState {
   closeNumericSheet: () => void;
   openDailySheet: () => void;
   closeDailySheet: () => void;
+  openInviteSheet: () => void;
+  closeInviteSheet: () => void;
 }
 
 const useUi = create<UiState>((set) => ({
@@ -24,6 +27,7 @@ const useUi = create<UiState>((set) => ({
   workoutSheetOpen: false,
   numericSheetOpen: false,
   dailySheetOpen: false,
+  inviteSheetOpen: false,
   openSettings: () => set({ settingsOpen: true }),
   closeSettings: () => set({ settingsOpen: false }),
   openWorkoutSheet: () => set({ workoutSheetOpen: true }),
@@ -32,6 +36,8 @@ const useUi = create<UiState>((set) => ({
   closeNumericSheet: () => set({ numericSheetOpen: false }),
   openDailySheet: () => set({ dailySheetOpen: true }),
   closeDailySheet: () => set({ dailySheetOpen: false }),
+  openInviteSheet: () => set({ inviteSheetOpen: true }),
+  closeInviteSheet: () => set({ inviteSheetOpen: false }),
 }));
 
 // Small typed accessor for convenience:
