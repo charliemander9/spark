@@ -14,8 +14,8 @@ export function Welcome() {
         className="lede"
         style={{ marginTop: 18, maxWidth: 320, textAlign: 'center' }}
       >
-        GM. Seventy-five days, every morning, the habits you choose — held
-        honest by the people who show up with you.
+        Good Morning! Seventy-five days, every day, the habits you choose —
+        held by the community who show up with you.
       </p>
       <div style={{ flex: 1 }} />
       <button

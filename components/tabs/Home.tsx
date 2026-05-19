@@ -41,12 +41,17 @@ export function Home() {
         </div>
       </div>
 
-      {/* DAILY ENTRY CARD — first thing on Home */}
+      <div className="daily-prompt">
+        <div className="tag">Today's Motivation</div>
+        <div className="serif-quote">"{dailyQuote()}"</div>
+      </div>
+
+      {/* DAILY ENTRY CARD */}
       {!hasEntry ? (
         <div className="daily-gate" onClick={openDailySheet} style={{ cursor: 'pointer' }}>
           <div className="gate-tag">Today's Entry</div>
-          <h3>Mark the day.</h3>
-          <p>Post a photo or write a journal entry. Then take on your check-ins.</p>
+          <h3>Seize the Day.</h3>
+          <p>Cover charge to navigate the app. Post what you&apos;re doing today for your goal.</p>
           <button onClick={(e) => { e.stopPropagation(); openDailySheet(); }}>
             Capture Entry
           </button>
@@ -75,11 +80,6 @@ export function Home() {
           <div className="ds-check">✓</div>
         </div>
       )}
-
-      <div className="daily-prompt">
-        <div className="tag">Today's Motivation</div>
-        <div className="serif-quote">"{dailyQuote()}"</div>
-      </div>
 
       <div className="home-hero">
         <div className="date">

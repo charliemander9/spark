@@ -15,27 +15,6 @@ const TABS: { id: Tab; label: string; icon: JSX.Element }[] = [
     ),
   },
   {
-    id: 'discover',
-    label: 'Discover',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6}>
-        <circle cx={11} cy={11} r={7} />
-        <line x1={16.5} y1={16.5} x2={21} y2={21} strokeLinecap="round" />
-      </svg>
-    ),
-  },
-  {
-    id: 'journal',
-    label: 'Journal',
-    icon: (
-      // Open journal icon
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}>
-        <path d="M12 5.5C10 4 7 4 4.5 4.5v14c2.5-.5 5.5-.5 7.5 1V5.5z" strokeLinejoin="round" />
-        <path d="M12 5.5C14 4 17 4 19.5 4.5v14c-2.5-.5-5.5-.5-7.5 1V5.5z" strokeLinejoin="round" />
-      </svg>
-    ),
-  },
-  {
     id: 'friends',
     label: 'Friends',
     icon: (
@@ -44,6 +23,26 @@ const TABS: { id: Tab; label: string; icon: JSX.Element }[] = [
         <circle cx={17} cy={9} r={2.5} />
         <path d="M3 20c0-3 2.5-5 6-5s6 2 6 5" />
         <path d="M15 20c0-2 1.5-3.5 4-3.5s2.5 1.5 2.5 3.5" />
+      </svg>
+    ),
+  },
+  {
+    id: 'journal',
+    label: 'Journal',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}>
+        <path d="M12 5.5C10 4 7 4 4.5 4.5v14c2.5-.5 5.5-.5 7.5 1V5.5z" strokeLinejoin="round" />
+        <path d="M12 5.5C14 4 17 4 19.5 4.5v14c-2.5-.5-5.5-.5-7.5 1V5.5z" strokeLinejoin="round" />
+      </svg>
+    ),
+  },
+  {
+    id: 'discover',
+    label: 'Discover',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6}>
+        <circle cx={11} cy={11} r={7} />
+        <line x1={16.5} y1={16.5} x2={21} y2={21} strokeLinecap="round" />
       </svg>
     ),
   },

@@ -129,7 +129,7 @@ export const useSpark = create<SparkState>((set, get) => ({
     streak: 13,
     day: 13,
     freezes: 2,
-    preset: '75-hard-lite',
+    preset: 'custom',
     dailyEntry: null,
     strict: true,
     push: true,

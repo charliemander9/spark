@@ -34,28 +34,38 @@ export function Profile() {
 
       <div className="prof-head">
         <div className="prof-ava">{(user.name[0] || 'C').toUpperCase()}</div>
-        <div className="prof-name">
+        <div className="prof-name-block">
           <h1>{user.name}</h1>
           <div className="prof-handle">@{handleFromName(user.name)}</div>
+          <div className="prof-stats-inline">
+            <div className="psi">
+              <span className="v">{user.follows.length}</span>
+              <span className="l">following</span>
+            </div>
+            <div className="psi">
+              <span className="v">{user.buddies.length}</span>
+              <span className="l">followers</span>
+            </div>
+            <div className="psi">
+              <span className="v">0</span>
+              <span className="l">nudges</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="prof-stats">
-        <div className="prof-stat">
-          <div className="v">{user.day}</div>
-          <div className="l">of 75</div>
+      <div className="prof-streak-row">
+        <div className="prof-streak-chip">
+          <span>🔥</span>
+          <span><b>{user.streak}</b> day streak</span>
         </div>
-        <div className="prof-stat">
-          <div className="v">{user.streak}</div>
-          <div className="l">streak</div>
+        <div className="prof-streak-chip">
+          <span>📅</span>
+          <span>Day <b>{user.day}</b> of 75</span>
         </div>
-        <div className="prof-stat">
-          <div className="v">{user.buddies.length}</div>
-          <div className="l">friends</div>
-        </div>
-        <div className="prof-stat">
-          <div className="v">{diary.length}</div>
-          <div className="l">entries</div>
+        <div className="prof-streak-chip">
+          <span>📷</span>
+          <span><b>{diary.length}</b> entries</span>
         </div>
       </div>
 
