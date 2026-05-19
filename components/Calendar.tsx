@@ -9,13 +9,17 @@ export function Calendar() {
   const calendar = useSpark((s) => s.calendar);
   const menu = useSpark((s) => s.menu);
 
-  const monthName = new Date(2026, 4, 1).toLocaleDateString('en-US', {
+  // Real calendar — current month with today = today's actual date.
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth(); // 0-indexed
+  const monthName = new Date(year, month, 1).toLocaleDateString('en-US', {
     month: 'long',
     year: 'numeric',
   });
-  const firstDow = new Date(2026, 4, 1).getDay();
-  const daysInMonth = 31;
-  const today = user.day;
+  const firstDow = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const today = now.getDate();
 
   // Colors come from the current menu's slot categories so the legend always
   // matches what the user is tracking.

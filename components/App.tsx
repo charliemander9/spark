@@ -32,6 +32,7 @@ export function App() {
   const setScreen = useSpark((s) => s.setScreen);
   const setDailyEntry = useSpark((s) => s.setDailyEntry);
   const pushDiary = useSpark((s) => s.pushDiary);
+  const loadDemo = useSpark((s) => s.loadDemo);
 
   // Rehydrate today's diary entry from the DB row so the photo shows after reload.
   const rehydrateTodayInDiary = (today: {
@@ -107,11 +108,13 @@ export function App() {
           // shows on Home / Profile / Friends after reload.
           rehydrateTodayInDiary(today);
         }
-        // New users — first sign-in, no onboarding yet — start at the Welcome
-        // intro so they understand what the app does before picking a challenge.
+        // New users — first sign-in — start at Welcome intro so they understand
+        // what the app does. Also pre-load demo content so when they land in
+        // the app post-onboarding, every tab looks alive.
         if (profile.onboarded) {
           setScreen('app');
         } else {
+          loadDemo();
           setScreen('onb-welcome');
         }
       } else {
@@ -142,7 +145,7 @@ export function App() {
     return () => {
       data.subscription.unsubscribe();
     };
-  }, [setUser, setScreen, setDailyEntry, pushDiary]);
+  }, [setUser, setScreen, setDailyEntry, pushDiary, loadDemo]);
 
   const inOnboarding = screen.startsWith('onb-');
 

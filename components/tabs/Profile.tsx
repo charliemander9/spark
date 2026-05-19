@@ -19,6 +19,8 @@ export function Profile() {
   const demoMode = useSpark((s) => s.demoMode);
   const loadDemo = useSpark((s) => s.loadDemo);
   const clearDemo = useSpark((s) => s.clearDemo);
+  const resetData = useSpark((s) => s.resetData);
+  const [confirmReset, setConfirmReset] = useState(false);
   const setUser = useSpark((s) => s.setUser);
   const openSettings = useUi((s) => s.openSettings);
   const openInviteSheet = useUi((s) => s.openInviteSheet);
@@ -71,6 +73,13 @@ export function Profile() {
       <div className="appbar">
         <div></div>
         <div className="right">
+          <button
+            className="reset-btn"
+            onClick={() => setConfirmReset(true)}
+            title="Reset all data and start fresh"
+          >
+            ↺ Reset
+          </button>
           <button
             className={'demo-btn' + (demoMode ? ' on' : '')}
             onClick={() => (demoMode ? clearDemo() : loadDemo())}
@@ -292,6 +301,36 @@ export function Profile() {
         </div>
       )}
       <div style={{ height: 20 }} />
+
+      {confirmReset && (
+        <div className="modal-bd open" onClick={() => setConfirmReset(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <h3><em>Start fresh?</em></h3>
+            <p>
+              This clears all entries, calendar progress, and demo data — your
+              account, name, and bio stay. You&apos;ll be on day 1 with a clean
+              slate.
+            </p>
+            <div className="row">
+              <button
+                className="btn btn-secondary"
+                onClick={() => setConfirmReset(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="btn btn-accent"
+                onClick={() => {
+                  resetData();
+                  setConfirmReset(false);
+                }}
+              >
+                Reset everything
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

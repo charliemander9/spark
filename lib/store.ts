@@ -69,6 +69,7 @@ interface SparkState {
 
   loadDemo: () => void;
   clearDemo: () => void;
+  resetData: () => void;
 }
 
 function makeDefaultMenu(): Menu {
@@ -319,17 +320,24 @@ export const useSpark = create<SparkState>((set, get) => ({
   })),
 
   loadDemo: () => set((st) => {
-    // Fake-complete days 1-6 so the calendar shows progress for today=day 7.
     const slots = st.menu.length || 3;
+    // Pre-fill the 6 days BEFORE today on the real calendar so it looks alive.
+    const now = new Date();
+    const today = now.getDate();
     const completedDays: Record<number, CalendarDay> = {};
-    for (let d = 1; d <= 6; d++) {
-      completedDays[d] = { done: Array.from({ length: slots }, () => true) };
+    for (let i = 1; i <= 6; i++) {
+      const d = today - i;
+      if (d >= 1) {
+        completedDays[d] = {
+          done: Array.from({ length: slots }, () => true),
+        };
+      }
     }
     return {
       demoMode: true,
       user: { ...st.user, day: 7, streak: 7 },
       diary: [
-        ...DEMO_DIARY,
+        ...buildDemoDiary(),
         ...st.diary.filter((d) => !d.id.startsWith('demo_')),
       ],
       calendar: { ...st.calendar, ...completedDays },
@@ -337,34 +345,87 @@ export const useSpark = create<SparkState>((set, get) => ({
   }),
 
   clearDemo: () => set((st) => {
-    // Clear demo-injected calendar days (1-6) too
+    // Clear demo-injected calendar days
+    const now = new Date();
+    const today = now.getDate();
     const cal = { ...st.calendar };
-    for (let d = 1; d <= 6; d++) delete cal[d];
+    for (let i = 1; i <= 6; i++) {
+      const d = today - i;
+      if (d >= 1) delete cal[d];
+    }
     return {
       demoMode: false,
       diary: st.diary.filter((d) => !d.id.startsWith('demo_')),
       calendar: cal,
     };
   }),
+
+  resetData: () => set((st) => {
+    // Clear all diary, calendar, day/streak, and demo state. Keep profile
+    // metadata (name, bio, avatar) intact so the user can keep their account
+    // and just start their journey fresh.
+    return {
+      demoMode: false,
+      diary: [],
+      calendar: {},
+      user: {
+        ...st.user,
+        day: 1,
+        streak: 0,
+        freezes: 2,
+        dailyEntry: null,
+      },
+      menu: st.menu.map((c) => ({
+        ...c,
+        completed: false,
+        value: 0,
+        source: null,
+        details: null,
+      })),
+    };
+  }),
 }));
 
-const DEMO_DIARY: DiaryEntry[] = [
-  { id:'demo_1', day:'F',  date:'May 16', type:'photo', isDaily: true,
-    bg:'linear-gradient(160deg,#1c3548 0%,#2d6a95 60%,#7AB6D8 100%)' },
-  { id:'demo_2', day:'Th', date:'May 15', type:'reflection',
-    body:'Long run before work. Lungs burned the first mile then the body remembered. There\'s a moment around minute 22 where it stops being a fight.' },
-  { id:'demo_3', day:'W',  date:'May 14', type:'video',
-    bg:'linear-gradient(160deg,#2e2a18 0%,#7c6c30 60%,#F5C842 100%)' },
-  { id:'demo_4', day:'T',  date:'May 13', type:'photo',
-    bg:'linear-gradient(160deg,#3a2818 0%,#a05c34 60%,#E8896F 100%)' },
-  { id:'demo_5', day:'M',  date:'May 12', type:'reflection',
-    body:'Restart week. Bed before 10. Two workouts, ten thousand steps. Boring on paper, less boring when I do it.' },
-  { id:'demo_6', day:'Su', date:'May 11', type:'photo',
-    bg:'linear-gradient(160deg,#1c2a18 0%,#3a5530 60%,#a0b08a 100%)' },
-  { id:'demo_7', day:'Sa', date:'May 10', type:'video',
-    bg:'linear-gradient(160deg,#2a1830 0%,#5a2a55 60%,#b04d9c 100%)' },
-  { id:'demo_8', day:'F',  date:'May 9',  type:'photo',
-    bg:'linear-gradient(160deg,#102838 0%,#1a5878 60%,#5fb0d4 100%)' },
-  { id:'demo_9', day:'Th', date:'May 8',  type:'reflection',
-    body:'Skipped the second workout. The day got away from me. Doing it tomorrow without making it a whole thing.' },
+// Demo diary entries are built dynamically so the dates always look "recent"
+// relative to today. Yesterday gets the most-recent demo, then 2 days ago, etc.
+// Position 0 in this list = yesterday, position 8 = 9 days ago.
+const DEMO_DIARY_TEMPLATES: Array<
+  Partial<DiaryEntry> & { offset: number; type: DiaryEntry['type'] }
+> = [
+  { offset: 1, type: 'photo',
+    bg: 'linear-gradient(160deg,#1c3548 0%,#2d6a95 60%,#7AB6D8 100%)' },
+  { offset: 2, type: 'reflection',
+    body: "Long run before work. Lungs burned the first mile then the body remembered. There's a moment around minute 22 where it stops being a fight." },
+  { offset: 3, type: 'video',
+    bg: 'linear-gradient(160deg,#2e2a18 0%,#7c6c30 60%,#F5C842 100%)' },
+  { offset: 4, type: 'photo',
+    bg: 'linear-gradient(160deg,#3a2818 0%,#a05c34 60%,#E8896F 100%)' },
+  { offset: 5, type: 'reflection',
+    body: 'Restart week. Bed before 10. Two workouts, ten thousand steps. Boring on paper, less boring when I do it.' },
+  { offset: 6, type: 'photo',
+    bg: 'linear-gradient(160deg,#1c2a18 0%,#3a5530 60%,#a0b08a 100%)' },
+  { offset: 7, type: 'video',
+    bg: 'linear-gradient(160deg,#2a1830 0%,#5a2a55 60%,#b04d9c 100%)' },
+  { offset: 8, type: 'photo',
+    bg: 'linear-gradient(160deg,#102838 0%,#1a5878 60%,#5fb0d4 100%)' },
+  { offset: 9, type: 'reflection',
+    body: 'Skipped the second workout. The day got away from me. Doing it tomorrow without making it a whole thing.' },
 ];
+
+function buildDemoDiary(): DiaryEntry[] {
+  const dayLetters = ['Su', 'M', 'T', 'W', 'Th', 'F', 'Sa'];
+  return DEMO_DIARY_TEMPLATES.map((tpl, i) => {
+    const d = new Date();
+    d.setDate(d.getDate() - tpl.offset);
+    const day = dayLetters[d.getDay()];
+    const date = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    return {
+      id: 'demo_' + i,
+      day,
+      date,
+      type: tpl.type,
+      bg: tpl.bg,
+      body: tpl.body,
+    } as DiaryEntry;
+  });
+}

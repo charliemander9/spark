@@ -2087,7 +2087,8 @@ p { line-height: 1.55; color: var(--ink-3); font-size: 14.5px; }
   padding-right: 22px;
 }
 .settings-head h2 { margin: 0; flex: 1; }
-.demo-btn {
+.demo-btn,
+.reset-btn {
   padding: 7px 12px;
   font-family: 'Inter', sans-serif;
   font-size: 11px;
@@ -2100,12 +2101,18 @@ p { line-height: 1.55; color: var(--ink-3); font-size: 14.5px; }
   color: var(--ink-2, var(--ink));
   transition: transform .07s, background .15s;
 }
-.demo-btn:active { transform: scale(0.96); }
+.demo-btn:active,
+.reset-btn:active { transform: scale(0.96); }
 .demo-btn.on {
   background: var(--sage, #A8E060);
   color: var(--bg-2);
   border-color: transparent;
 }
+.reset-btn {
+  color: var(--neon-coral);
+  border-color: var(--neon-coral);
+}
+.reset-btn:active { background: var(--neon-coral-soft); }
 
 /* ============ DISCOVER — IG explore style ============ */
 .discover-search {
