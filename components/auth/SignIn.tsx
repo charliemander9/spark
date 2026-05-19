@@ -1,15 +1,27 @@
 'use client';
 
 import { useState } from 'react';
-import { sendOtp, verifyOtp } from '@/lib/auth';
+import { sendOtp, verifyOtp, signInAnon } from '@/lib/auth';
+
+type Step = 'name' | 'email' | 'code';
 
 export function SignIn() {
-  const [step, setStep] = useState<'email' | 'code'>('email');
+  const [step, setStep] = useState<Step>('name');
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
   const [info, setInfo] = useState('');
+
+  const handleGuestStart = async () => {
+    setErr('');
+    setBusy(true);
+    const { error } = await signInAnon(name.trim());
+    setBusy(false);
+    if (error) setErr(error);
+    // success → auth listener in App.tsx takes over
+  };
 
   const handleSendCode = async () => {
     setErr('');
@@ -29,7 +41,6 @@ export function SignIn() {
     const { error } = await verifyOtp(email.trim(), code.trim());
     setBusy(false);
     if (error) setErr(error);
-    // success → auth listener in App.tsx takes over
   };
 
   return (
@@ -40,14 +51,69 @@ export function SignIn() {
         </div>
         <div className="brand-flourish" />
 
-        {step === 'email' ? (
+        {step === 'name' && (
           <>
             <p
               className="lede"
               style={{ marginTop: 18, maxWidth: 320, textAlign: 'center' }}
             >
-              Sign in with your email. We'll send a 6-digit code — no password
-              to remember.
+              GM. Pick a name your friends will recognize and you&apos;re in.
+            </p>
+
+            <div style={{ width: '100%', marginTop: 18 }}>
+              <input
+                type="text"
+                autoComplete="given-name"
+                placeholder="Your first name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && name.trim().length >= 2)
+                    handleGuestStart();
+                }}
+                style={{
+                  width: '100%',
+                  padding: '14px 16px',
+                  background: 'var(--surface)',
+                  border: '1px solid var(--border)',
+                  borderRadius: 14,
+                  fontFamily: "'Fraunces',serif",
+                  fontSize: 17,
+                  color: 'var(--ink)',
+                  textAlign: 'center',
+                }}
+              />
+            </div>
+
+            <div style={{ flex: 1 }} />
+            <button
+              className="btn btn-accent btn-lg btn-block"
+              disabled={name.trim().length < 2 || busy}
+              onClick={handleGuestStart}
+            >
+              {busy ? 'Starting…' : "Let's go"}
+            </button>
+            <button
+              className="btn btn-ghost btn-block"
+              style={{ marginTop: 6, fontSize: 13 }}
+              onClick={() => {
+                setErr('');
+                setStep('email');
+              }}
+            >
+              Sign in with email instead
+            </button>
+          </>
+        )}
+
+        {step === 'email' && (
+          <>
+            <p
+              className="lede"
+              style={{ marginTop: 18, maxWidth: 320, textAlign: 'center' }}
+            >
+              Sign in with your email. We&apos;ll send a 6-digit code — no
+              password to remember.
             </p>
 
             <div style={{ width: '100%', marginTop: 18 }}>
@@ -84,8 +150,20 @@ export function SignIn() {
             >
               {busy ? 'Sending…' : 'Send Code'}
             </button>
+            <button
+              className="btn btn-ghost btn-block"
+              style={{ marginTop: 6, fontSize: 13 }}
+              onClick={() => {
+                setErr('');
+                setStep('name');
+              }}
+            >
+              ← Back to quick start
+            </button>
           </>
-        ) : (
+        )}
+
+        {step === 'code' && (
           <>
             <p
               className="lede"
