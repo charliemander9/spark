@@ -16,10 +16,10 @@ export function CourseCard({ slot }: Props) {
   const openWorkoutSheet = useUi((s) => s.openWorkoutSheet);
   const openNumericSheet = useUi((s) => s.openNumericSheet);
 
+  if (!c) return null;
   const cat = CATEGORIES[c.category];
   const done = c.completed;
-  const ringClass =
-    slot === 'appetizer' ? 'ring-w1' : slot === 'main' ? 'ring-w2' : 'ring-steps';
+  const ringColor = cat?.ringColor || 'var(--terracotta)';
 
   const gate = (fn: () => void) => () => {
     if (!dailyEntry) {
@@ -33,8 +33,11 @@ export function CourseCard({ slot }: Props) {
   return (
     <div className={'course' + (done ? ' done' : '')}>
       <div className="course-head">
-        <div className={'lead ' + slot}>
-          <span className={'dot ring-dot ' + ringClass} />
+        <div className="lead">
+          <span
+            className="dot ring-dot"
+            style={{ background: ringColor }}
+          />
           {c.label}
         </div>
         <div className={'course-status' + (done ? ' done' : '')}>
@@ -62,7 +65,7 @@ export function CourseCard({ slot }: Props) {
           )}
           <div className="course-actions">
             <button
-              className={'mark-btn' + (done ? ' completed' : '') + (slot === 'main' ? ' terracotta' : '')}
+              className={'mark-btn' + (done ? ' completed' : '')}
               onClick={gate(() => {
                 setWorkoutSheetCourse(slot);
                 openWorkoutSheet();
@@ -107,6 +110,7 @@ export function CourseCard({ slot }: Props) {
 
 function NumericBody({ slot, onLog }: { slot: SlotKey; onLog: () => void }) {
   const c = useSpark((s) => s.menu[slot]);
+  if (!c) return null;
   const cat = CATEGORIES[c.category];
   const value = c.value || 0;
   const goal = c.config.goal ?? cat.defaultGoal ?? 0;
@@ -140,6 +144,7 @@ function NumericBody({ slot, onLog }: { slot: SlotKey; onLog: () => void }) {
 
 function CustomBody({ slot, onLog, onToggle }: { slot: SlotKey; onLog: () => void; onToggle: () => void }) {
   const c = useSpark((s) => s.menu[slot]);
+  if (!c) return null;
   if (c.config.quantified) {
     const value = c.value || 0;
     const goal = c.config.goal ?? 10;

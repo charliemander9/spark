@@ -14,10 +14,10 @@ export function NumericSheet() {
 
   const [val, setVal] = useState('');
   useEffect(() => {
-    if (slot) setVal(menu[slot]?.value ? String(menu[slot].value) : '');
+    if (slot !== null) setVal(menu[slot]?.value ? String(menu[slot].value) : '');
   }, [slot, menu]);
 
-  if (!open || !slot) return null;
+  if (!open || slot === null || !menu[slot]) return null;
   const c = menu[slot];
   const cat = CATEGORIES[c.category];
   const isCustom = c.category === 'custom';

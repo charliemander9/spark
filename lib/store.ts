@@ -48,6 +48,8 @@ interface SparkState {
   applyCustomDraft: () => void;
   setCustomDraft: (d: CustomDraftSlot[]) => void;
   patchCustomSlot: (i: number, patch: Partial<CustomDraftSlot> & { config?: Partial<CustomDraftSlot['config']> }) => void;
+  addCustomSlot: () => void;
+  removeCustomSlot: (i: number) => void;
 
   setWorkoutSheetCourse: (k: SlotKey | null) => void;
   setNumericSheetKey: (k: SlotKey | null) => void;
@@ -70,17 +72,17 @@ interface SparkState {
 }
 
 function makeDefaultMenu(): Menu {
-  return {
-    appetizer: { category: 'workout', label: 'Workout 1',
+  return [
+    { category: 'workout', label: 'Workout 1',
       config: { mustBeOutdoors: false, minDuration: 45 },
       completed: false, details: null, value: 0, source: null },
-    main: { category: 'workout', label: 'Outside Workout',
+    { category: 'workout', label: 'Outside Workout',
       config: { mustBeOutdoors: true, minDuration: 45 },
       completed: false, details: null, value: 0, source: null },
-    treat: { category: 'steps', label: '10K Steps',
+    { category: 'steps', label: '10K Steps',
       config: { goal: 10000 },
       completed: false, details: null, value: 0, source: null },
-  };
+  ];
 }
 
 function makeDefaultCustomDraft(): CustomDraftSlot[] {
@@ -91,23 +93,43 @@ function makeDefaultCustomDraft(): CustomDraftSlot[] {
   ];
 }
 
-const defaultCalendar: Record<number, CalendarDay> = {
-  1:  { w1: true, w2: true,  steps: true  },
-  2:  { w1: true, w2: true,  steps: true  },
-  3:  { w1: true, w2: true,  steps: true  },
-  4:  { w1: true, w2: false, steps: true  },
-  5:  { w1: true, w2: true,  steps: true  },
-  6:  { w1: true, w2: true,  steps: true  },
-  7:  { w1: true, w2: true,  steps: true  },
-  8:  { w1: true, w2: true,  steps: false },
-  9:  { w1: true, w2: true,  steps: true  },
-  10: { w1: true, w2: true,  steps: true  },
-  11: { w1: true, w2: true,  steps: true  },
-  12: { w1: true, w2: true,  steps: true  },
-};
+// Empty calendar by default — populated as the user completes days.
+const defaultCalendar: Record<number, CalendarDay> = {};
 
 // Empty by default — populated only when the user posts or loads demo.
 const defaultDiary: DiaryEntry[] = [];
+
+/**
+ * Helper used by every "complete a check-in" action. Applies the slot mutation
+ * to the menu, and if every slot is completed, bumps the day counter, locks in
+ * a calendar entry, and resets all slots for tomorrow.
+ */
+function bumpIfAllDone(
+  st: SparkState,
+  mutate: (m: Menu) => Menu,
+): Partial<SparkState> {
+  const m = mutate(st.menu);
+  const allDone = m.length > 0 && m.every((c) => c.completed);
+  if (!allDone) return { menu: m };
+
+  const u = { ...st.user, streak: st.user.streak + 1 };
+  const cal = {
+    ...st.calendar,
+    [u.day]: { done: m.map(() => true) },
+  };
+  if (u.day >= 75) {
+    return { menu: m, user: u, calendar: cal, day75Celebrate: true };
+  }
+  u.day += 1;
+  const reset = m.map((c) => ({
+    ...c,
+    completed: false,
+    value: 0,
+    source: null,
+    details: null,
+  }));
+  return { menu: reset, user: u, calendar: cal };
+}
 
 export const useSpark = create<SparkState>((set, get) => ({
   screen: 'onb-welcome',
@@ -154,40 +176,46 @@ export const useSpark = create<SparkState>((set, get) => ({
   applyPreset: (id) => {
     const preset = PRESETS[id];
     if (!preset?.slots) return;
-    const keys: SlotKey[] = ['appetizer', 'main', 'treat'];
-    const m: Menu = makeDefaultMenu();
-    preset.slots.forEach((slot, i) => {
-      const key = keys[i];
-      m[key] = {
-        category: slot.cat,
-        label: slot.label,
-        config: { ...slot.config },
-        completed: false, details: null, value: 0, source: null,
-      };
-    });
+    const m: Menu = preset.slots.map((slot) => ({
+      category: slot.cat,
+      label: slot.label,
+      config: { ...slot.config },
+      completed: false,
+      details: null,
+      value: 0,
+      source: null,
+    }));
     set({ menu: m, user: { ...get().user, preset: id } });
-    set({ customDraft: preset.slots.map((s) => ({ categoryId: s.cat, config: { ...s.config }, label: s.label })) });
+    set({
+      customDraft: preset.slots.map((s) => ({
+        categoryId: s.cat,
+        config: { ...s.config },
+        label: s.label,
+      })),
+    });
   },
 
   applyCustomDraft: () => {
-    const keys: SlotKey[] = ['appetizer', 'main', 'treat'];
     const draft = get().customDraft;
-    const m: Menu = makeDefaultMenu();
-    draft.forEach((d, i) => {
-      const key = keys[i];
+    const m: Menu = draft.map((d) => {
       const cat = CATEGORIES[d.categoryId];
       let label = d.label || '';
       if (!label) {
-        if (cat.type === 'workout')  label = d.config.mustBeOutdoors ? 'Outside Workout' : 'Workout';
-        else if (cat.type === 'numeric') label = (cat.fmt?.(d.config.goal ?? cat.defaultGoal ?? 0) ?? '') + '';
-        else if (cat.type === 'custom')  label = d.config.label || 'Custom';
+        if (cat.type === 'workout')
+          label = d.config.mustBeOutdoors ? 'Outside Workout' : 'Workout';
+        else if (cat.type === 'numeric')
+          label = (cat.fmt?.(d.config.goal ?? cat.defaultGoal ?? 0) ?? '') + '';
+        else if (cat.type === 'custom') label = d.config.label || 'Custom';
         else label = cat.label;
       }
-      m[key] = {
+      return {
         category: d.categoryId,
         label,
         config: { ...d.config },
-        completed: false, details: null, value: 0, source: null,
+        completed: false,
+        details: null,
+        value: 0,
+        source: null,
       };
     });
     set({ menu: m, user: { ...get().user, preset: 'custom' } });
@@ -206,89 +234,58 @@ export const useSpark = create<SparkState>((set, get) => ({
     return { customDraft: draft };
   }),
 
+  addCustomSlot: () => set((st) => {
+    if (st.customDraft.length >= 6) return st;
+    return {
+      customDraft: [
+        ...st.customDraft,
+        { categoryId: 'workout', config: { mustBeOutdoors: false, minDuration: 30 } },
+      ],
+    };
+  }),
+
+  removeCustomSlot: (i) => set((st) => {
+    if (st.customDraft.length <= 1) return st;
+    return { customDraft: st.customDraft.filter((_, j) => j !== i) };
+  }),
+
+  // Helpers used by every "complete a check-in" action
   pickCheckIn: (key, picked) => set((st) => ({
-    menu: { ...st.menu, [key]: { ...st.menu[key], value: picked ?? 0 } },
+    menu: st.menu.map((c, i) => (i === key ? { ...c, value: picked ?? 0 } : c)),
   })),
 
-  completeCourse: (key) => set((st) => {
-    const m = { ...st.menu, [key]: { ...st.menu[key], completed: true } };
-    const allDone = m.appetizer.completed && m.main.completed && m.treat.completed;
-    const u = { ...st.user };
-    let cal = st.calendar;
-    if (allDone) {
-      u.streak += 1;
-      cal = { ...cal, [u.day]: { w1: true, w2: true, steps: true } };
-      if (u.day >= 75) {
-        return { menu: m, user: u, calendar: cal, day75Celebrate: true };
-      }
-      u.day += 1;
-      m.appetizer.completed = false;
-      m.main.completed = false;
-      m.treat.completed = false;
-    }
-    return { menu: m, user: u, calendar: cal };
-  }),
+  completeCourse: (key) => set((st) => bumpIfAllDone(st, (m) =>
+    m.map((c, i) => (i === key ? { ...c, completed: true } : c))
+  )),
 
   toggleBinary: (key) => set((st) => {
     const cur = st.menu[key];
-    if (!cur.completed) {
-      const next: CheckIn = { ...cur, completed: true };
-      const m = { ...st.menu, [key]: next };
-      const allDone = m.appetizer.completed && m.main.completed && m.treat.completed;
-      const u = { ...st.user };
-      let cal = st.calendar;
-      if (allDone) {
-        u.streak += 1;
-        cal = { ...cal, [u.day]: { w1: true, w2: true, steps: true } };
-        if (u.day >= 75) return { menu: m, user: u, calendar: cal, day75Celebrate: true };
-        u.day += 1;
-        m.appetizer.completed = false;
-        m.main.completed = false;
-        m.treat.completed = false;
-      }
-      return { menu: m, user: u, calendar: cal };
-    } else {
-      return { menu: { ...st.menu, [key]: { ...cur, completed: false } } };
+    if (cur.completed) {
+      return {
+        menu: st.menu.map((c, i) => (i === key ? { ...c, completed: false } : c)),
+      } as Partial<SparkState>;
     }
+    return bumpIfAllDone(st, (m) =>
+      m.map((c, i) => (i === key ? { ...c, completed: true } : c))
+    );
   }),
 
   setCheckInValue: (key, value, source) => set((st) => {
     const cur = st.menu[key];
     const goal = cur.config.goal ?? CATEGORIES[cur.category].defaultGoal ?? 0;
     const hit = value >= goal;
-    const m = { ...st.menu, [key]: { ...cur, value, source, completed: hit } };
-    const allDone = m.appetizer.completed && m.main.completed && m.treat.completed;
-    const u = { ...st.user };
-    let cal = st.calendar;
-    if (hit && allDone) {
-      u.streak += 1;
-      cal = { ...cal, [u.day]: { w1: true, w2: true, steps: true } };
-      if (u.day >= 75) return { menu: m, user: u, calendar: cal, day75Celebrate: true };
-      u.day += 1;
-      m.appetizer.completed = false;
-      m.main.completed = false;
-      m.treat.completed = false;
-    }
-    return { menu: m, user: u, calendar: cal };
+    return bumpIfAllDone(st, (m) =>
+      m.map((c, i) =>
+        i === key ? { ...c, value, source, completed: hit } : c,
+      ),
+    );
   }),
 
-  saveWorkoutDetails: (key, details) => set((st) => {
-    const cur = st.menu[key];
-    const m = { ...st.menu, [key]: { ...cur, details, completed: true } };
-    const allDone = m.appetizer.completed && m.main.completed && m.treat.completed;
-    const u = { ...st.user };
-    let cal = st.calendar;
-    if (allDone) {
-      u.streak += 1;
-      cal = { ...cal, [u.day]: { w1: true, w2: true, steps: true } };
-      if (u.day >= 75) return { menu: m, user: u, calendar: cal, day75Celebrate: true };
-      u.day += 1;
-      m.appetizer.completed = false;
-      m.main.completed = false;
-      m.treat.completed = false;
-    }
-    return { menu: m, user: u, calendar: cal };
-  }),
+  saveWorkoutDetails: (key, details) => set((st) =>
+    bumpIfAllDone(st, (m) =>
+      m.map((c, i) => (i === key ? { ...c, details, completed: true } : c)),
+    ),
+  ),
 
   setDailyEntry: (entry) => set((st) => ({ user: { ...st.user, dailyEntry: entry } })),
 

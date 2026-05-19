@@ -1,6 +1,7 @@
 'use client';
 
 import { useSpark } from '@/lib/store';
+import { CATEGORIES } from '@/lib/data';
 import type { CalendarDay } from '@/lib/types';
 
 export function Calendar() {
@@ -15,10 +16,14 @@ export function Calendar() {
   const firstDow = new Date(2026, 4, 1).getDay();
   const daysInMonth = 31;
   const today = user.day;
+
+  // Colors come from the current menu's slot categories so the legend always
+  // matches what the user is tracking.
+  const colors = menu.map((c) => CATEGORIES[c.category]?.ringColor || '#999');
+  const labels = menu.map((c) => c.label);
+
   const todayData: CalendarDay = {
-    w1: menu.appetizer.completed,
-    w2: menu.main.completed,
-    steps: menu.treat.completed,
+    done: menu.map((c) => c.completed),
   };
 
   const cells: (number | null)[] = [
@@ -48,50 +53,70 @@ export function Calendar() {
           if (isToday) cls.push('today');
           return (
             <div key={i} className={cls.join(' ')}>
-              <RingSvg data={data} />
+              <RingSvg data={data} colors={colors} />
               <div className="cal-day-num">{d}</div>
             </div>
           );
         })}
       </div>
       <div className="cal-legend">
-        <div>
-          <span className="swatch" style={{ color: '#FF4D7A' }} /> Workout
-        </div>
-        <div>
-          <span className="swatch" style={{ color: '#A8E060' }} /> Outside
-        </div>
-        <div>
-          <span className="swatch" style={{ color: '#5BE0F0' }} /> 10K Steps
-        </div>
+        {labels.map((l, i) => (
+          <div key={i}>
+            <span className="swatch" style={{ color: colors[i] }} /> {l}
+          </div>
+        ))}
       </div>
     </div>
   );
 }
 
-function RingSvg({ data }: { data: CalendarDay | undefined }) {
+function RingSvg({
+  data,
+  colors,
+}: {
+  data: CalendarDay | undefined;
+  colors: string[];
+}) {
   const sw = 2.2;
   const c = 16;
-  const radii = [11, 7.5, 4];
-  const colors = ['#FF4D7A', '#A8E060', '#5BE0F0'];
-  const flags = data ? [data.w1, data.w2, data.steps] : [false, false, false];
+  const n = colors.length;
+  // Generate concentric radii from outside in. Outermost ring sits at r=11
+  // (matches the original 3-slot look); shrink the gap for more slots.
+  const outerR = 11;
+  const gap = n > 1 ? Math.min(3.5, (outerR - 2) / Math.max(1, n - 1)) : 0;
+  const radii = Array.from({ length: n }, (_, i) => outerR - i * gap);
+  const flags = data?.done && data.done.length === n
+    ? data.done
+    : Array.from({ length: n }, () => false);
 
   return (
     <svg className="cal-ring-svg" viewBox="0 0 32 32">
       {radii.map((r, i) => (
         <circle
           key={'bg' + i}
-          cx={c} cy={c} r={r}
-          stroke={colors[i]} strokeWidth={sw} fill="none" opacity={0.18}
+          cx={c}
+          cy={c}
+          r={r}
+          stroke={colors[i]}
+          strokeWidth={sw}
+          fill="none"
+          opacity={0.18}
         />
       ))}
-      {radii.map((r, i) => flags[i] ? (
-        <circle
-          key={'fg' + i}
-          cx={c} cy={c} r={r}
-          stroke={colors[i]} strokeWidth={sw} fill="none" strokeLinecap="round"
-        />
-      ) : null)}
+      {radii.map((r, i) =>
+        flags[i] ? (
+          <circle
+            key={'fg' + i}
+            cx={c}
+            cy={c}
+            r={r}
+            stroke={colors[i]}
+            strokeWidth={sw}
+            fill="none"
+            strokeLinecap="round"
+          />
+        ) : null,
+      )}
     </svg>
   );
 }

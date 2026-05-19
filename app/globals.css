@@ -2877,6 +2877,76 @@ p { line-height: 1.55; color: var(--ink-3); font-size: 14.5px; }
   font-weight: 600;
   margin-bottom: 6px;
 }
+.custom-slot-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.custom-slot-remove {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 0;
+  display: grid; place-items: center;
+  margin-bottom: 4px;
+}
+.custom-slot-remove:active {
+  background: var(--terracotta);
+  color: var(--bg-2);
+}
+
+/* Count selector at the top of Build my own */
+.cb-count-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  padding: 10px 6px;
+  background: var(--surface);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+.cb-count-btn {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  color: var(--ink);
+  font-family: 'Fraunces', serif;
+  font-size: 22px;
+  line-height: 0;
+  display: grid; place-items: center;
+  transition: transform .07s, background .15s;
+}
+.cb-count-btn:not(:disabled):active {
+  transform: scale(0.94);
+  background: var(--terracotta);
+  color: var(--bg-2);
+}
+.cb-count-btn:disabled { opacity: 0.35; }
+.cb-count-label {
+  font-family: 'Fraunces', serif;
+  font-size: 15px;
+  color: var(--ink);
+  text-align: center;
+  flex: 1;
+}
+.cb-count-label b { font-weight: 600; }
+.cb-rec {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  background: var(--neon-coral-soft);
+  color: var(--neon-coral);
+  font-family: 'Inter', sans-serif;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  vertical-align: middle;
+}
 .custom-slot-select {
   width: 100%;
   padding: 11px 14px;

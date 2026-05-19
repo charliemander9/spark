@@ -17,8 +17,8 @@ export function ChallengePicker() {
         Choose your <em>75</em>
       </h1>
       <p className="lede">
-        Five starting points. Pick one — you can tweak it before you commit, or
-        change anytime in Settings.
+        Build your own (recommended 3 check-ins — but you can do 1 to 6) or
+        pick a starting point below. Change anytime in Settings.
       </p>
 
       {Object.entries(PRESETS).map(([id, p]) => {
@@ -61,7 +61,7 @@ export function ChallengePicker() {
               <CustomBuilder />
             ) : (
               <div className="preset-checks">
-                <div className="preset-check-item muted">Tap to choose three categories</div>
+                <div className="preset-check-item muted">Tap to choose your check-ins</div>
               </div>
             )}
           </button>

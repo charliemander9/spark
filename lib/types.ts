@@ -93,15 +93,16 @@ export interface User {
   notifBuddies: boolean;
 }
 
-export interface Menu {
-  appetizer: CheckIn;
-  main:      CheckIn;
-  treat:     CheckIn;
+/** Menu is now a variable-length list of check-ins (1–6). Presets ship 3. */
+export type Menu = CheckIn[];
+
+/** A SlotKey is the index of a CheckIn in the Menu array. */
+export type SlotKey = number;
+
+/** Per-day completion record — one boolean per slot in the user's menu. */
+export interface CalendarDay {
+  done: boolean[];
 }
-
-export type SlotKey = keyof Menu;
-
-export interface CalendarDay { w1: boolean; w2: boolean; steps: boolean; }
 
 export interface DiaryEntry {
   id: string;

@@ -10,6 +10,7 @@ import { CourseCard } from '../CourseCard';
 export function Home() {
   const user = useSpark((s) => s.user);
   const diary = useSpark((s) => s.diary);
+  const menu = useSpark((s) => s.menu);
   const tone = TONE_COPY[user.tone];
   const [g, name] = greeting(user.name);
   const openSettings = useSparkActions('openSettings');
@@ -84,9 +85,9 @@ export function Home() {
         <p>{tone.sub}</p>
       </div>
 
-      <CourseCard slot="appetizer" />
-      <CourseCard slot="main" />
-      <CourseCard slot="treat" />
+      {menu.map((_, i) => (
+        <CourseCard key={i} slot={i} />
+      ))}
     </>
   );
 }

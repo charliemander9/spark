@@ -36,7 +36,7 @@ export function WorkoutSheet() {
   };
 
   useEffect(() => {
-    if (slot && menu[slot]?.details) {
+    if (slot !== null && menu[slot]?.details) {
       const d = menu[slot]!.details!;
       setType(d.type); setDur(d.duration); setPlace(d.place);
       setPhotos(d.photos ?? []);
@@ -45,7 +45,7 @@ export function WorkoutSheet() {
     }
   }, [slot, menu]);
 
-  if (!open || !slot) return null;
+  if (!open || slot === null || !menu[slot]) return null;
   const isOutdoors = menu[slot].config.mustBeOutdoors;
 
   const save = (source?: string) => {
@@ -69,7 +69,7 @@ export function WorkoutSheet() {
       <div className="sheet-bd open" onClick={close} />
       <div className="sheet open">
         <div className="sheet-handle" />
-        <h2><em>{slot === 'appetizer' ? 'Log Workout 1' : 'Log Workout 2'}</em></h2>
+        <h2><em>{menu[slot].label || `Log Slot ${slot + 1}`}</em></h2>
         <p style={{ padding: '0 22px 4px', fontFamily: "'Fraunces',serif", fontStyle: 'italic', fontSize: 13.5, color: 'var(--ink-3)' }}>
           {isOutdoors ? 'Must be outside. 45 minutes minimum.' : 'Indoor or outdoor. 45 minutes minimum.'}
         </p>
