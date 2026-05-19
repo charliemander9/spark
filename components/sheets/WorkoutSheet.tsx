@@ -1,9 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSpark } from '@/lib/store';
 import { useUi } from '@/lib/storeActions';
-import { MOCK_PHOTOS } from '@/lib/data';
 import type { Photo, WorkoutDetails } from '@/lib/types';
 
 export function WorkoutSheet() {
@@ -17,6 +16,24 @@ export function WorkoutSheet() {
   const [dur, setDur] = useState('');
   const [place, setPlace] = useState('');
   const [photos, setPhotos] = useState<Photo[]>([]);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const onFiles = (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    const room = 5 - photos.length;
+    const picked: Photo[] = [];
+    for (let i = 0; i < Math.min(files.length, room); i++) {
+      const f = files[i];
+      const url = URL.createObjectURL(f);
+      const isVideo = f.type.startsWith('video/');
+      picked.push({
+        type: isVideo ? 'video' : 'photo',
+        bg: `url("${url}")`,
+      });
+    }
+    setPhotos([...photos, ...picked]);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
 
   useEffect(() => {
     if (slot && menu[slot]?.details) {
@@ -73,36 +90,45 @@ export function WorkoutSheet() {
         </div>
 
         <div className="form-section">
-          <label>Photos & video <span className="lbl-hint">up to 5</span></label>
+          <label>Photos &amp; video <span className="lbl-hint">up to 5</span></label>
           <div className="photo-carousel">
             {photos.map((p, i) => (
               <div
                 key={i}
-                className={'photo-tile' + (p.type === 'video' ? ' video' : '')}
-                style={p.type === 'video' ? {} : { backgroundImage: p.bg }}
+                className="photo-tile"
+                style={{ backgroundImage: p.bg }}
               >
-                <button className="photo-remove" onClick={() => setPhotos(photos.filter((_, j) => j !== i))}>×</button>
+                {p.type === 'video' && <div className="photo-video-badge">▶</div>}
+                <button
+                  className="photo-remove"
+                  onClick={() => {
+                    const m = p.bg.match(/url\("?(blob:[^"]+)"?\)/);
+                    if (m) URL.revokeObjectURL(m[1]);
+                    setPhotos(photos.filter((_, j) => j !== i));
+                  }}
+                >
+                  ×
+                </button>
               </div>
             ))}
             {photos.length < 5 && (
               <button
                 className="photo-tile add"
-                onClick={() => setPhotos([...photos, { type: 'photo', bg: MOCK_PHOTOS[photos.length % MOCK_PHOTOS.length] }])}
+                onClick={() => fileInputRef.current?.click()}
               >
                 <span className="ico">+</span>
-                <span className="lbl">Photo</span>
-              </button>
-            )}
-            {photos.length < 5 && !photos.some(p => p.type === 'video') && (
-              <button
-                className="photo-tile add"
-                onClick={() => setPhotos([...photos, { type: 'video', bg: MOCK_PHOTOS[photos.length % MOCK_PHOTOS.length] }])}
-              >
-                <span className="ico">+</span>
-                <span className="lbl">Video</span>
+                <span className="lbl">Add</span>
               </button>
             )}
           </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*,video/*"
+            multiple
+            style={{ display: 'none' }}
+            onChange={(e) => onFiles(e.target.files)}
+          />
         </div>
 
         <div className="form-divider"><span>or import from device</span></div>

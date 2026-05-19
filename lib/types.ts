@@ -123,4 +123,4 @@ export type Screen =
   | 'onb-welcome' | 'onb-challenge' | 'onb-privacy' | 'onb-buddies' | 'onb-find'
   | 'app';
 
-export type Tab = 'home' | 'discover' | 'capture' | 'friends' | 'foryou';
+export type Tab = 'home' | 'discover' | 'journal' | 'friends' | 'foryou';

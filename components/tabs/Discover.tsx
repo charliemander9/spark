@@ -3,25 +3,14 @@
 import { useSpark } from '@/lib/store';
 import { useUi } from '@/lib/storeActions';
 import { gearSvg } from '@/lib/helpers';
-import { VIDEOS, type VideoCard } from '@/lib/data';
+import { DEMO_DISCOVER } from '@/lib/data';
 
 export function Discover() {
   const openSettings = useUi((s) => s.openSettings);
   const setScreen = useSpark((s) => s.setScreen);
-  const follows = useSpark((s) => s.user.follows);
+  const demoMode = useSpark((s) => s.demoMode);
 
-  // Mix all categories together, round-robin
-  const cards: VideoCard[] = [];
-  const cats = ['active', 'endurance', 'strength', 'recomp'];
-  let i = 0, added = true;
-  while (added) {
-    added = false;
-    for (const id of cats) {
-      const arr = VIDEOS[id] || [];
-      if (arr[i]) { cards.push(arr[i]); added = true; }
-    }
-    i++;
-  }
+  const cards = demoMode ? DEMO_DISCOVER : [];
 
   return (
     <>
@@ -66,34 +55,26 @@ export function Discover() {
           </button>
         </div>
       ) : (
-        <>
-          <div style={{ height: 14 }} />
-          {cards.map((v, idx) => (
-            <div key={v.author + idx} className="discover-card">
-              <div className="dc-img" style={{ backgroundImage: v.img }}>
-                <div className="dc-play" />
-                <div>
-                  <div className="lead">Story</div>
-                  <h3>{v.title}</h3>
+        <div className="discover-list">
+          {cards.map((p) => (
+            <div key={p.id} className="discover-person">
+              <div className="dp-ava" style={{ backgroundImage: p.avaGradient }}>
+                <span>{p.initials}</span>
+              </div>
+              <div className="dp-body">
+                <div className="dp-name">{p.name}</div>
+                <div className="dp-bio">{p.bio}</div>
+                <div className="dp-sub">
+                  <span className="streak-chip">🔥 <span className="mono">{p.streak}d</span></span>
+                  <span>· Day {p.day} of 75</span>
                 </div>
               </div>
-              <div className="dc-meta">
-                <div className="dc-author">
-                  <div className="avatar-sm sage">{v.initials}</div>
-                  <div>
-                    <div className="name">{v.author}</div>
-                    <div className="sub">{v.note}</div>
-                  </div>
-                </div>
-                <div className="dc-actions">
-                  <div>♡ 2.4k</div>
-                  <div>↗</div>
-                </div>
-              </div>
+              <button className="dp-follow">Follow</button>
             </div>
           ))}
-        </>
+        </div>
       )}
+      <div style={{ height: 20 }} />
     </>
   );
 }

@@ -15,6 +15,9 @@ export function SettingsSheet() {
   const setScreen = useSpark((s) => s.setScreen);
   const beginAnother75 = useSpark((s) => s.beginAnother75);
   const setDay75 = useSpark((s) => s.setDay75);
+  const demoMode = useSpark((s) => s.demoMode);
+  const loadDemo = useSpark((s) => s.loadDemo);
+  const clearDemo = useSpark((s) => s.clearDemo);
 
   if (!open) return null;
 
@@ -23,7 +26,15 @@ export function SettingsSheet() {
       <div className="sheet-bd open" onClick={close} />
       <div className="sheet open">
         <div className="sheet-handle" />
-        <h2><em>Settings</em></h2>
+        <div className="settings-head">
+          <h2><em>Settings</em></h2>
+          <button
+            className={'demo-btn' + (demoMode ? ' on' : '')}
+            onClick={() => (demoMode ? clearDemo() : loadDemo())}
+          >
+            {demoMode ? '× Demo on' : '✨ Load demo'}
+          </button>
+        </div>
 
         <div
           className="set-row nav-row"

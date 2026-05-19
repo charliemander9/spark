@@ -24,13 +24,14 @@ const TABS: { id: Tab; label: string; icon: JSX.Element }[] = [
     ),
   },
   {
-    id: 'capture',
-    label: 'Capture',
+    id: 'journal',
+    label: 'Journal',
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}>
-        <rect x={3} y={6.5} width={18} height={13.5} rx={2.5} />
-        <circle cx={12} cy={13} r={4} />
-        <path d="M8 6.5l1.5-2.2h5L16 6.5" />
+      // Book / journal icon
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6}>
+        <path d="M4 4.5A1.5 1.5 0 0 1 5.5 3H18a2 2 0 0 1 2 2v14.5a.5.5 0 0 1-.5.5H6a2 2 0 0 1-2-2V4.5z" strokeLinejoin="round" />
+        <path d="M4 18a2 2 0 0 1 2-2h14" strokeLinecap="round" />
+        <path d="M8 7h7M8 10h7" strokeLinecap="round" />
       </svg>
     ),
   },
@@ -65,12 +66,11 @@ export function TabBar() {
   return (
     <nav className="tabbar">
       {TABS.map((t) => {
-        const isCapture = t.id === 'capture';
         const isActive = tab === t.id;
         return (
           <button
             key={t.id}
-            className={'tab' + (isActive ? ' active' : '') + (isCapture ? ' tab-capture' : '')}
+            className={'tab' + (isActive ? ' active' : '')}
             onClick={() => setTab(t.id)}
           >
             <span className="tab-ico">{t.icon}</span>

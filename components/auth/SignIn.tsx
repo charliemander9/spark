@@ -35,7 +35,9 @@ export function SignIn() {
   return (
     <div className="onb">
       <div className="onb-hero">
-        <div className="brand">Spark</div>
+        <div className="brand">
+          Good <span className="brand-bolt">⚡</span> Morning
+        </div>
         <div className="brand-flourish" />
 
         {step === 'email' ? (

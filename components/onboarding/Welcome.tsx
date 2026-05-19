@@ -6,14 +6,16 @@ export function Welcome() {
   const setScreen = useSpark((s) => s.setScreen);
   return (
     <div className="onb-hero">
-      <div className="brand">Spark</div>
+      <div className="brand">
+        Good <span className="brand-bolt">⚡</span> Morning
+      </div>
       <div className="brand-flourish" />
       <p
         className="lede"
-        style={{ marginTop: 18, maxWidth: 310, textAlign: 'center' }}
+        style={{ marginTop: 18, maxWidth: 320, textAlign: 'center' }}
       >
-        Find your spark. Seventy-five days of the habits you choose, held honest
-        by the people who show up with you.
+        GM. Seventy-five days, every morning, the habits you choose — held
+        honest by the people who show up with you.
       </p>
       <div style={{ flex: 1 }} />
       <button
@@ -21,13 +23,6 @@ export function Welcome() {
         onClick={() => setScreen('onb-challenge')}
       >
         Get Started
-      </button>
-      <button
-        className="btn btn-ghost btn-block"
-        style={{ marginTop: 6, fontSize: 12.5 }}
-        onClick={() => setScreen('onb-challenge')}
-      >
-        I already have an account
       </button>
     </div>
   );

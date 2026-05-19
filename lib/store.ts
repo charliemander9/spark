@@ -29,6 +29,9 @@ interface SparkState {
   diary: DiaryEntry[];
   newestDiaryId: string | null;
 
+  // Demo mode — extra fake friends/discover content layered in for showcase
+  demoMode: boolean;
+
   // Sheet state
   workoutSheetCourse: SlotKey | null;
   workoutPhotosTmp: Photo[];
@@ -61,6 +64,9 @@ interface SparkState {
 
   setDay75: (v: boolean) => void;
   beginAnother75: () => void;
+
+  loadDemo: () => void;
+  clearDemo: () => void;
 }
 
 function makeDefaultMenu(): Menu {
@@ -136,6 +142,7 @@ export const useSpark = create<SparkState>((set, get) => ({
   calendar: { ...defaultCalendar },
   diary: defaultDiary,
   newestDiaryId: null,
+  demoMode: false,
 
   workoutSheetCourse: null,
   workoutPhotosTmp: [],
@@ -317,4 +324,38 @@ export const useSpark = create<SparkState>((set, get) => ({
     day75Celebrate: false,
     tab: 'home',
   })),
+
+  loadDemo: () => set((st) => ({
+    demoMode: true,
+    diary: [
+      ...DEMO_DIARY,
+      ...st.diary.filter((d) => !d.id.startsWith('demo_')),
+    ],
+  })),
+
+  clearDemo: () => set((st) => ({
+    demoMode: false,
+    diary: st.diary.filter((d) => !d.id.startsWith('demo_')),
+  })),
 }));
+
+const DEMO_DIARY: DiaryEntry[] = [
+  { id:'demo_1', day:'F',  date:'May 16', type:'photo', isDaily: true,
+    bg:'linear-gradient(160deg,#1c3548 0%,#2d6a95 60%,#7AB6D8 100%)' },
+  { id:'demo_2', day:'Th', date:'May 15', type:'reflection',
+    body:'Long run before work. Lungs burned the first mile then the body remembered. There\'s a moment around minute 22 where it stops being a fight.' },
+  { id:'demo_3', day:'W',  date:'May 14', type:'video',
+    bg:'linear-gradient(160deg,#2e2a18 0%,#7c6c30 60%,#F5C842 100%)' },
+  { id:'demo_4', day:'T',  date:'May 13', type:'photo',
+    bg:'linear-gradient(160deg,#3a2818 0%,#a05c34 60%,#E8896F 100%)' },
+  { id:'demo_5', day:'M',  date:'May 12', type:'reflection',
+    body:'Restart week. Bed before 10. Two workouts, ten thousand steps. Boring on paper, less boring when I do it.' },
+  { id:'demo_6', day:'Su', date:'May 11', type:'photo',
+    bg:'linear-gradient(160deg,#1c2a18 0%,#3a5530 60%,#a0b08a 100%)' },
+  { id:'demo_7', day:'Sa', date:'May 10', type:'video',
+    bg:'linear-gradient(160deg,#2a1830 0%,#5a2a55 60%,#b04d9c 100%)' },
+  { id:'demo_8', day:'F',  date:'May 9',  type:'photo',
+    bg:'linear-gradient(160deg,#102838 0%,#1a5878 60%,#5fb0d4 100%)' },
+  { id:'demo_9', day:'Th', date:'May 8',  type:'reflection',
+    body:'Skipped the second workout. The day got away from me. Doing it tomorrow without making it a whole thing.' },
+];

@@ -7,19 +7,28 @@ import { gearSvg } from '@/lib/helpers';
 import { hasSupabase, supabase } from '@/lib/supabase';
 import { loadFriends, type FriendSummary } from '@/lib/friends';
 import { getUnreadNudges, markNudgesRead, sendNudge, type IncomingNudge } from '@/lib/nudges';
+import { DEMO_FRIENDS } from '@/lib/data';
 
 export function Friends() {
   const openSettings = useUi((s) => s.openSettings);
   const openInviteSheet = useUi((s) => s.openInviteSheet);
+  const demoMode = useSpark((s) => s.demoMode);
 
-  const [friends, setFriends] = useState<FriendSummary[]>([]);
+  const [realFriends, setRealFriends] = useState<FriendSummary[]>([]);
   const [nudges, setNudges] = useState<IncomingNudge[]>([]);
   const [loading, setLoading] = useState(hasSupabase);
   const [confirm, setConfirm] = useState<{ friendId: string; name: string } | null>(null);
 
+  const friends: FriendSummary[] = demoMode
+    ? [...realFriends, ...DEMO_FRIENDS.map((d) => ({
+        id: d.id, name: d.name, invite_code: '',
+        day: d.day, streak: d.streak, todayEntry: d.todayEntry,
+      } as FriendSummary))]
+    : realFriends;
+
   const refresh = async () => {
     const [list, incoming] = await Promise.all([loadFriends(), getUnreadNudges()]);
-    setFriends(list);
+    setRealFriends(list);
     setNudges(incoming);
     setLoading(false);
   };
@@ -49,6 +58,12 @@ export function Friends() {
 
   const sendCheer = async () => {
     if (!confirm) return;
+    // Demo friends aren't in the DB — pretend the cheer went out
+    if (confirm.friendId.startsWith('demo-')) {
+      setConfirm(null);
+      setTimeout(() => alert('Sent.'), 80);
+      return;
+    }
     const { error } = await sendNudge(confirm.friendId, 'Cheering you on today 🔥');
     setConfirm(null);
     if (error) setTimeout(() => alert(error), 80);

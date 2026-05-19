@@ -184,3 +184,46 @@ export interface FriendPostMock {
 }
 
 export const FRIENDS_FEED: FriendPostMock[] = [];
+
+// ============ DEMO DATA — loaded by Settings → Load demo data ============
+export interface DemoFriend {
+  id: string;
+  name: string;
+  day: number;
+  streak: number;
+  todayEntry: { type: 'photo' | 'journal'; body: string | null } | null;
+}
+
+export const DEMO_FRIENDS: DemoFriend[] = [
+  { id: 'demo-maya', name: 'Maya',  day: 47, streak: 47,
+    todayEntry: { type: 'journal', body: 'Outdoor run, beach loop, 5K under the rain. Felt amazing.' } },
+  { id: 'demo-jay',  name: 'Jay',   day: 22, streak: 14,
+    todayEntry: { type: 'photo',  body: null } },
+  { id: 'demo-sam',  name: 'Sam',   day: 61, streak: 61,
+    todayEntry: null },
+  { id: 'demo-rina', name: 'Rina',  day: 9,  streak: 9,
+    todayEntry: { type: 'journal', body: 'Day 9. Knees sore. Walking helped more than I thought.' } },
+];
+
+export interface DemoDiscover {
+  id: string;
+  name: string;
+  initials: string;
+  bio: string;
+  day: number;
+  streak: number;
+  avaGradient: string;
+}
+
+export const DEMO_DISCOVER: DemoDiscover[] = [
+  { id:'dd-1', name:'Theo R.',   initials:'TR', bio:'Recomp · two-a-days',           day: 41, streak: 41,
+    avaGradient: 'linear-gradient(160deg,#1c3548 0%,#2d6a95 60%,#7AB6D8 100%)' },
+  { id:'dd-2', name:'Lena T.',   initials:'LT', bio:'Endurance · half marathon',     day: 58, streak: 58,
+    avaGradient: 'linear-gradient(160deg,#3a2818 0%,#a05c34 60%,#E8896F 100%)' },
+  { id:'dd-3', name:'Diego P.',  initials:'DP', bio:'Strength · 75 Hard original',   day: 12, streak: 12,
+    avaGradient: 'linear-gradient(160deg,#2e2a18 0%,#7c6c30 60%,#F5C842 100%)' },
+  { id:'dd-4', name:'Ari B.',    initials:'AB', bio:'Recovery · sleep & water',      day: 30, streak: 30,
+    avaGradient: 'linear-gradient(160deg,#1c2a18 0%,#3a5530 60%,#a0b08a 100%)' },
+  { id:'dd-5', name:'Noor H.',   initials:'NH', bio:'Custom · climbing 3×/wk',       day: 5,  streak: 5,
+    avaGradient: 'linear-gradient(160deg,#2a1830 0%,#5a2a55 60%,#b04d9c 100%)' },
+];

@@ -33,7 +33,7 @@ if (!configured && typeof window !== 'undefined') {
     // Only log on the client — and only if the user actually set something.
     // eslint-disable-next-line no-console
     console.warn(
-      '[Spark] Supabase env vars look wrong. Expected URL like ' +
+      '[GM] Supabase env vars look wrong. Expected URL like ' +
         'https://xxxx.supabase.co and a separate anon key. Running in local mode.',
     );
   }

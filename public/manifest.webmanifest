@@ -1,7 +1,7 @@
 {
-  "name": "Spark",
-  "short_name": "Spark",
-  "description": "Find your spark. Seventy-five days of the habits you choose.",
+  "name": "Good Morning",
+  "short_name": "GM",
+  "description": "GM. Seventy-five days, every morning, the habits you choose.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

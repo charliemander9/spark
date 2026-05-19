@@ -1,22 +1,33 @@
-<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Spark — 75">
+<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Good Morning — GM">
   <!-- cream rounded square -->
   <rect width="1024" height="1024" rx="224" fill="#F4ECD6"/>
 
-  <!-- lightning bolt -->
-  <path d="M 640 80 L 340 540 L 480 540 L 380 944 L 700 460 L 560 460 L 740 80 Z"
+  <!-- soft sunrise glow behind -->
+  <defs>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.55">
+      <stop offset="0%"  stop-color="#FFB36B" stop-opacity="0.32"/>
+      <stop offset="65%" stop-color="#FFB36B" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <circle cx="512" cy="512" r="420" fill="url(#glow)"/>
+
+  <!-- big lightning bolt behind GM -->
+  <path d="M 640 80 L 300 552 L 470 552 L 370 944 L 740 460 L 570 460 L 760 80 Z"
         fill="#F5C842"/>
 
-  <!-- 75 with cream halo for legibility against the bolt -->
-  <text x="512" y="555"
-        text-anchor="middle"
-        dominant-baseline="central"
-        font-family="'Fraunces', 'Times New Roman', Georgia, serif"
-        font-style="italic"
-        font-size="460"
-        font-weight="700"
-        stroke="#FCF7E8"
-        stroke-width="56"
-        paint-order="stroke fill"
-        fill="#1E6091"
-        letter-spacing="-10">75</text>
+  <!-- coral spark dot -->
+  <circle cx="800" cy="138" r="30" fill="#FF6B47"/>
+
+  <!-- G on left, M on right — explicit positions so kerning is consistent -->
+  <g font-family="'Helvetica Neue', Helvetica, 'Arial Black', Arial, sans-serif"
+     font-size="380"
+     font-weight="900"
+     font-style="italic"
+     stroke="#FCF7E8"
+     stroke-width="40"
+     paint-order="stroke fill"
+     fill="#1E6091">
+    <text x="260" y="568" dominant-baseline="central">G</text>
+    <text x="608" y="568" dominant-baseline="central">M</text>
+  </g>
 </svg>

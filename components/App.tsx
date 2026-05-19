@@ -9,11 +9,10 @@ import { OnboardingFlow } from './OnboardingFlow';
 import { TabBar } from './TabBar';
 import { Home } from './tabs/Home';
 import { Discover } from './tabs/Discover';
-import { Capture } from './tabs/Capture';
+import { Journal } from './tabs/Journal';
 import { Friends } from './tabs/Friends';
 import { Profile } from './tabs/Profile';
 import { Day75 } from './Day75';
-import { DailyGate } from './DailyGate';
 import { SignIn } from './auth/SignIn';
 import { SettingsSheet } from './sheets/SettingsSheet';
 import { WorkoutSheet } from './sheets/WorkoutSheet';
@@ -27,8 +26,8 @@ export function App() {
   const screen = useSpark((s) => s.screen);
   const tab = useSpark((s) => s.tab);
   const day75 = useSpark((s) => s.day75Celebrate);
-  const dailyEntry = useSpark((s) => s.user.dailyEntry);
   const setUser = useSpark((s) => s.setUser);
+  const setScreen = useSpark((s) => s.setScreen);
 
   const [authState, setAuthState] = useState<AuthState>(
     hasSupabase ? 'loading' : 'signedIn',
@@ -50,6 +49,9 @@ export function App() {
           preset: profile.preset,
         });
       }
+      // Returning users with a Supabase profile skip onboarding. They can re-run
+      // it from Settings → "Restart setup" if they want.
+      setScreen('app');
     };
 
     // Initial session
@@ -75,16 +77,17 @@ export function App() {
     return () => {
       data.subscription.unsubscribe();
     };
-  }, [setUser]);
+  }, [setUser, setScreen]);
 
   const inOnboarding = screen.startsWith('onb-');
-  const gated = !inOnboarding && !day75 && !dailyEntry;
 
   if (authState === 'loading') {
     return (
       <PhoneFrame>
         <div className="onb-hero" style={{ justifyContent: 'center' }}>
-          <div className="brand" style={{ opacity: 0.6 }}>Spark</div>
+          <div className="brand" style={{ opacity: 0.6 }}>
+            Good <span className="brand-bolt">⚡</span> Morning
+          </div>
         </div>
       </PhoneFrame>
     );
@@ -108,13 +111,12 @@ export function App() {
         <>
           {tab === 'home' && <Home />}
           {tab === 'discover' && <Discover />}
-          {tab === 'capture' && <Capture />}
+          {tab === 'journal' && <Journal />}
           {tab === 'friends' && <Friends />}
           {tab === 'foryou' && <Profile />}
         </>
       )}
-      {gated && <DailyGate />}
-      {!inOnboarding && !day75 && !gated && <TabBar />}
+      {!inOnboarding && !day75 && <TabBar />}
       <SettingsSheet />
       <WorkoutSheet />
       <NumericSheet />
