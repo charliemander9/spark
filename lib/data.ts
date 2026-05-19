@@ -116,11 +116,6 @@ export const PRESETS: Record<string, Preset> = {
       { cat: 'water', label: '80 oz Water',  config: { goal: 80 } },
     ],
   },
-  custom: {
-    label: 'Build my own',
-    desc: 'Pick any three from the catalog.',
-    slots: null,
-  },
 };
 
 export const DAILY_QUOTES = [
