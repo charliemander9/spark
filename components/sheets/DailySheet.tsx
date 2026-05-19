@@ -56,27 +56,16 @@ export function DailySheet() {
 
   const save = async () => {
     const text = caption.trim();
-    // Now we require at least ONE of photo or caption — either unlocks the day.
+    // Need at least one — photo or caption.
     if (photos.length === 0 && !text) {
       alert('Add a photo or write something — one is enough.');
       return;
     }
     setBusy(true);
 
-    // Type goes to DB. If they have a photo, type = photo; otherwise journal.
     const dbType: 'photo' | 'journal' = photos.length > 0 ? 'photo' : 'journal';
-    const { error } = await saveDailyEntryToDb(
-      dbType,
-      text || null,
-      photos.map((p) => p.bg),
-    );
-    if (error) {
-      setBusy(false);
-      alert('Could not save: ' + error);
-      return;
-    }
 
-    // Local mirror — single entry holds both the photo(s) and the caption.
+    // UNLOCK LOCALLY FIRST — don't let DB issues block the user.
     const d = new Date();
     const days = ['Su', 'M', 'T', 'W', 'Th', 'F', 'Sa'];
     const id = 'daily_' + Date.now();
@@ -108,6 +97,17 @@ export function DailySheet() {
     setCaption('');
     setBusy(false);
     close();
+
+    // Best-effort DB sync — fire-and-forget. If it fails, we log but the user
+    // is already unlocked and the entry is saved locally.
+    saveDailyEntryToDb(dbType, text || null, photos.map((p) => p.bg)).then(
+      ({ error }) => {
+        if (error) {
+          // eslint-disable-next-line no-console
+          console.warn('[GM] daily entry sync failed:', error);
+        }
+      },
+    );
   };
 
   if (!open) return null;

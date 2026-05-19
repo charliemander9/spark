@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSpark } from '@/lib/store';
 import { supabase, hasSupabase } from '@/lib/supabase';
 import { loadProfile } from '@/lib/profile';
+import { fetchTodayEntry } from '@/lib/dailyEntry';
 import { PhoneFrame } from './PhoneFrame';
 import { OnboardingFlow } from './OnboardingFlow';
 import { TabBar } from './TabBar';
@@ -28,6 +29,7 @@ export function App() {
   const day75 = useSpark((s) => s.day75Celebrate);
   const setUser = useSpark((s) => s.setUser);
   const setScreen = useSpark((s) => s.setScreen);
+  const setDailyEntry = useSpark((s) => s.setDailyEntry);
 
   const [authState, setAuthState] = useState<AuthState>(
     hasSupabase ? 'loading' : 'signedIn',
@@ -48,8 +50,12 @@ export function App() {
           freezes: profile.freezes,
           preset: profile.preset,
         });
+        // Re-check today's entry so reloads/re-opens stay unlocked.
+        const today = await fetchTodayEntry(userId);
+        if (today) {
+          setDailyEntry({ type: today.type, savedAt: Date.now() });
+        }
         // New users — first sign-in, no onboarding yet — see the setup flow.
-        // Existing users skip straight to the app.
         if (profile.onboarded) {
           setScreen('app');
         } else {
@@ -83,7 +89,7 @@ export function App() {
     return () => {
       data.subscription.unsubscribe();
     };
-  }, [setUser, setScreen]);
+  }, [setUser, setScreen, setDailyEntry]);
 
   const inOnboarding = screen.startsWith('onb-');
 

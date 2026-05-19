@@ -28,3 +28,19 @@ export async function saveDailyEntryToDb(
 
   return error ? { error: error.message } : {};
 }
+
+// Read whether the signed-in user has already posted today's entry. Used to
+// rehydrate the dailyEntry flag on app load so they stay unlocked.
+export async function fetchTodayEntry(
+  userId: string,
+): Promise<{ type: 'photo' | 'journal'; body: string | null; photo_urls: string[] } | null> {
+  if (!supabase) return null;
+  const today = new Date().toISOString().slice(0, 10);
+  const { data } = await supabase
+    .from('daily_entries')
+    .select('type, body, photo_urls')
+    .eq('user_id', userId)
+    .eq('entry_date', today)
+    .maybeSingle();
+  return (data as any) ?? null;
+}
