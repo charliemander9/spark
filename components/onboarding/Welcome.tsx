@@ -46,7 +46,7 @@ export function Welcome() {
       <div style={{ flex: 1 }} />
       <button
         className="btn btn-accent btn-lg btn-block"
-        onClick={() => setScreen('onb-challenge')}
+        onClick={() => setScreen('onb-name')}
       >
         Let&apos;s go
       </button>

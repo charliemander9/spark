@@ -175,7 +175,7 @@ export const TONE_COPY = {
   },
 };
 
-export const ONB_ORDER = ['onb-welcome', 'onb-challenge', 'onb-privacy', 'onb-buddies'] as const;
+export const ONB_ORDER = ['onb-welcome', 'onb-name', 'onb-challenge', 'onb-privacy', 'onb-buddies'] as const;
 
 export const SUGGESTED_FOLLOWS = [
   { name: 'Maya G.', initials: 'MG', sub: 'Building habits · 47 day streak' },
