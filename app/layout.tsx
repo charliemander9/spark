@@ -2,13 +2,13 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Good Morning',
+  title: 'GOODMORNING',
   description: 'GM. Seventy-five days, every morning, the habits you choose — held honest by the people who show up with you.',
   manifest: '/manifest.webmanifest',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'GM',
+    title: 'GOODMORNING',
   },
   icons: {
     icon: [

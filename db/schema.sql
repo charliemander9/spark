@@ -8,7 +8,7 @@
 
 create table if not exists public.profiles (
   id           uuid references auth.users on delete cascade primary key,
-  email        text not null,
+  email        text,                       -- nullable: anonymous users have no email
   name         text not null,
   created_at   timestamptz default now() not null,
 
@@ -128,10 +128,11 @@ begin
   insert into public.profiles (id, email, name)
   values (
     new.id,
-    new.email,
+    new.email,                                                -- may be NULL for anon
     coalesce(
       new.raw_user_meta_data->>'name',
-      split_part(new.email, '@', 1)
+      nullif(split_part(coalesce(new.email,''), '@', 1), ''),
+      'Friend'                                                -- fallback for anon
     )
   );
   return new;
