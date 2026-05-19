@@ -215,8 +215,35 @@ export function SettingsSheet() {
           </div>
         )}
 
+        <div className="set-row" style={{ background: 'transparent', borderTop: '1px dashed var(--border-2)' }}>
+          <div className="body">
+            <b style={{ fontSize: 13, color: 'var(--muted)' }}>Build</b>
+            <small style={{ fontFamily: "'Inter',monospace", fontSize: 11.5, color: 'var(--ink-3)' }}>
+              {formatBuildTime(process.env.NEXT_PUBLIC_BUILD_TIME)}
+              {' · '}
+              <span style={{ fontFamily: 'monospace' }}>{process.env.NEXT_PUBLIC_GIT_SHA || 'local'}</span>
+            </small>
+          </div>
+        </div>
+
         <div style={{ height: 30 }} />
       </div>
     </>
   );
+}
+
+function formatBuildTime(iso: string | undefined): string {
+  if (!iso) return 'unknown';
+  try {
+    const d = new Date(iso);
+    return d.toLocaleString(undefined, {
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    });
+  } catch {
+    return iso;
+  }
 }

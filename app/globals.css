@@ -12,16 +12,24 @@
   min-height: 84px;
 }
 
-/* On real phones (narrow viewport) anchor the tab bar to the actual viewport,
+/* On real phones (any size) anchor the tab bar to the actual viewport,
    not the .phone container — fixes the bug where the bar floated mid-screen
-   on iOS PWA when address bar showed/hid. Desktop preview still uses absolute
-   so the bar stays inside the fake phone frame. */
-@media (max-width: 430px) {
+   on iOS PWA. Bumped breakpoint to 768px + coarse-pointer (any touch device)
+   to catch iPhone Plus/Pro Max widths too. Desktop preview still uses absolute. */
+@media (max-width: 768px), (pointer: coarse) {
   .tabbar {
     position: fixed !important;
     bottom: 0 !important;
     left: 0 !important;
     right: 0 !important;
+  }
+  body { padding: 0 !important; }
+  .phone {
+    width: 100% !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
   }
 }
 
