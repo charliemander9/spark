@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useSpark } from '@/lib/store';
 import { useUi } from '@/lib/storeActions';
+import { Media } from '../Media';
 import type { Photo, WorkoutDetails } from '@/lib/types';
 
 export function WorkoutSheet() {
@@ -96,34 +97,22 @@ export function WorkoutSheet() {
               const m = p.bg.match(/url\("?([^"]+)"?\)/);
               const rawUrl = m ? m[1] : null;
               return (
-              <div
-                key={i}
-                className="photo-tile"
-                style={p.type === 'video' ? undefined : { backgroundImage: p.bg }}
-              >
-                {p.type === 'video' && rawUrl && (
-                  <>
-                    <video
-                      src={rawUrl}
-                      muted
-                      playsInline
-                      preload="metadata"
-                      className="photo-tile-video"
-                    />
+                <div key={i} className="photo-tile">
+                  <Media bg={p.bg} isVideo={p.type === 'video'} />
+                  {p.type === 'video' && (
                     <div className="photo-video-badge">▶</div>
-                  </>
-                )}
-                <button
-                  className="photo-remove"
-                  onClick={() => {
-                    if (rawUrl && rawUrl.startsWith('blob:'))
-                      URL.revokeObjectURL(rawUrl);
-                    setPhotos(photos.filter((_, j) => j !== i));
-                  }}
-                >
-                  ×
-                </button>
-              </div>
+                  )}
+                  <button
+                    className="photo-remove"
+                    onClick={() => {
+                      if (rawUrl && rawUrl.startsWith('blob:'))
+                        URL.revokeObjectURL(rawUrl);
+                      setPhotos(photos.filter((_, j) => j !== i));
+                    }}
+                  >
+                    ×
+                  </button>
+                </div>
               );
             })}
             {photos.length < 5 && (

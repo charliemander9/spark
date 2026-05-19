@@ -1,16 +1,19 @@
 'use client';
 
+import { useState } from 'react';
 import { useSparkActions, useUi } from '@/lib/storeActions';
 import { useSpark } from '@/lib/store';
 import { dailyQuote, greeting, gearSvg, todayLabel } from '@/lib/helpers';
 import { TONE_COPY } from '@/lib/data';
 import type { DiaryEntry } from '@/lib/types';
 import { CourseCard } from '../CourseCard';
+import { Media } from '../Media';
 
 export function Home() {
   const user = useSpark((s) => s.user);
   const diary = useSpark((s) => s.diary);
   const menu = useSpark((s) => s.menu);
+  const useFreeze = useSpark((s) => s.useFreeze);
   const tone = TONE_COPY[user.tone];
   const [g, name] = greeting(user.name);
   const openSettings = useSparkActions('openSettings');
@@ -19,6 +22,8 @@ export function Home() {
   const hasEntry = !!user.dailyEntry;
   // Find today's entry (most-recent isDaily diary item, if any)
   const todayEntry = diary.find((d) => d.isDaily);
+
+  const [freezePromptOpen, setFreezePromptOpen] = useState(false);
 
   return (
     <>
@@ -32,7 +37,13 @@ export function Home() {
             <span className="n">{user.streak}</span>
             <span className="lbl">days</span>
             {user.freezes > 0 && (
-              <span className="freezes">❄️ {user.freezes}</span>
+              <button
+                className="freezes"
+                onClick={() => setFreezePromptOpen(true)}
+                title="Use a freeze"
+              >
+                ❄️ {user.freezes}
+              </button>
             )}
           </div>
           <button
@@ -88,6 +99,45 @@ export function Home() {
       {menu.map((_, i) => (
         <CourseCard key={i} slot={i} />
       ))}
+
+      {freezePromptOpen && (
+        <div
+          className="modal-bd open"
+          onClick={() => setFreezePromptOpen(false)}
+        >
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div style={{ fontSize: 40, textAlign: 'center', marginBottom: 6 }}>
+              ❄️
+            </div>
+            <h3>
+              <em>Use a freeze?</em>
+            </h3>
+            <p>
+              You have <b>{user.freezes}</b>{' '}
+              {user.freezes === 1 ? 'freeze' : 'freezes'} left this month.
+              Use one to cover today without breaking your streak — your
+              check-ins reset tomorrow.
+            </p>
+            <div className="row">
+              <button
+                className="btn btn-secondary"
+                onClick={() => setFreezePromptOpen(false)}
+              >
+                Not yet
+              </button>
+              <button
+                className="btn btn-accent"
+                onClick={() => {
+                  useFreeze();
+                  setFreezePromptOpen(false);
+                }}
+              >
+                Use one
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
@@ -96,36 +146,9 @@ function DSThumb({ entry }: { entry: DiaryEntry | undefined }) {
   if (!entry) return <div className="ds-thumb journal">✎</div>;
   if (entry.type === 'reflection' || !entry.bg)
     return <div className="ds-thumb journal">✎</div>;
-  const m = entry.bg.match(/url\("?([^"]+)"?\)/);
-  const rawUrl = m ? m[1] : null;
-  const isRealVideo =
-    entry.type === 'video' && rawUrl && rawUrl.startsWith('blob:');
-  if (isRealVideo) {
-    return (
-      <div className="ds-thumb video">
-        <video
-          src={rawUrl!}
-          muted
-          playsInline
-          preload="metadata"
-          style={{
-            position: 'absolute',
-            inset: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            borderRadius: 12,
-          }}
-        />
-        <div className="ds-play" />
-      </div>
-    );
-  }
   return (
-    <div
-      className={'ds-thumb' + (entry.type === 'video' ? ' video' : '')}
-      style={{ backgroundImage: entry.bg }}
-    >
+    <div className={'ds-thumb' + (entry.type === 'video' ? ' video' : '')}>
+      <Media bg={entry.bg} isVideo={entry.type === 'video'} />
       {entry.type === 'video' && <div className="ds-play" />}
     </div>
   );

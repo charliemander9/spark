@@ -53,7 +53,7 @@ export function Calendar() {
           if (isToday) cls.push('today');
           return (
             <div key={i} className={cls.join(' ')}>
-              <RingSvg data={data} colors={colors} />
+              <TallySvg data={data} colors={colors} />
               <div className="cal-day-num">{d}</div>
             </div>
           );
@@ -70,52 +70,61 @@ export function Calendar() {
   );
 }
 
-function RingSvg({
+/**
+ * Tally mark renderer — vertical lines for each completed check-in, with the
+ * 5th tally drawn as a diagonal strike across the previous four. Each line
+ * uses the matching slot's category color.
+ */
+function TallySvg({
   data,
   colors,
 }: {
   data: CalendarDay | undefined;
   colors: string[];
 }) {
+  const flags = data?.done ?? [];
+  const done = flags.slice(0, 5);          // cap visual at 5
+  const lineCount = Math.min(done.filter(Boolean).length, 5);
+
+  // Layout: 4 vertical lines + optional diagonal strike for the 5th
+  // viewBox 32x32. Vertical lines sit at x = 6, 12, 18, 24.
+  const xs = [6, 12, 18, 24];
+  const yTop = 7;
+  const yBot = 25;
   const sw = 2.2;
-  const c = 16;
-  const n = colors.length;
-  // Generate concentric radii from outside in. Outermost ring sits at r=11
-  // (matches the original 3-slot look); shrink the gap for more slots.
-  const outerR = 11;
-  const gap = n > 1 ? Math.min(3.5, (outerR - 2) / Math.max(1, n - 1)) : 0;
-  const radii = Array.from({ length: n }, (_, i) => outerR - i * gap);
-  const flags = data?.done && data.done.length === n
-    ? data.done
-    : Array.from({ length: n }, () => false);
+
+  // Determine which slot colors to use for visible lines (the first N true ones)
+  const visibleSlotIndexes: number[] = [];
+  done.forEach((flag, i) => {
+    if (flag) visibleSlotIndexes.push(i);
+  });
+  const slotsForLines = visibleSlotIndexes.slice(0, Math.min(lineCount, 4));
+  const fifthSlotIdx = visibleSlotIndexes[4]; // may be undefined
 
   return (
-    <svg className="cal-ring-svg" viewBox="0 0 32 32">
-      {radii.map((r, i) => (
-        <circle
-          key={'bg' + i}
-          cx={c}
-          cy={c}
-          r={r}
-          stroke={colors[i]}
+    <svg className="cal-tally-svg" viewBox="0 0 32 32">
+      {slotsForLines.map((slotIdx, i) => (
+        <line
+          key={'tally' + i}
+          x1={xs[i]}
+          y1={yTop}
+          x2={xs[i]}
+          y2={yBot}
+          stroke={colors[slotIdx] || 'var(--ink-3)'}
           strokeWidth={sw}
-          fill="none"
-          opacity={0.18}
+          strokeLinecap="round"
         />
       ))}
-      {radii.map((r, i) =>
-        flags[i] ? (
-          <circle
-            key={'fg' + i}
-            cx={c}
-            cy={c}
-            r={r}
-            stroke={colors[i]}
-            strokeWidth={sw}
-            fill="none"
-            strokeLinecap="round"
-          />
-        ) : null,
+      {fifthSlotIdx !== undefined && (
+        <line
+          x1={3}
+          y1={yBot - 1}
+          x2={27}
+          y2={yTop + 1}
+          stroke={colors[fifthSlotIdx] || 'var(--ink-3)'}
+          strokeWidth={sw}
+          strokeLinecap="round"
+        />
       )}
     </svg>
   );

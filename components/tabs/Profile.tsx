@@ -6,6 +6,7 @@ import { useUi } from '@/lib/storeActions';
 import { gearSvg } from '@/lib/helpers';
 import { updateProfile } from '@/lib/profile';
 import { hasSupabase } from '@/lib/supabase';
+import { Media } from '../Media';
 import type { DiaryEntry } from '@/lib/types';
 
 type ProfileTab = 'all' | 'photos' | 'journal';
@@ -242,59 +243,35 @@ export function Profile() {
         </div>
       ) : (
         <div className="prof-grid">
-          {filtered.map((d) => {
-            const m = d.bg?.match(/url\("?([^"]+)"?\)/);
-            const rawUrl = m ? m[1] : null;
-            const isRealVideo =
-              d.type === 'video' && rawUrl && rawUrl.startsWith('blob:');
-            return (
-              <div
-                key={d.id}
-                className={'prof-tile ' + d.type + (d.id === newestId ? ' new' : '')}
-                style={
-                  d.type === 'reflection' || isRealVideo
-                    ? undefined
-                    : { backgroundImage: d.bg }
-                }
-                onClick={() =>
-                  openViewer({
-                    authorName: user.name,
-                    authorInitials: (user.name[0] || '?').toUpperCase(),
-                    when: `${d.day} · ${d.date}`,
-                    bg: d.bg,
-                    isVideo: d.type === 'video',
-                    isJournal: d.type === 'reflection',
-                    body: d.body,
-                    day: user.day,
-                    streak: user.streak,
-                  })
-                }
-              >
-                {isRealVideo && (
-                  <video
-                    src={rawUrl!}
-                    muted
-                    playsInline
-                    preload="metadata"
-                    style={{
-                      position: 'absolute',
-                      inset: 0,
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'cover',
-                    }}
-                  />
-                )}
-                {d.type === 'reflection' && (
-                  <div className="pt-body">{d.body}</div>
-                )}
-                {d.type === 'video' && <div className="pt-play" />}
-                {d.photos && d.photos.length > 1 && (
-                  <div className="pt-multi">⊞ {d.photos.length}</div>
-                )}
-              </div>
-            );
-          })}
+          {filtered.map((d) => (
+            <div
+              key={d.id}
+              className={'prof-tile ' + d.type + (d.id === newestId ? ' new' : '')}
+              onClick={() =>
+                openViewer({
+                  authorName: user.name,
+                  authorInitials: (user.name[0] || '?').toUpperCase(),
+                  when: `${d.day} · ${d.date}`,
+                  bg: d.bg,
+                  isVideo: d.type === 'video',
+                  isJournal: d.type === 'reflection',
+                  body: d.body,
+                  day: user.day,
+                  streak: user.streak,
+                })
+              }
+            >
+              {d.type === 'reflection' ? (
+                <div className="pt-body">{d.body}</div>
+              ) : (
+                <Media bg={d.bg} isVideo={d.type === 'video'} />
+              )}
+              {d.type === 'video' && <div className="pt-play" />}
+              {d.photos && d.photos.length > 1 && (
+                <div className="pt-multi">⊞ {d.photos.length}</div>
+              )}
+            </div>
+          ))}
         </div>
       )}
       <div style={{ height: 20 }} />

@@ -17,7 +17,7 @@ export function ChallengePicker() {
         Choose your <em>75</em>
       </h1>
       <p className="lede">
-        Build your own (recommended 3 check-ins — but you can do 1 to 6) or
+        Build your own (recommended 3 check-ins — but you can do 1 to 5) or
         pick a starting point below. Change anytime in Settings.
       </p>
 

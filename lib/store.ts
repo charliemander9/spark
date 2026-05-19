@@ -237,7 +237,7 @@ export const useSpark = create<SparkState>((set, get) => ({
   }),
 
   addCustomSlot: () => set((st) => {
-    if (st.customDraft.length >= 6) return st;
+    if (st.customDraft.length >= 5) return st;
     return {
       customDraft: [
         ...st.customDraft,
@@ -318,18 +318,34 @@ export const useSpark = create<SparkState>((set, get) => ({
     tab: 'home',
   })),
 
-  loadDemo: () => set((st) => ({
-    demoMode: true,
-    diary: [
-      ...DEMO_DIARY,
-      ...st.diary.filter((d) => !d.id.startsWith('demo_')),
-    ],
-  })),
+  loadDemo: () => set((st) => {
+    // Fake-complete days 1-6 so the calendar shows progress for today=day 7.
+    const slots = st.menu.length || 3;
+    const completedDays: Record<number, CalendarDay> = {};
+    for (let d = 1; d <= 6; d++) {
+      completedDays[d] = { done: Array.from({ length: slots }, () => true) };
+    }
+    return {
+      demoMode: true,
+      user: { ...st.user, day: 7, streak: 7 },
+      diary: [
+        ...DEMO_DIARY,
+        ...st.diary.filter((d) => !d.id.startsWith('demo_')),
+      ],
+      calendar: { ...st.calendar, ...completedDays },
+    };
+  }),
 
-  clearDemo: () => set((st) => ({
-    demoMode: false,
-    diary: st.diary.filter((d) => !d.id.startsWith('demo_')),
-  })),
+  clearDemo: () => set((st) => {
+    // Clear demo-injected calendar days (1-6) too
+    const cal = { ...st.calendar };
+    for (let d = 1; d <= 6; d++) delete cal[d];
+    return {
+      demoMode: false,
+      diary: st.diary.filter((d) => !d.id.startsWith('demo_')),
+      calendar: cal,
+    };
+  }),
 }));
 
 const DEMO_DIARY: DiaryEntry[] = [

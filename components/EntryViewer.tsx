@@ -1,6 +1,7 @@
 'use client';
 
 import { useUi } from '@/lib/storeActions';
+import { Media } from './Media';
 
 /**
  * Fullscreen Instagram-style viewer that pops over the app when the user taps
@@ -11,10 +12,6 @@ export function EntryViewer() {
   const close = useUi((s) => s.closeViewer);
 
   if (!entry) return null;
-
-  const m = entry.bg?.match(/url\("?([^"]+)"?\)/);
-  const rawUrl = m ? m[1] : null;
-  const isRealVideo = entry.isVideo && rawUrl && rawUrl.startsWith('blob:');
 
   return (
     <div className="ev-bd" onClick={close}>
@@ -47,31 +44,16 @@ export function EntryViewer() {
             <div className="ev-quote">&ldquo;</div>
             <p>{entry.body}</p>
           </div>
-        ) : isRealVideo ? (
-          <div className="ev-media">
-            <video
-              src={rawUrl!}
-              controls
-              autoPlay
-              playsInline
-              muted
-              className="ev-video"
-            />
-          </div>
         ) : (
           <div className="ev-media">
-            <div
-              className="ev-photo"
-              style={{ backgroundImage: entry.bg || 'var(--surface-2)' }}
-            >
-              {entry.isVideo && (
-                <div className="ev-play-overlay">
-                  <svg viewBox="0 0 24 24" width={48} height={48} fill="white">
-                    <path d="M8 5v14l11-7L8 5z" />
-                  </svg>
-                </div>
-              )}
-            </div>
+            <Media bg={entry.bg} isVideo={entry.isVideo} />
+            {entry.isVideo && (
+              <div className="ev-play-overlay">
+                <svg viewBox="0 0 24 24" width={48} height={48} fill="white">
+                  <path d="M8 5v14l11-7L8 5z" />
+                </svg>
+              </div>
+            )}
           </div>
         )}
 

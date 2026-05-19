@@ -8,6 +8,7 @@ import { hasSupabase, supabase } from '@/lib/supabase';
 import { loadFriends, type FriendSummary } from '@/lib/friends';
 import { getUnreadNudges, markNudgesRead, sendNudge, type IncomingNudge } from '@/lib/nudges';
 import { DEMO_FRIENDS } from '@/lib/data';
+import { Media } from '../Media';
 
 interface FeedItem {
   id: string;
@@ -174,6 +175,12 @@ export function Friends() {
         <h1>Today</h1>
       </div>
 
+      {/* Always-visible add-a-friend CTA */}
+      <button className="add-friend-cta" onClick={openInviteSheet}>
+        <span className="afc-plus">+</span>
+        <span className="afc-label">Add a friend</span>
+      </button>
+
       {nudges.length > 0 && (
         <div className="nudge-banner">
           <div className="nb-body">
@@ -333,25 +340,9 @@ export function Friends() {
  *  - demo "video" (gradient + play overlay)
  */
 function BPPhoto({ bg, isVideo }: { bg: string; isVideo?: boolean }) {
-  const m = bg.match(/url\("?([^"]+)"?\)/);
-  const rawUrl = m ? m[1] : null;
-  const isRealVideo = isVideo && rawUrl && rawUrl.startsWith('blob:');
-
-  if (isRealVideo) {
-    return (
-      <div className="bp-photo bp-photo-video">
-        <video src={rawUrl!} muted playsInline preload="metadata" />
-        <div className="bp-play-overlay">
-          <svg viewBox="0 0 24 24" width={26} height={26} fill="white">
-            <path d="M8 5v14l11-7L8 5z" />
-          </svg>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="bp-photo" style={{ backgroundImage: bg }}>
+    <div className="bp-photo">
+      <Media bg={bg} isVideo={isVideo} />
       {isVideo && (
         <div className="bp-play-overlay">
           <svg viewBox="0 0 24 24" width={26} height={26} fill="white">

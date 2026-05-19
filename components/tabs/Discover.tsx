@@ -5,6 +5,7 @@ import { useSpark } from '@/lib/store';
 import { useUi } from '@/lib/storeActions';
 import { gearSvg } from '@/lib/helpers';
 import { DEMO_DISCOVER, DISCOVER_FILTERS } from '@/lib/data';
+import { Media } from '../Media';
 
 export function Discover() {
   const openSettings = useUi((s) => s.openSettings);
@@ -89,7 +90,6 @@ export function Discover() {
             <div
               key={p.id}
               className={'explore-tile' + (i % 7 === 1 ? ' tall' : '')}
-              style={{ backgroundImage: p.bg }}
               onClick={() =>
                 openViewer({
                   authorName: p.name,
@@ -103,6 +103,7 @@ export function Discover() {
                 })
               }
             >
+              <Media bg={p.bg} isVideo={p.isVideo} />
               {p.isVideo && (
                 <div className="et-play">
                   <svg viewBox="0 0 24 24" width={14} height={14} fill="white">

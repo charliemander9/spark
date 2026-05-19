@@ -7,13 +7,13 @@ import type { CategoryId } from '@/lib/types';
 
 /**
  * Inline variable-slot builder shown inside the "Build my own" preset card.
- * Users can add/remove slots (1–6). App recommends 3.
+ * Users can add/remove slots (1–5). App recommends 3.
  */
 export function CustomBuilder() {
   const customDraft = useSpark((s) => s.customDraft);
   const addCustomSlot = useSpark((s) => s.addCustomSlot);
   const removeCustomSlot = useSpark((s) => s.removeCustomSlot);
-  const canAdd = customDraft.length < 6;
+  const canAdd = customDraft.length < 5;
   const canRemove = customDraft.length > 1;
 
   return (

@@ -2197,6 +2197,43 @@ p { line-height: 1.55; color: var(--ink-3); font-size: 14.5px; }
   text-shadow: 0 1px 2px rgba(0,0,0,0.5);
 }
 
+/* ============ FRIENDS — Add a Friend CTA ============ */
+.add-friend-cta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: calc(100% - 44px);
+  margin: 0 22px 16px;
+  padding: 12px 16px;
+  background: var(--surface);
+  border: 1.5px dashed var(--border-2);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: transform .07s, background .15s, border-color .15s;
+}
+.add-friend-cta:active {
+  transform: scale(0.99);
+  background: var(--surface-2);
+  border-color: var(--terracotta);
+}
+.afc-plus {
+  width: 32px; height: 32px;
+  background: var(--terracotta);
+  color: var(--bg-2);
+  border-radius: 50%;
+  display: grid; place-items: center;
+  font-size: 20px;
+  font-weight: 300;
+  line-height: 0;
+  flex-shrink: 0;
+}
+.afc-label {
+  font-family: 'Fraunces', serif;
+  font-size: 15.5px;
+  font-weight: 500;
+  color: var(--ink);
+}
+
 /* ============ FRIENDS — BeReal-style feed ============ */
 .bereal-feed {
   display: flex;
@@ -3495,10 +3532,11 @@ p { line-height: 1.55; color: var(--ink-3); font-size: 14.5px; }
   color: var(--terracotta);
   font-weight: 700;
 }
-.cal-ring-svg {
+.cal-ring-svg,
+.cal-tally-svg {
   display: block;
-  width: 68%;
-  max-width: 24px;
+  width: 70%;
+  max-width: 26px;
   aspect-ratio: 1;
   height: auto;
   margin: 0 auto;
