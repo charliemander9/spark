@@ -56,6 +56,7 @@ interface SparkState {
   saveWorkoutDetails: (key: SlotKey, details: WorkoutDetails) => void;
 
   setDailyEntry: (entry: User['dailyEntry']) => void;
+  useFreeze: () => void;
   pushDiary: (e: DiaryEntry) => void;
 
   setDay75: (v: boolean) => void;
@@ -121,6 +122,7 @@ export const useSpark = create<SparkState>((set, get) => ({
     follows: [],
     streak: 13,
     day: 13,
+    freezes: 2,
     preset: '75-hard-lite',
     dailyEntry: null,
     strict: true,
@@ -288,6 +290,18 @@ export const useSpark = create<SparkState>((set, get) => ({
   }),
 
   setDailyEntry: (entry) => set((st) => ({ user: { ...st.user, dailyEntry: entry } })),
+
+  // Streak freeze — uses one freeze, marks today as covered without requiring a real entry
+  useFreeze: () => set((st) => {
+    if (st.user.freezes <= 0) return st;
+    return {
+      user: {
+        ...st.user,
+        freezes: st.user.freezes - 1,
+        dailyEntry: { type: 'photo', savedAt: Date.now() },
+      },
+    };
+  }),
 
   pushDiary: (e) => set((st) => ({
     diary: [e, ...st.diary],

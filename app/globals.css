@@ -1,4 +1,163 @@
 /* Spark — ported from HTML prototype, expanded with Next.js niceties */
+
+/* ============ PUSH 4 — fixes & additions ============ */
+
+/* Onboarding sticky-bottom button was clipping last bit of scrolled content */
+.onb-q { padding-bottom: 100px; }
+
+/* iPhone home-indicator safe area for the bottom tab bar */
+.tabbar {
+  padding-bottom: max(24px, env(safe-area-inset-bottom)) !important;
+  height: auto !important;
+  min-height: 84px;
+}
+
+/* Streak pill — show a freeze count next to the flame */
+.streak-pill .freezes {
+  color: var(--clay);
+  font-weight: 600;
+  border-left: 1px solid var(--border-2);
+  padding-left: 7px;
+  margin-left: 4px;
+}
+
+/* Fullscreen daily-entry gate takeover */
+.daily-gate-screen {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(140% 80% at 50% 10%, rgba(255,255,255,0.08) 0%, transparent 60%),
+    linear-gradient(180deg, var(--terracotta) 0%, var(--clay) 100%);
+  z-index: 220;
+  padding: 64px 28px 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  color: var(--bg-2);
+  overflow-y: auto;
+  animation: gateIn .5s cubic-bezier(.3,.7,.4,1);
+}
+.daily-gate-screen .preamble {
+  font-family: 'Inter', sans-serif;
+  font-size: 10.5px;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: rgba(252,247,232,0.75);
+  font-weight: 700;
+  margin-bottom: 32px;
+}
+.daily-gate-screen .gate-emoji {
+  font-size: 64px;
+  margin-bottom: 14px;
+  filter: drop-shadow(0 4px 16px rgba(0,0,0,0.25));
+}
+.daily-gate-screen h1 {
+  font-family: 'Fraunces', serif;
+  font-size: 44px;
+  font-weight: 300;
+  color: var(--bg-2);
+  line-height: 1.05;
+  margin-bottom: 10px;
+  letter-spacing: -0.015em;
+}
+.daily-gate-screen h1 em {
+  font-style: italic;
+  color: var(--bg-2);
+}
+.daily-gate-screen p.gate-lede {
+  font-family: 'Fraunces', serif;
+  font-size: 17px;
+  font-style: italic;
+  font-weight: 400;
+  color: rgba(252,247,232,0.92);
+  line-height: 1.55;
+  margin-bottom: 36px;
+  max-width: 330px;
+}
+.daily-gate-screen .gate-cta {
+  background: var(--bg-2);
+  color: var(--terracotta);
+  padding: 18px 40px;
+  border-radius: 999px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.04em;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.28);
+  margin-bottom: 14px;
+  min-width: 240px;
+  transition: transform .08s ease;
+}
+.daily-gate-screen .gate-cta:active { transform: scale(0.97); }
+.daily-gate-screen .gate-secondary {
+  background: transparent;
+  color: rgba(252,247,232,0.85);
+  padding: 12px 16px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.daily-gate-screen .gate-day-pill {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  padding: 6px 12px;
+  background: rgba(252,247,232,0.18);
+  backdrop-filter: blur(8px);
+  border-radius: 999px;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--bg-2);
+  font-weight: 700;
+}
+
+/* Empty state cards for Discover & Friends */
+.empty-tab {
+  margin: 22px;
+  padding: 36px 24px;
+  text-align: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+}
+.empty-tab .icon {
+  font-size: 40px;
+  margin-bottom: 12px;
+}
+.empty-tab h3 {
+  font-family: 'Fraunces', serif;
+  font-size: 19px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: var(--ink);
+}
+.empty-tab p {
+  font-size: 14px;
+  color: var(--ink-3);
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  line-height: 1.5;
+  margin-bottom: 18px;
+  max-width: 280px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.empty-tab .empty-cta {
+  padding: 12px 22px;
+  background: var(--terracotta);
+  color: var(--bg-2);
+  border-radius: 999px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 13.5px;
+  letter-spacing: 0.02em;
+}
+
 /* =========================================================
    COMMUNAL v4 — Journal by Intelligent Change vibe
    Cream paper, sage + terracotta, editorial serif headlines

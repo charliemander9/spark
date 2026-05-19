@@ -10,6 +10,7 @@ import { Capture } from './tabs/Capture';
 import { Friends } from './tabs/Friends';
 import { Profile } from './tabs/Profile';
 import { Day75 } from './Day75';
+import { DailyGate } from './DailyGate';
 import { SettingsSheet } from './sheets/SettingsSheet';
 import { WorkoutSheet } from './sheets/WorkoutSheet';
 import { NumericSheet } from './sheets/NumericSheet';
@@ -19,8 +20,10 @@ export function App() {
   const screen = useSpark((s) => s.screen);
   const tab = useSpark((s) => s.tab);
   const day75 = useSpark((s) => s.day75Celebrate);
+  const dailyEntry = useSpark((s) => s.user.dailyEntry);
 
   const inOnboarding = screen.startsWith('onb-');
+  const gated = !inOnboarding && !day75 && !dailyEntry;
 
   return (
     <PhoneFrame>
@@ -37,7 +40,8 @@ export function App() {
           {tab === 'foryou' && <Profile />}
         </>
       )}
-      {!inOnboarding && !day75 && <TabBar />}
+      {gated && <DailyGate />}
+      {!inOnboarding && !day75 && !gated && <TabBar />}
       <SettingsSheet />
       <WorkoutSheet />
       <NumericSheet />

@@ -5,7 +5,6 @@ import { useSpark } from '@/lib/store';
 import { dailyQuote, greeting, gearSvg, todayLabel } from '@/lib/helpers';
 import { TONE_COPY } from '@/lib/data';
 import { CourseCard } from '../CourseCard';
-import { DailyGate } from '../DailyGate';
 
 export function Home() {
   const user = useSpark((s) => s.user);
@@ -23,7 +22,10 @@ export function Home() {
           <div className="streak-pill">
             <span className="flame">🔥</span>
             <span className="n">{user.streak}</span>
-            <span className="lbl">day streak</span>
+            <span className="lbl">days</span>
+            {user.freezes > 0 && (
+              <span className="freezes">❄️ {user.freezes}</span>
+            )}
           </div>
           <button
             className="iconbtn"
@@ -47,8 +49,6 @@ export function Home() {
         </h1>
         <p>{tone.sub}</p>
       </div>
-
-      {!user.dailyEntry && <DailyGate />}
 
       <CourseCard slot="appetizer" />
       <CourseCard slot="main" />

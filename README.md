@@ -16,6 +16,8 @@ npm run dev
 
 Open http://localhost:3000
 
+> Want to test backend features locally? Copy `.env.local.example` to `.env.local` and fill in your Supabase keys. See **[SUPABASE_SETUP.md](./SUPABASE_SETUP.md)**.
+
 ---
 
 ## Deploy to Vercel — step by step

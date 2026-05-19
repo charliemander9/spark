@@ -82,6 +82,7 @@ export interface User {
   follows: string[];
   streak: number;
   day: number;
+  freezes: number;             // Duolingo-style streak freezes available
   preset: PresetId | string;
   dailyEntry: DailyEntry | null;
   strict: boolean;

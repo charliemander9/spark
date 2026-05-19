@@ -1,11 +1,14 @@
 'use client';
 
+import { useSpark } from '@/lib/store';
 import { useUi } from '@/lib/storeActions';
 import { gearSvg } from '@/lib/helpers';
 import { VIDEOS, type VideoCard } from '@/lib/data';
 
 export function Discover() {
   const openSettings = useUi((s) => s.openSettings);
+  const setScreen = useSpark((s) => s.setScreen);
+  const follows = useSpark((s) => s.user.follows);
 
   // Mix all categories together, round-robin
   const cards: VideoCard[] = [];
@@ -43,36 +46,54 @@ export function Discover() {
         <div className="date">Community</div>
         <h1>Discover</h1>
         <p className="small muted" style={{ marginTop: 6 }}>
-          Real fitness journeys, kept honest. Running, lifting, swimming, recomp — all mixed.
+          Real fitness journeys, kept honest.
         </p>
       </div>
 
-      <div style={{ height: 14 }} />
-
-      {cards.map((v, idx) => (
-        <div key={v.author + idx} className="discover-card">
-          <div className="dc-img" style={{ backgroundImage: v.img }}>
-            <div className="dc-play" />
-            <div>
-              <div className="lead">Story</div>
-              <h3>{v.title}</h3>
-            </div>
-          </div>
-          <div className="dc-meta">
-            <div className="dc-author">
-              <div className="avatar-sm sage">{v.initials}</div>
-              <div>
-                <div className="name">{v.author}</div>
-                <div className="sub">{v.note}</div>
+      {cards.length === 0 ? (
+        <div className="empty-tab">
+          <div className="icon">🌊</div>
+          <h3>No stories yet</h3>
+          <p>
+            Follow a few people working on similar goals and their journeys will
+            show up here.
+          </p>
+          <button
+            className="empty-cta"
+            onClick={() => setScreen('onb-find')}
+          >
+            Find people
+          </button>
+        </div>
+      ) : (
+        <>
+          <div style={{ height: 14 }} />
+          {cards.map((v, idx) => (
+            <div key={v.author + idx} className="discover-card">
+              <div className="dc-img" style={{ backgroundImage: v.img }}>
+                <div className="dc-play" />
+                <div>
+                  <div className="lead">Story</div>
+                  <h3>{v.title}</h3>
+                </div>
+              </div>
+              <div className="dc-meta">
+                <div className="dc-author">
+                  <div className="avatar-sm sage">{v.initials}</div>
+                  <div>
+                    <div className="name">{v.author}</div>
+                    <div className="sub">{v.note}</div>
+                  </div>
+                </div>
+                <div className="dc-actions">
+                  <div>♡ 2.4k</div>
+                  <div>↗</div>
+                </div>
               </div>
             </div>
-            <div className="dc-actions">
-              <div>♡ 2.4k</div>
-              <div>↗</div>
-            </div>
-          </div>
-        </div>
-      ))}
+          ))}
+        </>
+      )}
     </>
   );
 }
