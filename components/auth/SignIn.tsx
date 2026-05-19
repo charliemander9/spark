@@ -57,7 +57,8 @@ export function SignIn() {
               className="lede"
               style={{ marginTop: 18, maxWidth: 320, textAlign: 'center' }}
             >
-              GM. Pick a name your friends will recognize and you&apos;re in.
+              Good Morning! Seventy-five days, every day, the habits you choose
+              — held by the community who show up with you.
             </p>
 
             <div style={{ width: '100%', marginTop: 18 }}>

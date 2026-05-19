@@ -76,19 +76,6 @@ export function SettingsSheet() {
           </div>
           <div className="arrow">›</div>
         </div>
-        <div
-          className="set-row nav-row"
-          onClick={() => {
-            close();
-            setScreen('onb-find');
-          }}
-        >
-          <div className="body">
-            <b>Find more people</b>
-            <small>Discover others on the same path</small>
-          </div>
-          <div className="arrow">›</div>
-        </div>
 
         <div className="set-row">
           <div className="body">
@@ -104,24 +91,6 @@ export function SettingsSheet() {
             }}
             style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--ink)', padding: '8px 12px', borderRadius: 999, width: 130, textAlign: 'right', fontSize: 13, fontFamily: "'Fraunces',serif" }}
           />
-        </div>
-
-        <div className="set-row">
-          <div className="body">
-            <b>Tone of voice</b>
-            <small>How the app speaks to you</small>
-          </div>
-          <div className="seg">
-            {(['feather','balanced','rock'] as const).map(v => (
-              <button
-                key={v}
-                className={user.tone === v ? 'active' : ''}
-                onClick={() => setUser({ tone: v })}
-              >
-                {v[0].toUpperCase() + v.slice(1)}
-              </button>
-            ))}
-          </div>
         </div>
 
         <div className="set-row">

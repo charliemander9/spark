@@ -719,6 +719,32 @@ p { line-height: 1.55; color: var(--ink-3); font-size: 14.5px; }
 .buddy-card .body b { font-size: 15px; font-weight: 500; font-family: 'Fraunces', serif; }
 .buddy-card .body small { font-size: 12px; color: var(--muted); display: block; margin-top: 2px; }
 .buddy-card .x { color: var(--muted); font-size: 18px; padding: 4px 8px; }
+.buddy-card .bc-text {
+  width: 36px; height: 36px;
+  background: var(--neon-coral);
+  color: var(--bg-2);
+  border-radius: 50%;
+  display: grid; place-items: center;
+  flex-shrink: 0;
+}
+.buddy-card .bc-text:active { transform: scale(0.94); }
+
+.buddy-add-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.buddy-add-form input {
+  padding: 13px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  font-size: 14px;
+  color: var(--ink);
+}
+.buddy-add-form input:focus { border-color: var(--terracotta); }
+.buddy-add-form .btn { padding: 12px 18px; }
 .buddy-toggle-row {
   margin-top: 12px;
   padding: 16px 18px;
@@ -1887,70 +1913,213 @@ p { line-height: 1.55; color: var(--ink-3); font-size: 14.5px; }
   border-color: transparent;
 }
 
-/* ============ DISCOVER LIST (demo people) ============ */
-.discover-list {
-  padding: 0 22px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+/* ============ DISCOVER — IG explore style ============ */
+.discover-search {
+  margin: 0 22px 12px;
+  padding: 10px 14px;
+  background: var(--surface-2);
+  border-radius: 14px;
+  display: flex; align-items: center;
+  gap: 10px;
+  color: var(--ink-3);
 }
-.discover-person {
+.discover-search input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: var(--ink);
+}
+.discover-search input::placeholder { color: var(--ink-3); }
+.ds-clear {
+  width: 20px; height: 20px;
+  background: var(--ink-3);
+  color: var(--bg-2);
+  border-radius: 50%;
+  font-size: 14px;
+  display: grid; place-items: center;
+}
+.discover-filters {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 0 22px 12px;
+  scrollbar-width: none;
+}
+.discover-filters::-webkit-scrollbar { display: none; }
+.df-chip {
+  flex-shrink: 0;
+  padding: 8px 14px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: 999px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink-2);
+  transition: transform .07s, background .15s, color .15s;
 }
-.dp-ava {
-  width: 48px; height: 48px;
-  border-radius: 50%;
+.df-chip.active {
+  background: var(--ink);
+  color: var(--bg-2);
+  border-color: var(--ink);
+}
+.df-chip:active { transform: scale(0.96); }
+
+.explore-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 1fr;
+  gap: 3px;
+  padding: 0 22px;
+}
+.explore-tile {
+  position: relative;
+  aspect-ratio: 1;
   background-size: cover;
   background-position: center;
-  color: white;
-  display: grid; place-items: center;
-  font-family: 'Inter', sans-serif;
-  font-weight: 700;
-  font-size: 14px;
-  letter-spacing: 0.02em;
-  flex-shrink: 0;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+  border-radius: 4px;
+  overflow: hidden;
+  background-color: var(--surface-2);
 }
-.dp-body { flex: 1; min-width: 0; }
-.dp-name {
+.explore-tile.tall {
+  grid-row: span 2;
+  aspect-ratio: unset;
+}
+.et-play {
+  position: absolute;
+  top: 6px; right: 6px;
+  width: 22px; height: 22px;
+  background: rgba(0,0,0,0.45);
+  border-radius: 50%;
+  display: grid; place-items: center;
+}
+.et-tag {
+  position: absolute;
+  top: 6px; left: 6px;
+  padding: 3px 8px;
+  background: rgba(0,0,0,0.5);
+  color: white;
+  font-family: 'Inter', sans-serif;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 6px;
+}
+.et-bottom {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 8px;
+  background: linear-gradient(0deg, rgba(0,0,0,0.55) 0%, transparent 100%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.et-ava {
+  width: 22px; height: 22px;
+  background: rgba(255,255,255,0.25);
+  border-radius: 50%;
+  display: grid; place-items: center;
+  color: white;
+  font-family: 'Inter', sans-serif;
+  font-size: 9.5px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.et-meta { min-width: 0; flex: 1; }
+.et-name {
+  color: white;
+  font-family: 'Inter', sans-serif;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.et-streak {
+  color: rgba(255,255,255,0.85);
+  font-family: 'Inter', sans-serif;
+  font-size: 9.5px;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+/* ============ FRIENDS — BeReal-style feed ============ */
+.bereal-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 0 22px;
+}
+.bereal-post {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  overflow: hidden;
+}
+.bp-head {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+}
+.bp-ava {
+  width: 36px; height: 36px;
+  background: linear-gradient(160deg, var(--terracotta) 0%, var(--clay) 100%);
+  color: var(--bg-2);
+  border-radius: 50%;
+  display: grid; place-items: center;
   font-family: 'Fraunces', serif;
   font-size: 16px;
   font-weight: 500;
-  color: var(--ink);
+  flex-shrink: 0;
 }
-.dp-bio {
+.bp-id { flex: 1; min-width: 0; }
+.bp-name {
+  font-family: 'Fraunces', serif;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink);
+  display: flex; align-items: center; gap: 6px;
+}
+.bp-you {
   font-family: 'Inter', sans-serif;
-  font-size: 12px;
-  color: var(--ink-2, var(--muted));
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: var(--neon-coral);
+  color: var(--bg-2);
+  padding: 2px 6px;
+  border-radius: 999px;
+}
+.bp-sub {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  color: var(--ink-3);
+  display: flex; gap: 4px; align-items: center;
   margin-top: 1px;
 }
-.dp-sub {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  font-family: 'Inter', sans-serif;
-  font-size: 11.5px;
-  color: var(--ink-3);
-  margin-top: 4px;
+.bp-photo {
+  aspect-ratio: 1;
+  background-size: cover;
+  background-position: center;
+  background-color: var(--surface-2);
 }
-.dp-follow {
-  padding: 8px 16px;
-  background: var(--terracotta);
-  color: var(--bg-2);
-  border-radius: 999px;
-  font-family: 'Inter', sans-serif;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  transition: transform .07s;
+.bp-caption {
+  padding: 10px 14px 14px;
+  font-family: 'Fraunces', serif;
+  font-size: 14.5px;
+  line-height: 1.45;
+  color: var(--ink);
 }
-.dp-follow:active { transform: scale(0.96); }
+.bp-caption b {
+  font-weight: 500;
+  color: var(--terracotta);
+  margin-right: 4px;
+  font-style: normal;
+}
 
 /* ============ PROFILE — IG / TikTok style ============ */
 .prof-head {
@@ -2208,6 +2377,48 @@ p { line-height: 1.55; color: var(--ink-3); font-size: 14.5px; }
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* ============ DAILY ENTRY — SHEET EMPTY PHOTO BUTTON ============ */
+.daily-photo-empty {
+  width: 100%;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1.5px dashed var(--border-2);
+  border-radius: 16px;
+  cursor: pointer;
+  text-align: left;
+  transition: transform .07s, background .15s, border-color .15s;
+}
+.daily-photo-empty:active {
+  transform: scale(0.99);
+  background: var(--surface-2);
+  border-color: var(--terracotta);
+}
+.daily-photo-empty .dpe-ico {
+  width: 52px; height: 52px;
+  background: var(--terracotta-soft);
+  color: var(--terracotta);
+  border-radius: 14px;
+  display: grid; place-items: center;
+  flex-shrink: 0;
+}
+.daily-photo-empty .dpe-body b {
+  display: block;
+  font-family: 'Fraunces', serif;
+  font-size: 15.5px;
+  font-weight: 500;
+  color: var(--ink);
+}
+.daily-photo-empty .dpe-body small {
+  display: block;
+  font-family: 'Inter', sans-serif;
+  font-size: 11.5px;
+  color: var(--ink-3);
+  margin-top: 2px;
 }
 
 /* ============ DAILY ENTRY — SAVED STATE (inline on Home) ============ */
@@ -2867,7 +3078,7 @@ p { line-height: 1.55; color: var(--ink-3); font-size: 14.5px; }
 /* ============ PROFILE CALENDAR ============ */
 .profile-calendar {
   margin: 0 22px 24px;
-  padding: 18px 12px 14px;
+  padding: 18px 18px 14px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 18px;
@@ -2934,10 +3145,11 @@ p { line-height: 1.55; color: var(--ink-3); font-size: 14.5px; }
 }
 .cal-ring-svg {
   display: block;
-  width: 78%;
-  max-width: 30px;
+  width: 68%;
+  max-width: 24px;
   aspect-ratio: 1;
   height: auto;
+  margin: 0 auto;
 }
 .cal-day-num {
   font-family: 'Fraunces', serif;

@@ -1,10 +1,20 @@
 'use client';
 
-import { useRef, useState, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSpark } from '@/lib/store';
 import { useUi } from '@/lib/storeActions';
 import { saveDailyEntryToDb } from '@/lib/dailyEntry';
 import type { Photo } from '@/lib/types';
+
+// Random placeholder so users get an example of what to write.
+const CAPTION_EXAMPLES = [
+  'About to head out for a morning run.',
+  'Gym fit on. 45 min strength session.',
+  'Walking to the trailhead, going for 12k today.',
+  'Water bottle filled. Cardio first, lift after.',
+  'Pre-run selfie. Cold but going.',
+  'Outfit ready. Workout 1 in 20 min.',
+];
 
 export function DailySheet() {
   const open = useUi((s) => s.dailySheetOpen);
@@ -12,20 +22,19 @@ export function DailySheet() {
   const setDailyEntry = useSpark((s) => s.setDailyEntry);
   const pushDiary = useSpark((s) => s.pushDiary);
 
-  const [mode, setMode] = useState<'photo' | 'journal'>('photo');
   const [photos, setPhotos] = useState<Photo[]>([]);
-  const [body, setBody] = useState('');
+  const [caption, setCaption] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [placeholder, setPlaceholder] = useState(CAPTION_EXAMPLES[0]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  // Release object URLs when component closes / photos change
+  // Reset state + pick a fresh example every time the sheet opens.
   useEffect(() => {
-    return () => {
-      photos.forEach((p) => {
-        const m = p.bg.match(/url\("?(blob:[^"]+)"?\)/);
-        if (m) URL.revokeObjectURL(m[1]);
-      });
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (open) {
+      setPlaceholder(
+        CAPTION_EXAMPLES[Math.floor(Math.random() * CAPTION_EXAMPLES.length)],
+      );
+    }
   }, [open]);
 
   const onFiles = (files: FileList | null) => {
@@ -42,44 +51,45 @@ export function DailySheet() {
       });
     }
     setPhotos([...photos, ...picked]);
-    // Reset so the same file can be picked again
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const save = async () => {
-    if (mode === 'photo' && photos.length === 0) {
-      alert('Add a photo or switch to journal');
+    const text = caption.trim();
+    // Now we require at least ONE of photo or caption — either unlocks the day.
+    if (photos.length === 0 && !text) {
+      alert('Add a photo or write something — one is enough.');
       return;
     }
-    if (mode === 'journal' && !body.trim()) {
-      alert('Write a few words or switch to photo');
-      return;
-    }
+    setBusy(true);
 
-    // Persist to Supabase (no-op in local mode)
+    // Type goes to DB. If they have a photo, type = photo; otherwise journal.
+    const dbType: 'photo' | 'journal' = photos.length > 0 ? 'photo' : 'journal';
     const { error } = await saveDailyEntryToDb(
-      mode,
-      mode === 'journal' ? body.trim() : null,
-      mode === 'photo' ? photos.map((p) => p.bg) : [],
+      dbType,
+      text || null,
+      photos.map((p) => p.bg),
     );
     if (error) {
+      setBusy(false);
       alert('Could not save: ' + error);
       return;
     }
 
-    // Mirror to local store so the rest of the app updates immediately
+    // Local mirror — single entry holds both the photo(s) and the caption.
     const d = new Date();
-    const days = ['Su','M','T','W','Th','F','Sa'];
+    const days = ['Su', 'M', 'T', 'W', 'Th', 'F', 'Sa'];
     const id = 'daily_' + Date.now();
-    if (mode === 'photo') {
-      const firstIsVideo = photos[0].type === 'video';
+
+    if (photos.length > 0) {
       pushDiary({
         id,
         day: days[d.getDay()],
         date: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-        type: firstIsVideo ? 'video' : 'photo',
+        type: photos[0].type === 'video' ? 'video' : 'photo',
         bg: photos[0].bg,
         photos,
+        body: text || undefined,
         isDaily: true,
       });
     } else {
@@ -88,13 +98,15 @@ export function DailySheet() {
         day: days[d.getDay()],
         date: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
         type: 'reflection',
-        body: body.trim(),
+        body: text,
         isDaily: true,
       });
     }
-    setDailyEntry({ type: mode, savedAt: Date.now() });
+
+    setDailyEntry({ type: dbType, savedAt: Date.now() });
     setPhotos([]);
-    setBody('');
+    setCaption('');
+    setBusy(false);
     close();
   };
 
@@ -104,22 +116,59 @@ export function DailySheet() {
       <div className="sheet-bd open" onClick={close} />
       <div className="sheet open">
         <div className="sheet-handle" />
-        <h2><em>Today's entry</em></h2>
-        <p style={{ padding: '0 22px 4px', fontFamily: "'Fraunces',serif", fontStyle: 'italic', fontSize: 13.5, color: 'var(--ink-3)' }}>
-          A photo, video, or a journal — something to mark the day.
+        <h2>
+          <em>Today&apos;s entry</em>
+        </h2>
+        <p
+          style={{
+            padding: '0 22px 4px',
+            fontFamily: "'Fraunces',serif",
+            fontStyle: 'italic',
+            fontSize: 13.5,
+            color: 'var(--ink-3)',
+          }}
+        >
+          A quick snap and a line about what you&apos;re doing today. This is
+          what your friends see.
         </p>
-        <div className="daily-mode-tabs">
-          <button className={mode === 'photo' ? 'active' : ''} onClick={() => setMode('photo')}>📷 Photo / Video</button>
-          <button className={mode === 'journal' ? 'active' : ''} onClick={() => setMode('journal')}>✎ Journal</button>
-        </div>
 
-        {mode === 'photo' && (
-          <div className="form-section">
-            <label>Photos &amp; videos · up to 5</label>
+        <div className="form-section">
+          <label>Snap</label>
+          {photos.length === 0 ? (
+            <button
+              className="daily-photo-empty"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <div className="dpe-ico">
+                <svg
+                  viewBox="0 0 24 24"
+                  width={28}
+                  height={28}
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={1.6}
+                >
+                  <rect x={3} y={6.5} width={18} height={13.5} rx={2.5} />
+                  <circle cx={12} cy={13} r={4} />
+                  <path d="M8 6.5l1.5-2.2h5L16 6.5" />
+                </svg>
+              </div>
+              <div className="dpe-body">
+                <b>Add a photo or video</b>
+                <small>Selfie · gym fit · water bottle · trailhead</small>
+              </div>
+            </button>
+          ) : (
             <div className="photo-carousel">
               {photos.map((p, i) => (
-                <div key={i} className="photo-tile" style={{ backgroundImage: p.bg }}>
-                  {p.type === 'video' && <div className="photo-video-badge">▶</div>}
+                <div
+                  key={i}
+                  className="photo-tile"
+                  style={{ backgroundImage: p.bg }}
+                >
+                  {p.type === 'video' && (
+                    <div className="photo-video-badge">▶</div>
+                  )}
                   <button
                     className="photo-remove"
                     onClick={() => {
@@ -142,35 +191,35 @@ export function DailySheet() {
                 </button>
               )}
             </div>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*,video/*"
-              multiple
-              style={{ display: 'none' }}
-              onChange={(e) => onFiles(e.target.files)}
-            />
-            <p style={{ marginTop: 8, fontSize: 11.5, color: 'var(--ink-3)', fontFamily: "'Inter',sans-serif", textAlign: 'center' }}>
-              Choose from library, take a photo, or record video.
-            </p>
-          </div>
-        )}
+          )}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*,video/*"
+            multiple
+            style={{ display: 'none' }}
+            onChange={(e) => onFiles(e.target.files)}
+          />
+        </div>
 
-        {mode === 'journal' && (
-          <div className="form-section">
-            <label>Journal entry</label>
-            <textarea
-              className="daily-journal-input"
-              placeholder="A line or two about today…"
-              value={body}
-              onChange={(e) => setBody(e.target.value)}
-            />
-          </div>
-        )}
+        <div className="form-section">
+          <label>What are you doing today?</label>
+          <textarea
+            className="daily-journal-input"
+            placeholder={placeholder}
+            value={caption}
+            onChange={(e) => setCaption(e.target.value)}
+            rows={3}
+          />
+        </div>
 
         <div className="sheet-actions">
-          <button className="btn btn-secondary" onClick={close}>Cancel</button>
-          <button className="btn btn-accent" onClick={save}>Save &amp; Unlock</button>
+          <button className="btn btn-secondary" onClick={close}>
+            Cancel
+          </button>
+          <button className="btn btn-accent" onClick={save} disabled={busy}>
+            {busy ? 'Saving…' : 'Save & Unlock'}
+          </button>
         </div>
         <div style={{ height: 30 }} />
       </div>

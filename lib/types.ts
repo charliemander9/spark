@@ -72,7 +72,7 @@ export type Privacy = 'private' | 'friends' | 'open';
 export type Tone = 'feather' | 'balanced' | 'rock';
 export type DailyMode = 'photo' | 'journal';
 
-export interface Buddy { name: string; relation: string; }
+export interface Buddy { name: string; relation: string; phone?: string; }
 
 export interface DailyEntry { type: DailyMode; savedAt: number; }
 
@@ -122,7 +122,7 @@ export interface CustomDraftSlot {
 }
 
 export type Screen =
-  | 'onb-welcome' | 'onb-challenge' | 'onb-privacy' | 'onb-buddies' | 'onb-find'
+  | 'onb-welcome' | 'onb-challenge' | 'onb-privacy' | 'onb-buddies'
   | 'app';
 
 export type Tab = 'home' | 'discover' | 'journal' | 'friends' | 'foryou';

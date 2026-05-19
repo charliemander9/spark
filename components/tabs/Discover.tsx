@@ -1,28 +1,34 @@
 'use client';
 
+import { useState } from 'react';
 import { useSpark } from '@/lib/store';
 import { useUi } from '@/lib/storeActions';
 import { gearSvg } from '@/lib/helpers';
-import { DEMO_DISCOVER } from '@/lib/data';
+import { DEMO_DISCOVER, DISCOVER_FILTERS } from '@/lib/data';
 
 export function Discover() {
   const openSettings = useUi((s) => s.openSettings);
-  const setScreen = useSpark((s) => s.setScreen);
   const demoMode = useSpark((s) => s.demoMode);
+  const [filter, setFilter] = useState<string>('For you');
+  const [query, setQuery] = useState('');
 
-  const cards = demoMode ? DEMO_DISCOVER : [];
+  const allPosts = demoMode ? DEMO_DISCOVER : [];
+  const filteredByTag =
+    filter === 'For you' ? allPosts : allPosts.filter((p) => p.tag === filter);
+  const posts = query
+    ? filteredByTag.filter(
+        (p) =>
+          p.caption.toLowerCase().includes(query.toLowerCase()) ||
+          p.name.toLowerCase().includes(query.toLowerCase()) ||
+          p.tag.toLowerCase().includes(query.toLowerCase()),
+      )
+    : filteredByTag;
 
   return (
     <>
       <div className="appbar">
         <div></div>
         <div className="right">
-          <button className="iconbtn">
-            <svg viewBox="0 0 24 24" width={17} height={17} fill="none" stroke="currentColor" strokeWidth={1.6}>
-              <circle cx={11} cy={11} r={7} />
-              <line x1={16.5} y1={16.5} x2={21} y2={21} strokeLinecap="round" />
-            </svg>
-          </button>
           <button
             className="iconbtn"
             onClick={openSettings}
@@ -31,45 +37,74 @@ export function Discover() {
         </div>
       </div>
 
-      <div className="discover-head">
-        <div className="date">Community</div>
-        <h1>Discover</h1>
-        <p className="small muted" style={{ marginTop: 6 }}>
-          Real fitness journeys, kept honest.
-        </p>
+      <div className="discover-search">
+        <svg
+          viewBox="0 0 24 24"
+          width={16}
+          height={16}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={1.8}
+        >
+          <circle cx={11} cy={11} r={7} />
+          <line x1={16.5} y1={16.5} x2={21} y2={21} strokeLinecap="round" />
+        </svg>
+        <input
+          type="text"
+          placeholder="Search people, captions, tags…"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+        {query && (
+          <button className="ds-clear" onClick={() => setQuery('')}>×</button>
+        )}
       </div>
 
-      {cards.length === 0 ? (
+      <div className="discover-filters">
+        {DISCOVER_FILTERS.map((f) => (
+          <button
+            key={f}
+            className={'df-chip' + (f === filter ? ' active' : '')}
+            onClick={() => setFilter(f)}
+          >
+            {f}
+          </button>
+        ))}
+      </div>
+
+      {posts.length === 0 ? (
         <div className="empty-tab">
           <div className="icon">🌊</div>
-          <h3>No stories yet</h3>
+          <h3>{demoMode ? 'No posts for that filter' : 'Nothing yet'}</h3>
           <p>
-            Follow a few people working on similar goals and their journeys will
-            show up here.
+            {demoMode
+              ? 'Try another filter or clear the search.'
+              : 'Real stories from people on the same path will show up here. Use Load demo from Settings to preview.'}
           </p>
-          <button
-            className="empty-cta"
-            onClick={() => setScreen('onb-find')}
-          >
-            Find people
-          </button>
         </div>
       ) : (
-        <div className="discover-list">
-          {cards.map((p) => (
-            <div key={p.id} className="discover-person">
-              <div className="dp-ava" style={{ backgroundImage: p.avaGradient }}>
-                <span>{p.initials}</span>
-              </div>
-              <div className="dp-body">
-                <div className="dp-name">{p.name}</div>
-                <div className="dp-bio">{p.bio}</div>
-                <div className="dp-sub">
-                  <span className="streak-chip">🔥 <span className="mono">{p.streak}d</span></span>
-                  <span>· Day {p.day} of 75</span>
+        <div className="explore-grid">
+          {posts.map((p, i) => (
+            <div
+              key={p.id}
+              className={'explore-tile' + (i % 7 === 1 ? ' tall' : '')}
+              style={{ backgroundImage: p.bg }}
+            >
+              {p.isVideo && (
+                <div className="et-play">
+                  <svg viewBox="0 0 24 24" width={14} height={14} fill="white">
+                    <path d="M8 5v14l11-7L8 5z" />
+                  </svg>
+                </div>
+              )}
+              <div className="et-tag">{p.tag}</div>
+              <div className="et-bottom">
+                <div className="et-ava">{p.initials}</div>
+                <div className="et-meta">
+                  <div className="et-name">{p.name}</div>
+                  <div className="et-streak">🔥 {p.streak}d</div>
                 </div>
               </div>
-              <button className="dp-follow">Follow</button>
             </div>
           ))}
         </div>

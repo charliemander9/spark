@@ -9,10 +9,32 @@ import { loadFriends, type FriendSummary } from '@/lib/friends';
 import { getUnreadNudges, markNudgesRead, sendNudge, type IncomingNudge } from '@/lib/nudges';
 import { DEMO_FRIENDS } from '@/lib/data';
 
+interface FeedItem {
+  id: string;
+  name: string;
+  initials: string;
+  when: string;
+  streak: number;
+  day: number;
+  bg: string;            // gradient or url() for the photo
+  caption: string;
+  isYou?: boolean;
+}
+
+// Mock photos used for demo friends so the feed isn't gradient-only.
+const DEMO_BGS = [
+  'linear-gradient(160deg,#1c3548 0%,#2d6a95 60%,#7AB6D8 100%)',
+  'linear-gradient(160deg,#2e2a18 0%,#7c6c30 60%,#F5C842 100%)',
+  'linear-gradient(160deg,#3a2818 0%,#a05c34 60%,#E8896F 100%)',
+  'linear-gradient(160deg,#1c2a18 0%,#3a5530 60%,#a0b08a 100%)',
+];
+
 export function Friends() {
   const openSettings = useUi((s) => s.openSettings);
   const openInviteSheet = useUi((s) => s.openInviteSheet);
   const demoMode = useSpark((s) => s.demoMode);
+  const user = useSpark((s) => s.user);
+  const diary = useSpark((s) => s.diary);
 
   const [realFriends, setRealFriends] = useState<FriendSummary[]>([]);
   const [nudges, setNudges] = useState<IncomingNudge[]>([]);
@@ -20,10 +42,20 @@ export function Friends() {
   const [confirm, setConfirm] = useState<{ friendId: string; name: string } | null>(null);
 
   const friends: FriendSummary[] = demoMode
-    ? [...realFriends, ...DEMO_FRIENDS.map((d) => ({
-        id: d.id, name: d.name, invite_code: '',
-        day: d.day, streak: d.streak, todayEntry: d.todayEntry,
-      } as FriendSummary))]
+    ? [
+        ...realFriends,
+        ...DEMO_FRIENDS.map(
+          (d) =>
+            ({
+              id: d.id,
+              name: d.name,
+              invite_code: '',
+              day: d.day,
+              streak: d.streak,
+              todayEntry: d.todayEntry,
+            } as FriendSummary),
+        ),
+      ]
     : realFriends;
 
   const refresh = async () => {
@@ -34,11 +66,13 @@ export function Friends() {
   };
 
   useEffect(() => {
-    if (!hasSupabase) { setLoading(false); return; }
+    if (!hasSupabase) {
+      setLoading(false);
+      return;
+    }
     refresh();
   }, []);
 
-  // Real-time subscriptions — refresh when a new nudge arrives or a friend posts
   useEffect(() => {
     if (!hasSupabase || !supabase) return;
     const channel = supabase
@@ -47,7 +81,9 @@ export function Friends() {
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'daily_entries' }, () => refresh())
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'friendships' }, () => refresh())
       .subscribe();
-    return () => { channel.unsubscribe(); };
+    return () => {
+      channel.unsubscribe();
+    };
   }, []);
 
   const dismissNudges = async () => {
@@ -58,7 +94,6 @@ export function Friends() {
 
   const sendCheer = async () => {
     if (!confirm) return;
-    // Demo friends aren't in the DB — pretend the cheer went out
     if (confirm.friendId.startsWith('demo-')) {
       setConfirm(null);
       setTimeout(() => alert('Sent.'), 80);
@@ -69,6 +104,42 @@ export function Friends() {
     if (error) setTimeout(() => alert(error), 80);
     else setTimeout(() => alert('Sent.'), 80);
   };
+
+  // Build the unified feed: your own daily entry first, then each friend with an entry today.
+  const feed: FeedItem[] = [];
+
+  // Your own daily entry
+  const todayEntry = diary.find((d) => d.isDaily);
+  if (todayEntry) {
+    feed.push({
+      id: 'me-' + todayEntry.id,
+      name: user.name,
+      initials: (user.name[0] || '?').toUpperCase(),
+      when: 'Just now',
+      streak: user.streak,
+      day: user.day,
+      bg: todayEntry.bg || DEMO_BGS[0],
+      caption: todayEntry.body || (todayEntry.type === 'reflection' ? '' : 'Today.'),
+      isYou: true,
+    });
+  }
+
+  friends.forEach((f, i) => {
+    if (!f.todayEntry) return;
+    feed.push({
+      id: f.id,
+      name: f.name,
+      initials: (f.name[0] || '?').toUpperCase(),
+      when: 'Today',
+      streak: f.streak,
+      day: f.day,
+      bg: DEMO_BGS[i % DEMO_BGS.length],
+      caption:
+        f.todayEntry.type === 'journal' && f.todayEntry.body
+          ? f.todayEntry.body
+          : 'Posted a photo.',
+    });
+  });
 
   return (
     <>
@@ -91,7 +162,7 @@ export function Friends() {
 
       <div className="friends-head">
         <div className="date">Your Circle</div>
-        <h1>Friends</h1>
+        <h1>Today</h1>
       </div>
 
       {nudges.length > 0 && (
@@ -102,47 +173,26 @@ export function Friends() {
                 ? `${nudges[0].fromName} sent you a nudge`
                 : `${nudges.length} new nudges`}
             </b>
-            <em style={{ fontStyle: 'italic' }}>"{nudges[0].message}"</em>
+            <em style={{ fontStyle: 'italic' }}>&quot;{nudges[0].message}&quot;</em>
             <small>tap to dismiss</small>
           </div>
           <button onClick={dismissNudges}>Got it</button>
         </div>
       )}
 
-      {loading && !demoMode && friends.length === 0 ? (
-        <div className="empty-tab"><div className="icon">⏳</div><p>Loading friends…</p></div>
-      ) : friends.length === 0 ? (
-        <div className="empty-tab">
-          <div className="icon">🫂</div>
-          <h3>Add your circle</h3>
-          <p>
-            Share your invite code with someone, or enter their code, and their
-            daily check-ins will show up here.
-          </p>
-          <button className="empty-cta" onClick={openInviteSheet}>
-            Invite or add a friend
-          </button>
-        </div>
-      ) : (
-        <>
-          <div className="section-label">Buddies — tap to cheer</div>
-          <div className="buddies-row">
-            {friends.map((f) => (
-              <div
-                key={f.id}
-                className={'buddy' + (f.todayEntry ? ' has-note' : ' no-gratitude')}
-              >
+      {/* Buddies strip — quick cheer access */}
+      {friends.length > 0 && (
+        <div className="buddies-row">
+          {friends.map((f) => (
+            <div
+              key={f.id}
+              className={'buddy' + (f.todayEntry ? ' has-note' : ' no-gratitude')}
+            >
+              <div className="buddy-ava-wrap">
+                <div className={'buddy-ava sage' + (f.todayEntry ? ' has-gratitude' : '')}>
+                  {(f.name[0] || '?').toUpperCase()}
+                </div>
                 {f.todayEntry && (
-                  <div className="gratitude-note">
-                    {f.todayEntry.type === 'journal'
-                      ? f.todayEntry.body
-                      : '📷 Photo today'}
-                  </div>
-                )}
-                <div className="buddy-ava-wrap">
-                  <div className={'buddy-ava sage' + (f.todayEntry ? ' has-gratitude' : '')}>
-                    {(f.name[0] || '?').toUpperCase()}
-                  </div>
                   <button
                     className="nudge-dot"
                     onClick={() => setConfirm({ friendId: f.id, name: f.name })}
@@ -151,77 +201,102 @@ export function Friends() {
                       <path d="M13 2l-9 12h7l-1 8 9-12h-7z" />
                     </svg>
                   </button>
-                </div>
-                <span className="name">{f.name}</span>
-                <span className="streak-mini">
-                  <span>🔥</span>
-                  <span className="mono">{f.streak}d</span>
-                </span>
+                )}
               </div>
-            ))}
-            <div className="buddy" onClick={openInviteSheet}>
-              <div className="buddy-ava-wrap"><div className="buddy-ava add">+</div></div>
-              <span className="name">Add</span>
+              <span className="name">{f.name}</span>
+              <span className="streak-mini">
+                <span>🔥</span>
+                <span className="mono">{f.streak}d</span>
+              </span>
             </div>
+          ))}
+          <div className="buddy" onClick={openInviteSheet}>
+            <div className="buddy-ava-wrap">
+              <div className="buddy-ava add">+</div>
+            </div>
+            <span className="name">Add</span>
           </div>
+        </div>
+      )}
 
-          <div className="section-label">Today</div>
-          {friends.filter((f) => f.todayEntry).length === 0 ? (
-            <div className="empty-tab"><p>No check-ins from your friends today yet.</p></div>
-          ) : (
-            friends.filter((f) => f.todayEntry).map((f) => (
-              <div key={f.id} className="fpost">
-                <div className="fpost-head">
-                  <div className="fpost-id">
-                    <div className="ava">{(f.name[0] || '?').toUpperCase()}</div>
-                    <div>
-                      <div className="name">{f.name}</div>
-                      <div className="sub">
-                        Day {f.day} ·{' '}
-                        <span className="streak-chip">🔥 <span className="mono">{f.streak}d</span></span>
-                      </div>
-                    </div>
+      {loading && !demoMode && feed.length === 0 ? (
+        <div className="empty-tab">
+          <div className="icon">⏳</div>
+          <p>Loading…</p>
+        </div>
+      ) : feed.length === 0 ? (
+        <div className="empty-tab">
+          <div className="icon">📷</div>
+          <h3>No one has posted yet</h3>
+          <p>
+            When you and your friends drop your daily snap, it shows up here. Add
+            someone to get started.
+          </p>
+          <button className="empty-cta" onClick={openInviteSheet}>
+            Invite or add a friend
+          </button>
+        </div>
+      ) : (
+        <div className="bereal-feed">
+          {feed.map((p) => (
+            <article key={p.id} className="bereal-post">
+              <header className="bp-head">
+                <div className="bp-ava">{p.initials}</div>
+                <div className="bp-id">
+                  <div className="bp-name">
+                    {p.name}
+                    {p.isYou && <span className="bp-you">you</span>}
                   </div>
+                  <div className="bp-sub">
+                    Day {p.day} ·{' '}
+                    <span className="streak-chip">
+                      🔥 <span className="mono">{p.streak}d</span>
+                    </span>{' '}
+                    · {p.when}
+                  </div>
+                </div>
+                {!p.isYou && (
                   <button
                     className="fpost-nudge"
-                    onClick={() => setConfirm({ friendId: f.id, name: f.name })}
+                    onClick={() => setConfirm({ friendId: p.id, name: p.name })}
                   >
                     Cheer
                   </button>
-                </div>
-                {f.todayEntry!.type === 'journal' ? (
-                  <div className="fpost-reflection">
-                    <div className="chip">Today</div>
-                    <div className="body">{f.todayEntry!.body}</div>
-                  </div>
-                ) : (
-                  <div className="fpost-frame">
-                    <div
-                      className="fpost-photo"
-                      style={{ backgroundImage: 'linear-gradient(160deg,#1c3548 0%,#2d6a95 60%,#7AB6D8 100%)' }}
-                    >
-                      <div className="fpost-chip">Today</div>
-                    </div>
-                  </div>
                 )}
-              </div>
-            ))
-          )}
-        </>
+              </header>
+
+              <div className="bp-photo" style={{ backgroundImage: p.bg }} />
+
+              {p.caption && (
+                <div className="bp-caption">
+                  <b>{p.name.toLowerCase()}</b> {p.caption}
+                </div>
+              )}
+            </article>
+          ))}
+        </div>
       )}
 
       {confirm && (
         <div className="modal-bd open" onClick={() => setConfirm(null)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h3><em>Send {confirm.name} a cheer</em></h3>
-            <p>A small "I see you doing this — keep going" note?</p>
+            <h3>
+              <em>Send {confirm.name} a cheer</em>
+            </h3>
+            <p>A small &quot;I see you doing this — keep going&quot; note?</p>
             <div className="row">
-              <button className="btn btn-secondary" onClick={() => setConfirm(null)}>Not now</button>
-              <button className="btn btn-accent" onClick={sendCheer}>Yes, send</button>
+              <button className="btn btn-secondary" onClick={() => setConfirm(null)}>
+                Not now
+              </button>
+              <button className="btn btn-accent" onClick={sendCheer}>
+                Yes, send
+              </button>
             </div>
           </div>
         </div>
       )}
+
+      <div style={{ height: 20 }} />
     </>
   );
 }

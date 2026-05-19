@@ -48,6 +48,11 @@ export const CATEGORIES: Record<CategoryId, Category> = {
 };
 
 export const PRESETS: Record<string, Preset> = {
+  custom: {
+    label: 'Build my own',
+    desc: 'Pick three from the catalog. Mix and match.',
+    slots: null,
+  },
   '75-hard-lite': {
     label: '75 Hard Lite',
     desc: 'Two workouts, 10K steps. The classic.',
@@ -164,7 +169,7 @@ export const TONE_COPY = {
   },
 };
 
-export const ONB_ORDER = ['onb-welcome', 'onb-challenge', 'onb-privacy', 'onb-buddies', 'onb-find'] as const;
+export const ONB_ORDER = ['onb-welcome', 'onb-challenge', 'onb-privacy', 'onb-buddies'] as const;
 
 export const SUGGESTED_FOLLOWS = [
   { name: 'Maya G.', initials: 'MG', sub: 'Building habits · 47 day streak' },
@@ -240,17 +245,58 @@ export interface DemoDiscover {
   day: number;
   streak: number;
   avaGradient: string;
+  bg: string;          // photo gradient for the explore tile
+  tag: string;         // category for filter (Running, Lifting, etc.)
+  caption: string;
+  isVideo?: boolean;
 }
 
+export const DISCOVER_FILTERS = [
+  'For you',
+  'Running',
+  'Lifting',
+  'Outdoor',
+  'Recovery',
+  'Eating',
+  'No alcohol',
+  'Yoga',
+] as const;
+
 export const DEMO_DISCOVER: DemoDiscover[] = [
-  { id:'dd-1', name:'Theo R.',   initials:'TR', bio:'Recomp · two-a-days',           day: 41, streak: 41,
-    avaGradient: 'linear-gradient(160deg,#1c3548 0%,#2d6a95 60%,#7AB6D8 100%)' },
-  { id:'dd-2', name:'Lena T.',   initials:'LT', bio:'Endurance · half marathon',     day: 58, streak: 58,
-    avaGradient: 'linear-gradient(160deg,#3a2818 0%,#a05c34 60%,#E8896F 100%)' },
-  { id:'dd-3', name:'Diego P.',  initials:'DP', bio:'Strength · 75 Hard original',   day: 12, streak: 12,
-    avaGradient: 'linear-gradient(160deg,#2e2a18 0%,#7c6c30 60%,#F5C842 100%)' },
-  { id:'dd-4', name:'Ari B.',    initials:'AB', bio:'Recovery · sleep & water',      day: 30, streak: 30,
-    avaGradient: 'linear-gradient(160deg,#1c2a18 0%,#3a5530 60%,#a0b08a 100%)' },
-  { id:'dd-5', name:'Noor H.',   initials:'NH', bio:'Custom · climbing 3×/wk',       day: 5,  streak: 5,
-    avaGradient: 'linear-gradient(160deg,#2a1830 0%,#5a2a55 60%,#b04d9c 100%)' },
+  { id:'dd-1', name:'Theo R.',   initials:'TR', bio:'Recomp · two-a-days',       day: 41, streak: 41,
+    avaGradient: 'linear-gradient(160deg,#1c3548 0%,#2d6a95 60%,#7AB6D8 100%)',
+    bg: 'linear-gradient(160deg,#1c3548 0%,#2d6a95 60%,#7AB6D8 100%)',
+    tag: 'Lifting', caption: 'Day 41. Push day done before 7.' },
+  { id:'dd-2', name:'Lena T.',   initials:'LT', bio:'Endurance · half marathon', day: 58, streak: 58,
+    avaGradient: 'linear-gradient(160deg,#3a2818 0%,#a05c34 60%,#E8896F 100%)',
+    bg: 'linear-gradient(160deg,#3a2818 0%,#a05c34 60%,#E8896F 100%)',
+    tag: 'Running', caption: '12 miles at sunrise. Body remembered.', isVideo: true },
+  { id:'dd-3', name:'Diego P.',  initials:'DP', bio:'Strength · 75 Hard',         day: 12, streak: 12,
+    avaGradient: 'linear-gradient(160deg,#2e2a18 0%,#7c6c30 60%,#F5C842 100%)',
+    bg: 'linear-gradient(160deg,#2e2a18 0%,#7c6c30 60%,#F5C842 100%)',
+    tag: 'Lifting', caption: 'Day 12. Volume up, weight up, no excuses.' },
+  { id:'dd-4', name:'Ari B.',    initials:'AB', bio:'Recovery · sleep + water',   day: 30, streak: 30,
+    avaGradient: 'linear-gradient(160deg,#1c2a18 0%,#3a5530 60%,#a0b08a 100%)',
+    bg: 'linear-gradient(160deg,#1c2a18 0%,#3a5530 60%,#a0b08a 100%)',
+    tag: 'Recovery', caption: 'Day 30. Slept 8h. Walked 5k. Easy day.' },
+  { id:'dd-5', name:'Noor H.',   initials:'NH', bio:'Custom · climbing 3×/wk',    day: 5,  streak: 5,
+    avaGradient: 'linear-gradient(160deg,#2a1830 0%,#5a2a55 60%,#b04d9c 100%)',
+    bg: 'linear-gradient(160deg,#2a1830 0%,#5a2a55 60%,#b04d9c 100%)',
+    tag: 'Outdoor', caption: 'Bouldering session. Got the V4.', isVideo: true },
+  { id:'dd-6', name:'Jules M.',  initials:'JM', bio:'Reset · 21 days sober',      day: 21, streak: 21,
+    avaGradient: 'linear-gradient(160deg,#102838 0%,#1a5878 60%,#5fb0d4 100%)',
+    bg: 'linear-gradient(160deg,#102838 0%,#1a5878 60%,#5fb0d4 100%)',
+    tag: 'No alcohol', caption: 'Three weeks. Sleep is incredible.' },
+  { id:'dd-7', name:'Kai S.',    initials:'KS', bio:'Move More · long walks',     day: 33, streak: 33,
+    avaGradient: 'linear-gradient(160deg,#2a3a28 0%,#5a8a55 60%,#a8d090 100%)',
+    bg: 'linear-gradient(160deg,#2a3a28 0%,#5a8a55 60%,#a8d090 100%)',
+    tag: 'Outdoor', caption: 'Trail loop, 14k steps before noon.' },
+  { id:'dd-8', name:'Riley F.',  initials:'RF', bio:'Recomp · clean eating',      day: 18, streak: 18,
+    avaGradient: 'linear-gradient(160deg,#3a2818 0%,#8a5c34 60%,#E0A06F 100%)',
+    bg: 'linear-gradient(160deg,#3a2818 0%,#8a5c34 60%,#E0A06F 100%)',
+    tag: 'Eating', caption: 'Meal prep Sunday. The whole week sorted.' },
+  { id:'dd-9', name:'Sage P.',   initials:'SP', bio:'Yoga + endurance',           day: 9,  streak: 9,
+    avaGradient: 'linear-gradient(160deg,#283038 0%,#4c5c78 60%,#a0b0c8 100%)',
+    bg: 'linear-gradient(160deg,#283038 0%,#4c5c78 60%,#a0b0c8 100%)',
+    tag: 'Yoga', caption: 'Morning flow. 30 minutes, every day.' },
 ];

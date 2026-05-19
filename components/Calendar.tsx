@@ -70,9 +70,9 @@ export function Calendar() {
 }
 
 function RingSvg({ data }: { data: CalendarDay | undefined }) {
-  const sw = 2.4;
+  const sw = 2.2;
   const c = 16;
-  const radii = [13, 9, 5];
+  const radii = [11, 7.5, 4];
   const colors = ['#FF4D7A', '#A8E060', '#5BE0F0'];
   const flags = data ? [data.w1, data.w2, data.steps] : [false, false, false];
 
