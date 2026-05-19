@@ -34,6 +34,14 @@ create table if not exists public.friendships (
   unique (user_a, user_b)
 );
 
+create table if not exists public.follows (
+  follower_id  uuid references public.profiles on delete cascade not null,
+  following_id uuid references public.profiles on delete cascade not null,
+  created_at   timestamptz default now() not null,
+  primary key (follower_id, following_id),
+  check (follower_id != following_id)
+);
+
 create table if not exists public.daily_entries (
   id          uuid default gen_random_uuid() primary key,
   user_id     uuid references public.profiles on delete cascade not null,
@@ -59,6 +67,7 @@ create table if not exists public.nudges (
 
 alter table public.profiles      enable row level security;
 alter table public.friendships   enable row level security;
+alter table public.follows       enable row level security;
 alter table public.daily_entries enable row level security;
 alter table public.nudges        enable row level security;
 
@@ -88,6 +97,19 @@ create policy "friendships_insert_own" on public.friendships
 drop policy if exists "friendships_delete_own" on public.friendships;
 create policy "friendships_delete_own" on public.friendships
   for delete using (auth.uid() in (user_a, user_b));
+
+-- follows policies
+drop policy if exists "follows_select_authenticated" on public.follows;
+create policy "follows_select_authenticated" on public.follows
+  for select using (auth.role() = 'authenticated');
+
+drop policy if exists "follows_insert_own" on public.follows;
+create policy "follows_insert_own" on public.follows
+  for insert with check (auth.uid() = follower_id);
+
+drop policy if exists "follows_delete_own" on public.follows;
+create policy "follows_delete_own" on public.follows
+  for delete using (auth.uid() = follower_id);
 
 -- daily_entries: see your own + friends'; write only your own
 drop policy if exists "entries_select_own_and_friends" on public.daily_entries;

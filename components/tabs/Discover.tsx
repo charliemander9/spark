@@ -10,6 +10,7 @@ import { Media } from '../Media';
 export function Discover() {
   const openSettings = useUi((s) => s.openSettings);
   const openViewer = useUi((s) => s.openViewer);
+  const openUserProfile = useUi((s) => s.openUserProfile);
   const demoMode = useSpark((s) => s.demoMode);
   const [filter, setFilter] = useState<string>('For you');
   const [query, setQuery] = useState('');
@@ -114,13 +115,26 @@ export function Discover() {
                 </div>
               )}
               <div className="et-tag">{p.tag}</div>
-              <div className="et-bottom">
+              <button
+                className="et-bottom et-bottom-button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  openUserProfile({
+                    id: p.id,
+                    name: p.name,
+                    bio: p.bio,
+                    day: p.day,
+                    streak: p.streak,
+                    isDemo: true,
+                  });
+                }}
+              >
                 <div className="et-ava">{p.initials}</div>
                 <div className="et-meta">
                   <div className="et-name">{p.name}</div>
                   <div className="et-streak">🔥 {p.streak}d</div>
                 </div>
-              </div>
+              </button>
             </div>
           ))}
         </div>

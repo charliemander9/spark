@@ -1957,6 +1957,80 @@ p { line-height: 1.55; color: var(--ink-3); font-size: 14.5px; }
   margin-bottom: 6px;
 }
 
+/* ============ USER PROFILE SHEET (tap-into someone's profile) ============ */
+.ups-head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 22px 14px;
+}
+.ups-ava {
+  width: 70px; height: 70px;
+  border-radius: 50%;
+  background: linear-gradient(160deg, var(--terracotta) 0%, var(--clay) 100%);
+  color: var(--bg-2);
+  display: grid; place-items: center;
+  font-family: 'Fraunces', serif;
+  font-size: 32px;
+  font-weight: 500;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.ups-ava img { width: 100%; height: 100%; object-fit: cover; }
+.ups-name {
+  font-family: 'Fraunces', serif;
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--ink);
+}
+.ups-handle {
+  font-family: 'Inter', sans-serif;
+  font-size: 12.5px;
+  color: var(--ink-3);
+  margin-top: 1px;
+}
+.ups-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding: 0 22px 14px;
+  gap: 4px;
+  text-align: center;
+}
+.ups-stat .v {
+  display: block;
+  font-family: 'Fraunces', serif;
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--ink);
+  line-height: 1.1;
+}
+.ups-stat .l {
+  display: block;
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  font-weight: 600;
+  margin-top: 4px;
+}
+.ups-bio {
+  padding: 0 22px 16px;
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: 14.5px;
+  color: var(--ink-2, var(--ink));
+}
+.ups-actions {
+  display: flex;
+  gap: 8px;
+  padding: 0 22px;
+}
+.ups-actions .btn {
+  flex: 1;
+  padding: 12px 16px !important;
+}
+
 /* ============ FRIEND LIST SHEET ============ */
 .friend-list {
   display: flex;
@@ -2310,6 +2384,13 @@ p { line-height: 1.55; color: var(--ink-3); font-size: 14.5px; }
   align-items: center;
   gap: 6px;
 }
+.et-bottom-button {
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: transform .07s;
+}
+.et-bottom-button:active { transform: scale(0.97); }
 .et-ava {
   width: 22px; height: 22px;
   background: rgba(255,255,255,0.25);
@@ -2405,6 +2486,23 @@ p { line-height: 1.55; color: var(--ink-3); font-size: 14.5px; }
   font-weight: 500;
   flex-shrink: 0;
 }
+.bp-ava-button {
+  cursor: pointer;
+  border: none;
+  padding: 0;
+  transition: transform .08s;
+}
+.bp-ava-button:active { transform: scale(0.94); }
+.bp-name-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+}
+.bp-name-button:active { opacity: 0.7; }
 .bp-id { flex: 1; min-width: 0; }
 .bp-name {
   font-family: 'Fraunces', serif;

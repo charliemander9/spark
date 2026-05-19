@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSpark } from '@/lib/store';
 import { useUi } from '@/lib/storeActions';
 import { hasSupabase } from '@/lib/supabase';
-import { loadFriends, type FriendSummary } from '@/lib/friends';
+import { loadFollowing, loadFollowers, type FriendSummary } from '@/lib/friends';
 import { DEMO_FRIENDS } from '@/lib/data';
 
 const TITLES: Record<string, string> = {
@@ -23,6 +23,7 @@ export function FriendListSheet() {
   const mode = useUi((s) => s.friendListMode);
   const close = useUi((s) => s.closeFriendList);
   const openInviteSheet = useUi((s) => s.openInviteSheet);
+  const openUserProfile = useUi((s) => s.openUserProfile);
   const demoMode = useSpark((s) => s.demoMode);
 
   const [realFriends, setRealFriends] = useState<FriendSummary[]>([]);
@@ -31,7 +32,11 @@ export function FriendListSheet() {
   useEffect(() => {
     if (!mode || !hasSupabase) return;
     setLoading(true);
-    loadFriends().then((list) => {
+    const loader =
+      mode === 'followers'
+        ? loadFollowers
+        : loadFollowing;
+    loader().then((list) => {
       setRealFriends(list);
       setLoading(false);
     });
@@ -101,7 +106,22 @@ export function FriendListSheet() {
         ) : (
           <div className="friend-list">
             {friends.map((f) => (
-              <div key={f.id} className="friend-row">
+              <button
+                key={f.id}
+                className="friend-row"
+                onClick={() => {
+                  close();
+                  openUserProfile({
+                    id: f.id,
+                    name: f.name,
+                    bio: f.bio,
+                    avatarUrl: f.avatarUrl,
+                    day: f.day,
+                    streak: f.streak,
+                    isDemo: f.id.startsWith('demo-'),
+                  });
+                }}
+              >
                 <div className="fr-ava">{(f.name[0] || '?').toUpperCase()}</div>
                 <div className="fr-body">
                   <div className="fr-name">{f.name}</div>
@@ -113,7 +133,7 @@ export function FriendListSheet() {
                   </div>
                 </div>
                 {f.todayEntry && <div className="fr-pulse" title="Posted today" />}
-              </div>
+              </button>
             ))}
             <button
               className="friend-row friend-row-add"

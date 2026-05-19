@@ -21,6 +21,7 @@ import { NumericSheet } from './sheets/NumericSheet';
 import { DailySheet } from './sheets/DailySheet';
 import { InviteSheet } from './sheets/InviteSheet';
 import { FriendListSheet } from './sheets/FriendListSheet';
+import { UserProfileSheet } from './sheets/UserProfileSheet';
 import { EntryViewer } from './EntryViewer';
 
 type AuthState = 'loading' | 'signedIn' | 'signedOut';
@@ -192,6 +193,7 @@ export function App() {
       <DailySheet />
       <InviteSheet />
       <FriendListSheet />
+      <UserProfileSheet />
       <EntryViewer />
     </PhoneFrame>
   );

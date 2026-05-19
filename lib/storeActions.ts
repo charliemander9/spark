@@ -22,6 +22,17 @@ export interface ViewerEntry {
 
 export type FriendListMode = 'following' | 'followers' | 'nudges';
 
+export interface ViewedUser {
+  id: string;
+  name: string;
+  bio?: string;
+  avatarUrl?: string | null;
+  day?: number;
+  streak?: number;
+  /** Marks this as a non-DB demo user — Follow button no-ops with a toast. */
+  isDemo?: boolean;
+}
+
 interface UiState {
   settingsOpen: boolean;
   workoutSheetOpen: boolean;
@@ -30,6 +41,7 @@ interface UiState {
   inviteSheetOpen: boolean;
   viewerEntry: ViewerEntry | null;
   friendListMode: FriendListMode | null;
+  viewedUser: ViewedUser | null;
 
   openSettings: () => void;
   closeSettings: () => void;
@@ -45,6 +57,8 @@ interface UiState {
   closeViewer: () => void;
   openFriendList: (mode: FriendListMode) => void;
   closeFriendList: () => void;
+  openUserProfile: (u: ViewedUser) => void;
+  closeUserProfile: () => void;
 }
 
 const useUi = create<UiState>((set) => ({
@@ -55,6 +69,7 @@ const useUi = create<UiState>((set) => ({
   inviteSheetOpen: false,
   viewerEntry: null,
   friendListMode: null,
+  viewedUser: null,
   openSettings: () => set({ settingsOpen: true }),
   closeSettings: () => set({ settingsOpen: false }),
   openWorkoutSheet: () => set({ workoutSheetOpen: true }),
@@ -69,6 +84,8 @@ const useUi = create<UiState>((set) => ({
   closeViewer: () => set({ viewerEntry: null }),
   openFriendList: (mode) => set({ friendListMode: mode }),
   closeFriendList: () => set({ friendListMode: null }),
+  openUserProfile: (u) => set({ viewedUser: u }),
+  closeUserProfile: () => set({ viewedUser: null }),
 }));
 
 // Small typed accessor for convenience:

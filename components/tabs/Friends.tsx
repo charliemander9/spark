@@ -35,6 +35,7 @@ export function Friends() {
   const openSettings = useUi((s) => s.openSettings);
   const openInviteSheet = useUi((s) => s.openInviteSheet);
   const openViewer = useUi((s) => s.openViewer);
+  const openUserProfile = useUi((s) => s.openUserProfile);
   const demoMode = useSpark((s) => s.demoMode);
   const user = useSpark((s) => s.user);
   const diary = useSpark((s) => s.diary);
@@ -97,7 +98,7 @@ export function Friends() {
       .channel('friends-tab')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'nudges' }, () => refresh())
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'daily_entries' }, () => refresh())
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'friendships' }, () => refresh())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'follows' }, () => refresh())
       .subscribe();
     return () => {
       channel.unsubscribe();
@@ -275,12 +276,38 @@ export function Friends() {
           {feed.map((p) => (
             <article key={p.id} className="bereal-post">
               <header className="bp-head">
-                <div className="bp-ava">{p.initials}</div>
+                <button
+                  className="bp-ava bp-ava-button"
+                  onClick={() => {
+                    if (p.isYou) return;
+                    openUserProfile({
+                      id: p.id,
+                      name: p.name,
+                      day: p.day,
+                      streak: p.streak,
+                      isDemo: p.id.startsWith('demo-'),
+                    });
+                  }}
+                >
+                  {p.initials}
+                </button>
                 <div className="bp-id">
-                  <div className="bp-name">
+                  <button
+                    className="bp-name bp-name-button"
+                    onClick={() => {
+                      if (p.isYou) return;
+                      openUserProfile({
+                        id: p.id,
+                        name: p.name,
+                        day: p.day,
+                        streak: p.streak,
+                        isDemo: p.id.startsWith('demo-'),
+                      });
+                    }}
+                  >
                     {p.name}
                     {p.isYou && <span className="bp-you">you</span>}
-                  </div>
+                  </button>
                   <div className="bp-sub">
                     Day {p.day} ·{' '}
                     <span className="streak-chip">

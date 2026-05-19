@@ -7,7 +7,7 @@ import { gearSvg } from '@/lib/helpers';
 import { updateProfile } from '@/lib/profile';
 import { hasSupabase, supabase } from '@/lib/supabase';
 import { uploadAvatar } from '@/lib/storage';
-import { loadFriends } from '@/lib/friends';
+import { getFollowCounts } from '@/lib/friends';
 import { Media } from '../Media';
 import type { DiaryEntry } from '@/lib/types';
 
@@ -32,22 +32,24 @@ export function Profile() {
   const [editingBio, setEditingBio] = useState(false);
   const [bioDraft, setBioDraft] = useState(user.bio);
   const avatarInputRef = useRef<HTMLInputElement | null>(null);
-  const [friendCount, setFriendCount] = useState(0);
+  const [counts, setCounts] = useState({ followers: 0, following: 0 });
 
-  // Load real friend count from Supabase. Also re-fetch when demo toggles or
-  // when friendship rows change in the DB so the number updates live.
+  // Load real follower + following counts from Supabase. Re-fetch when demo
+  // toggles or when any follow row changes in the DB so the numbers update live.
   useEffect(() => {
     let cancelled = false;
-    const refresh = () => {
-      loadFriends().then((list) => {
-        if (!cancelled) setFriendCount(list.length);
-      });
+    const refresh = async () => {
+      const { data } = (await supabase?.auth.getUser()) ?? { data: { user: null } };
+      const me = data?.user?.id;
+      if (!me) return;
+      const c = await getFollowCounts(me);
+      if (!cancelled) setCounts(c);
     };
     if (hasSupabase) {
       refresh();
       const channel = supabase
-        ?.channel('profile-friends')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'friendships' }, () => refresh())
+        ?.channel('profile-follows')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'follows' }, () => refresh())
         .subscribe();
       return () => {
         cancelled = true;
@@ -154,14 +156,14 @@ export function Profile() {
               className="psi"
               onClick={() => openFriendList('following')}
             >
-              <span className="v">{friendCount}</span>
+              <span className="v">{counts.following}</span>
               <span className="l">following</span>
             </button>
             <button
               className="psi"
               onClick={() => openFriendList('followers')}
             >
-              <span className="v">{friendCount}</span>
+              <span className="v">{counts.followers}</span>
               <span className="l">followers</span>
             </button>
             <button
