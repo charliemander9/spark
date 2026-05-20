@@ -62,11 +62,11 @@ export function Home() {
       {/* DAILY ENTRY CARD */}
       {!hasEntry ? (
         <div className="daily-gate" onClick={openDailySheet} style={{ cursor: 'pointer' }}>
-          <div className="gate-tag">Today's Entry</div>
-          <h3>Seize the Day.</h3>
-          <p>Cover charge to navigate the app. Post what you&apos;re doing today for your goal.</p>
+          <div className="gate-tag">Today's Screen Time</div>
+          <h3>Post to unlock.</h3>
+          <p>Screenshot your Screen Time and share it. Honest numbers keep the streak — and your friends — real.</p>
           <button onClick={(e) => { e.stopPropagation(); openDailySheet(); }}>
-            Capture Entry
+            Upload Screen Time
           </button>
         </div>
       ) : (
@@ -75,12 +75,9 @@ export function Home() {
             <DSThumb entry={todayEntry} />
           </div>
           <div className="ds-body">
-            <div className="ds-tag">Today's Entry</div>
-            <div className="ds-title">
-              {todayEntry?.type === 'reflection' ? 'Journal saved' :
-               todayEntry?.type === 'video' ? 'Video saved' : 'Photo saved'}
-            </div>
-            <div className="ds-sub">Tap to add more</div>
+            <div className="ds-tag">Today's Screen Time</div>
+            <div className="ds-title">Posted ✓</div>
+            <div className="ds-sub">Tap to view or re-upload</div>
           </div>
           <div className="ds-check">✓</div>
         </div>

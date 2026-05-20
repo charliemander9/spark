@@ -13,12 +13,12 @@ type LocalPhoto = Photo & { file?: File };
 
 // Random placeholder so users get an example of what to write.
 const CAPTION_EXAMPLES = [
-  'About to head out for a morning run.',
-  'Gym fit on. 45 min strength session.',
-  'Walking to the trailhead, going for 12k today.',
-  'Water bottle filled. Cardio first, lift after.',
-  'Pre-run selfie. Cold but going.',
-  'Outfit ready. Workout 1 in 20 min.',
+  'Down an hour from yesterday. Small wins.',
+  'Too much TikTok. Resetting tomorrow.',
+  'Best day this week — phone stayed in a drawer.',
+  'Deleted Instagram for the weekend.',
+  'Rough one. Doom-scrolled after dinner.',
+  'Phone goes in another room after 9pm now.',
 ];
 
 export function DailySheet() {
@@ -62,9 +62,9 @@ export function DailySheet() {
 
   const save = async () => {
     const text = caption.trim();
-    // Need at least one — photo or caption.
-    if (photos.length === 0 && !text) {
-      alert('Add a photo or write something — one is enough.');
+    // The Screen Time screenshot is required — that's the daily proof.
+    if (photos.length === 0) {
+      alert('Add a screenshot of your Screen Time to unlock the day.');
       return;
     }
     setBusy(true);
@@ -146,7 +146,7 @@ export function DailySheet() {
       <div className="sheet open">
         <div className="sheet-handle" />
         <h2>
-          <em>Today&apos;s entry</em>
+          <em>Today&apos;s Screen Time</em>
         </h2>
         <p
           style={{
@@ -157,12 +157,17 @@ export function DailySheet() {
             color: 'var(--ink-3)',
           }}
         >
-          A quick snap and a line about what you&apos;re doing today. This is
-          what your friends see.
+          Screenshot your Screen Time and post it. Honest numbers, every day —
+          that&apos;s the whole game. This is what your friends see.
         </p>
 
+        <div className="screentime-howto">
+          <b>How to grab it:</b> open <b>Settings → Screen Time</b>, then
+          screenshot the chart at the top. (Side button + volume up.)
+        </div>
+
         <div className="form-section">
-          <label>Snap</label>
+          <label>Your Screen Time screenshot</label>
           {photos.length === 0 ? (
             <button
               className="daily-photo-empty"
@@ -177,14 +182,13 @@ export function DailySheet() {
                   stroke="currentColor"
                   strokeWidth={1.6}
                 >
-                  <rect x={3} y={6.5} width={18} height={13.5} rx={2.5} />
-                  <circle cx={12} cy={13} r={4} />
-                  <path d="M8 6.5l1.5-2.2h5L16 6.5" />
+                  <rect x={4} y={3} width={16} height={18} rx={3} />
+                  <line x1={9} y1={18} x2={15} y2={18} strokeLinecap="round" />
                 </svg>
               </div>
               <div className="dpe-body">
-                <b>Add a photo or video</b>
-                <small>Selfie · gym fit · water bottle · trailhead</small>
+                <b>Add your Screen Time screenshot</b>
+                <small>From Settings → Screen Time</small>
               </div>
             </button>
           ) : (
@@ -225,7 +229,7 @@ export function DailySheet() {
           <input
             ref={fileInputRef}
             type="file"
-            accept="image/*,video/*"
+            accept="image/*"
             multiple
             style={{ display: 'none' }}
             onChange={(e) => onFiles(e.target.files)}
@@ -233,7 +237,7 @@ export function DailySheet() {
         </div>
 
         <div className="form-section">
-          <label>What are you doing today?</label>
+          <label>Add a note <span className="lbl-hint">optional</span></label>
           <textarea
             className="daily-journal-input"
             placeholder={placeholder}
@@ -248,7 +252,7 @@ export function DailySheet() {
             Cancel
           </button>
           <button className="btn btn-accent" onClick={save} disabled={busy}>
-            {busy ? 'Saving…' : 'Save & Unlock'}
+            {busy ? 'Saving…' : 'Post & Unlock'}
           </button>
         </div>
         <div style={{ height: 30 }} />

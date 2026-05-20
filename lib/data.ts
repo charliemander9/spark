@@ -238,15 +238,15 @@ export interface DemoFriend {
 
 export const DEMO_FRIENDS: DemoFriend[] = [
   { id: 'demo-maya', name: 'Maya',  day: 47, streak: 47,
-    todayEntry: { type: 'journal', body: 'Outdoor run, beach loop, 5K under the rain. Felt amazing.' } },
+    todayEntry: { type: 'photo', body: '3h 02m yesterday. Deleted Instagram for the week.' } },
   { id: 'demo-jay',  name: 'Jay',   day: 22, streak: 14,
-    todayEntry: { type: 'photo',  body: 'About to crush leg day. New PR or bust.', isVideo: true } },
+    todayEntry: { type: 'photo', body: '5h 40m — rough day, too much TikTok. Resetting.' } },
   { id: 'demo-sam',  name: 'Sam',   day: 61, streak: 61,
-    todayEntry: { type: 'photo',  body: 'Trailhead at 6am. Going for 10 miles.' } },
+    todayEntry: { type: 'photo', body: '2h 15m. Best day this month.' } },
   { id: 'demo-rina', name: 'Rina',  day: 9,  streak: 9,
-    todayEntry: { type: 'journal', body: 'Day 9. Knees sore. Walking helped more than I thought.' } },
+    todayEntry: { type: 'photo', body: 'Day 9. 4h flat. Slowly bringing it down.' } },
   { id: 'demo-leo',  name: 'Leo',   day: 33, streak: 33,
-    todayEntry: { type: 'photo',  body: 'Morning lift session — back day. Quick form check.', isVideo: true } },
+    todayEntry: { type: 'photo', body: '4h 30m. Phone stays in another room after 9pm now.' } },
 ];
 
 export interface DemoDiscover {
