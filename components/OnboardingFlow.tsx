@@ -8,6 +8,7 @@ import { NameSetup } from './onboarding/NameSetup';
 import { ChallengePicker } from './onboarding/ChallengePicker';
 import { Privacy } from './onboarding/Privacy';
 import { Buddies } from './onboarding/Buddies';
+import { Notifications } from './onboarding/Notifications';
 
 export function OnboardingFlow() {
   const screen = useSpark((s) => s.screen);
@@ -37,6 +38,7 @@ export function OnboardingFlow() {
       {screen === 'onb-challenge' && <ChallengePicker />}
       {screen === 'onb-privacy' && <Privacy />}
       {screen === 'onb-buddies' && <Buddies />}
+      {screen === 'onb-notifications' && <Notifications />}
     </div>
   );
 }

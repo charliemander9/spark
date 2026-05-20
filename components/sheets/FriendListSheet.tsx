@@ -44,9 +44,8 @@ export function FriendListSheet() {
 
   if (!mode) return null;
 
-  // Layer demo friends in when there are no real ones (matches Friends tab behavior)
-  const showDemo = demoMode || realFriends.length === 0;
-  const friends: FriendSummary[] = showDemo
+  // Demo friends only show in the list when demo mode is explicitly on.
+  const friends: FriendSummary[] = demoMode
     ? [
         ...realFriends,
         ...DEMO_FRIENDS.map(

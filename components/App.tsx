@@ -5,6 +5,7 @@ import { useSpark } from '@/lib/store';
 import { supabase, hasSupabase } from '@/lib/supabase';
 import { loadProfile } from '@/lib/profile';
 import { fetchTodayEntry } from '@/lib/dailyEntry';
+import { registerServiceWorker } from '@/lib/notifications';
 import { PhoneFrame } from './PhoneFrame';
 import { OnboardingFlow } from './OnboardingFlow';
 import { TabBar } from './TabBar';
@@ -33,8 +34,9 @@ export function App() {
   const setUser = useSpark((s) => s.setUser);
   const setScreen = useSpark((s) => s.setScreen);
   const setDailyEntry = useSpark((s) => s.setDailyEntry);
+  const setTab = useSpark((s) => s.setTab);
   const pushDiary = useSpark((s) => s.pushDiary);
-  const loadDemo = useSpark((s) => s.loadDemo);
+  const resetData = useSpark((s) => s.resetData);
 
   // Rehydrate today's diary entry from the DB row so the photo shows after reload.
   const rehydrateTodayInDiary = (today: {
@@ -85,6 +87,11 @@ export function App() {
     hasSupabase ? 'loading' : 'signedIn',
   );
 
+  // Register the service worker once on mount (enables push notifications).
+  useEffect(() => {
+    registerServiceWorker();
+  }, []);
+
   useEffect(() => {
     if (!hasSupabase || !supabase) return;
 
@@ -110,13 +117,15 @@ export function App() {
           // shows on Home / Profile / Friends after reload.
           rehydrateTodayInDiary(today);
         }
-        // New users — first sign-in — start at Welcome intro so they understand
-        // what the app does. Also pre-load demo content so when they land in
-        // the app post-onboarding, every tab looks alive.
+        // New users — first sign-in — start fresh: clear any stale state from
+        // the previous session (tab, diary, dailyEntry, demo data) and route
+        // through the Welcome intro.
         if (profile.onboarded) {
+          setTab('home');
           setScreen('app');
         } else {
-          loadDemo();
+          resetData();
+          setTab('home');
           setScreen('onb-welcome');
         }
       } else {
@@ -147,7 +156,7 @@ export function App() {
     return () => {
       data.subscription.unsubscribe();
     };
-  }, [setUser, setScreen, setDailyEntry, pushDiary, loadDemo]);
+  }, [setUser, setScreen, setDailyEntry, setTab, pushDiary, resetData]);
 
   const inOnboarding = screen.startsWith('onb-');
 

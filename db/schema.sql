@@ -62,14 +62,23 @@ create table if not exists public.nudges (
   created_at  timestamptz default now() not null
 );
 
+create table if not exists public.push_subscriptions (
+  endpoint    text primary key,
+  user_id     uuid references public.profiles on delete cascade not null,
+  p256dh      text not null,
+  auth        text not null,
+  created_at  timestamptz default now() not null
+);
+
 
 -- 2. ENABLE ROW-LEVEL SECURITY -------------------------------
 
-alter table public.profiles      enable row level security;
-alter table public.friendships   enable row level security;
-alter table public.follows       enable row level security;
-alter table public.daily_entries enable row level security;
-alter table public.nudges        enable row level security;
+alter table public.profiles           enable row level security;
+alter table public.friendships        enable row level security;
+alter table public.follows            enable row level security;
+alter table public.daily_entries      enable row level security;
+alter table public.nudges             enable row level security;
+alter table public.push_subscriptions enable row level security;
 
 
 -- 3. POLICIES -------------------------------------------------
@@ -143,6 +152,23 @@ create policy "nudges_insert_from_self" on public.nudges
 drop policy if exists "nudges_update_received" on public.nudges;
 create policy "nudges_update_received" on public.nudges
   for update using (auth.uid() = to_user);
+
+-- push_subscriptions — each user manages only their own device rows
+drop policy if exists "push_sub_select_own" on public.push_subscriptions;
+create policy "push_sub_select_own" on public.push_subscriptions
+  for select using (auth.uid() = user_id);
+
+drop policy if exists "push_sub_insert_own" on public.push_subscriptions;
+create policy "push_sub_insert_own" on public.push_subscriptions
+  for insert with check (auth.uid() = user_id);
+
+drop policy if exists "push_sub_update_own" on public.push_subscriptions;
+create policy "push_sub_update_own" on public.push_subscriptions
+  for update using (auth.uid() = user_id);
+
+drop policy if exists "push_sub_delete_own" on public.push_subscriptions;
+create policy "push_sub_delete_own" on public.push_subscriptions
+  for delete using (auth.uid() = user_id);
 
 
 -- 4. AUTO-CREATE PROFILE ON SIGN-UP ---------------------------

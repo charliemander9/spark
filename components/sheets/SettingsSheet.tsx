@@ -5,6 +5,7 @@ import { useUi } from '@/lib/storeActions';
 import { signOut } from '@/lib/auth';
 import { updateProfile } from '@/lib/profile';
 import { hasSupabase } from '@/lib/supabase';
+import { enableNotifications, notifState } from '@/lib/notifications';
 
 export function SettingsSheet() {
   const open = useUi((s) => s.settingsOpen);
@@ -98,6 +99,29 @@ export function SettingsSheet() {
               </button>
             ))}
           </div>
+        </div>
+
+        <div className="set-row">
+          <div className="body">
+            <b>Notifications</b>
+            <small>
+              {notifState() === 'granted'
+                ? 'On — you’ll get nudges and reminders'
+                : notifState() === 'denied'
+                ? 'Blocked — enable in your phone Settings → GoodMorning'
+                : 'Daily reminders + cheers from friends'}
+            </small>
+          </div>
+          <button
+            className="btn btn-secondary"
+            style={{ padding: '9px 16px', fontSize: 12.5 }}
+            onClick={async () => {
+              const r = await enableNotifications();
+              setUser({ push: r === 'granted' });
+            }}
+          >
+            {notifState() === 'granted' ? 'On ✓' : 'Enable'}
+          </button>
         </div>
 
         <div className="set-row">

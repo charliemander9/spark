@@ -15,9 +15,9 @@ export function Discover() {
   const [filter, setFilter] = useState<string>('For you');
   const [query, setQuery] = useState('');
 
-  // Discover is always populated with demo content for now — it gives new
-  // users something to browse before there are real posts on the network.
-  const allPosts = DEMO_DISCOVER;
+  // Discover shows demo content only when the Profile demo toggle is on. New
+  // testers should see real empty state to start.
+  const allPosts = demoMode ? DEMO_DISCOVER : [];
   const filteredByTag =
     filter === 'For you' ? allPosts : allPosts.filter((p) => p.tag === filter);
   const posts = query

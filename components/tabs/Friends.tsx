@@ -56,11 +56,9 @@ export function Friends() {
     });
   };
 
-  // Always layer demo friends in for visual richness when the user doesn't have
-  // their own friends yet. The toggle on Profile controls whether DEMO_DIARY is
-  // injected into the user's own diary, not whether demo people show up here.
-  const showDemoFriends = demoMode || realFriends.length === 0;
-  const friends: FriendSummary[] = showDemoFriends
+  // Demo friends only show when the Profile demo toggle is on — keeps the
+  // first-run experience clean and honest for testers.
+  const friends: FriendSummary[] = demoMode
     ? [
         ...realFriends,
         ...DEMO_FRIENDS.map(

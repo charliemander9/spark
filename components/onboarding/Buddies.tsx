@@ -1,8 +1,6 @@
 'use client';
 
 import { useSpark } from '@/lib/store';
-import { updateProfile } from '@/lib/profile';
-import { hasSupabase } from '@/lib/supabase';
 
 export function Buddies() {
   const setScreen = useSpark((s) => s.setScreen);
@@ -10,10 +8,7 @@ export function Buddies() {
   const push = useSpark((s) => s.user.push);
   const notifBuddies = useSpark((s) => s.user.notifBuddies);
 
-  const finish = () => {
-    if (hasSupabase) updateProfile({ onboarded: true });
-    setScreen('app');
-  };
+  const next = () => setScreen('onb-notifications');
 
   return (
     <div className="onb-q">
@@ -59,9 +54,9 @@ export function Buddies() {
       <div className="onb-stick">
         <button
           className="btn btn-accent btn-lg btn-block"
-          onClick={finish}
+          onClick={next}
         >
-          I&apos;m in
+          Continue
         </button>
       </div>
     </div>
