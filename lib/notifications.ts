@@ -31,7 +31,7 @@ export async function enableNotifications(): Promise<NotifState> {
   if (notifState() === 'unsupported') return 'unsupported';
   if (Notification.permission === 'denied') return 'denied';
 
-  let permission = Notification.permission;
+  let permission: NotificationPermission = Notification.permission;
   if (permission === 'default') {
     permission = await Notification.requestPermission();
   }
