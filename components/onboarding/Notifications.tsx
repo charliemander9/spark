@@ -20,8 +20,11 @@ export function Notifications() {
     setBusy(false);
   };
 
-  const finish = async () => {
-    if (hasSupabase) await updateProfile({ onboarded: true });
+  const finish = () => {
+    // Mark onboarded in the background — never block entry into the app.
+    if (hasSupabase) {
+      updateProfile({ onboarded: true }).catch(() => {});
+    }
     setScreen('app');
   };
 

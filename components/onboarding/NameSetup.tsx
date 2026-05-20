@@ -13,15 +13,17 @@ export function NameSetup() {
   // Seed with the current profile name (which the trigger sets to the email
   // local-part by default). The user can keep it or type a fresh display name.
   const [name, setName] = useState(user.name || '');
-  const [busy, setBusy] = useState(false);
 
-  const handleContinue = async () => {
+  const handleContinue = () => {
     const trimmed = name.trim();
     if (trimmed.length < 2) return;
-    setBusy(true);
+    // Save locally and move on immediately — never block on the network.
     setUser({ name: trimmed });
-    if (hasSupabase) await updateProfile({ name: trimmed });
-    setBusy(false);
+    if (hasSupabase) {
+      updateProfile({ name: trimmed }).catch(() => {
+        /* best effort — name is already set locally */
+      });
+    }
     setScreen('onb-challenge');
   };
 
@@ -75,10 +77,10 @@ export function NameSetup() {
       <div style={{ flex: 1 }} />
       <button
         className="btn btn-accent btn-lg btn-block"
-        disabled={name.trim().length < 2 || busy}
+        disabled={name.trim().length < 2}
         onClick={handleContinue}
       >
-        {busy ? 'Saving…' : 'Continue'}
+        Continue
       </button>
     </div>
   );
