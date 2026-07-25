@@ -42,6 +42,9 @@ interface UiState {
   viewerEntry: ViewerEntry | null;
   friendListMode: FriendListMode | null;
   viewedUser: ViewedUser | null;
+  /** True when the challenge picker is opened from Settings (not onboarding),
+   *  so its "Continue" returns straight to the app instead of advancing. */
+  editingChallenge: boolean;
 
   openSettings: () => void;
   closeSettings: () => void;
@@ -59,6 +62,7 @@ interface UiState {
   closeFriendList: () => void;
   openUserProfile: (u: ViewedUser) => void;
   closeUserProfile: () => void;
+  setEditingChallenge: (v: boolean) => void;
 }
 
 const useUi = create<UiState>((set) => ({
@@ -70,6 +74,7 @@ const useUi = create<UiState>((set) => ({
   viewerEntry: null,
   friendListMode: null,
   viewedUser: null,
+  editingChallenge: false,
   openSettings: () => set({ settingsOpen: true }),
   closeSettings: () => set({ settingsOpen: false }),
   openWorkoutSheet: () => set({ workoutSheetOpen: true }),
@@ -86,6 +91,7 @@ const useUi = create<UiState>((set) => ({
   closeFriendList: () => set({ friendListMode: null }),
   openUserProfile: (u) => set({ viewedUser: u }),
   closeUserProfile: () => set({ viewedUser: null }),
+  setEditingChallenge: (v) => set({ editingChallenge: v }),
 }));
 
 // Small typed accessor for convenience:

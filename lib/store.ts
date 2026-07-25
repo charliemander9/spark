@@ -154,6 +154,7 @@ export const useSpark = create<SparkState>((set, get) => ({
     push: true,
     accBuddy: true,
     notifBuddies: true,
+    reminderCount: 3,
   },
 
   menu: makeDefaultMenu(),

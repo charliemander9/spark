@@ -9,6 +9,7 @@ import { enableNotifications, notifState } from '@/lib/notifications';
 export function Notifications() {
   const setScreen = useSpark((s) => s.setScreen);
   const setUser = useSpark((s) => s.setUser);
+  const reminderCount = useSpark((s) => s.user.reminderCount);
   const [busy, setBusy] = useState(false);
   const [state, setState] = useState(notifState());
 
@@ -96,6 +97,32 @@ export function Notifications() {
         )}
       </div>
 
+      <div className="reminder-count-row">
+        <div className="rc-label">
+          <b>Daily reminders</b>
+          <small>Gentle nudges to check the app and stay on track</small>
+        </div>
+        <div className="rc-stepper">
+          <button
+            onClick={() =>
+              setUser({ reminderCount: Math.max(1, reminderCount - 1) })
+            }
+            disabled={reminderCount <= 1}
+          >
+            −
+          </button>
+          <span className="rc-value">{reminderCount}×</span>
+          <button
+            onClick={() =>
+              setUser({ reminderCount: Math.min(6, reminderCount + 1) })
+            }
+            disabled={reminderCount >= 6}
+          >
+            +
+          </button>
+        </div>
+      </div>
+
       <p
         style={{
           marginTop: 14,
@@ -106,7 +133,7 @@ export function Notifications() {
           textAlign: 'center',
         }}
       >
-        You can change this anytime in Settings.
+        You can change all of this anytime in Settings.
       </p>
 
       <div style={{ flex: 1, minHeight: 12 }} />

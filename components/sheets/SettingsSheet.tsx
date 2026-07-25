@@ -14,8 +14,10 @@ export function SettingsSheet() {
   const user = useSpark((s) => s.user);
   const setUser = useSpark((s) => s.setUser);
   const setScreen = useSpark((s) => s.setScreen);
+  const setTab = useSpark((s) => s.setTab);
   const beginAnother75 = useSpark((s) => s.beginAnother75);
   const setDay75 = useSpark((s) => s.setDay75);
+  const setEditingChallenge = useUi((s) => s.setEditingChallenge);
 
   if (!open) return null;
 
@@ -44,6 +46,7 @@ export function SettingsSheet() {
           className="set-row nav-row"
           onClick={() => {
             close();
+            setEditingChallenge(true);
             setScreen('onb-challenge');
           }}
         >
@@ -57,12 +60,12 @@ export function SettingsSheet() {
           className="set-row nav-row"
           onClick={() => {
             close();
-            setScreen('onb-buddies');
+            setTab('friends');
           }}
         >
           <div className="body">
-            <b>Accountability buddies</b>
-            <small>Edit your circle</small>
+            <b>Your circle</b>
+            <small>Add friends, see who&apos;s on track, send nudges</small>
           </div>
           <div className="arrow">›</div>
         </div>
@@ -122,6 +125,32 @@ export function SettingsSheet() {
           >
             {notifState() === 'granted' ? 'On ✓' : 'Enable'}
           </button>
+        </div>
+
+        <div className="set-row">
+          <div className="body">
+            <b>Daily reminders</b>
+            <small>How many nudges a day to check in</small>
+          </div>
+          <div className="rc-stepper">
+            <button
+              onClick={() =>
+                setUser({ reminderCount: Math.max(1, user.reminderCount - 1) })
+              }
+              disabled={user.reminderCount <= 1}
+            >
+              −
+            </button>
+            <span className="rc-value">{user.reminderCount}×</span>
+            <button
+              onClick={() =>
+                setUser({ reminderCount: Math.min(6, user.reminderCount + 1) })
+              }
+              disabled={user.reminderCount >= 6}
+            >
+              +
+            </button>
+          </div>
         </div>
 
         <div className="set-row">

@@ -1,6 +1,7 @@
 'use client';
 
 import { useSpark } from '@/lib/store';
+import { useUi } from '@/lib/storeActions';
 import { PRESETS, CATEGORIES } from '@/lib/data';
 import { CustomBuilder } from './CustomBuilder';
 
@@ -10,6 +11,8 @@ export function ChallengePicker() {
   const applyCustomDraft = useSpark((s) => s.applyCustomDraft);
   const setUser = useSpark((s) => s.setUser);
   const preset = useSpark((s) => s.user.preset);
+  const editingChallenge = useUi((s) => s.editingChallenge);
+  const setEditingChallenge = useUi((s) => s.setEditingChallenge);
 
   return (
     <div className="onb-q">
@@ -74,10 +77,16 @@ export function ChallengePicker() {
           className="btn btn-accent btn-lg btn-block"
           onClick={() => {
             if (preset === 'custom') applyCustomDraft();
-            setScreen('onb-privacy');
+            if (editingChallenge) {
+              // Opened from Settings — go straight back to the app.
+              setEditingChallenge(false);
+              setScreen('app');
+            } else {
+              setScreen('onb-privacy');
+            }
           }}
         >
-          Continue
+          {editingChallenge ? 'Save challenge' : 'Continue'}
         </button>
       </div>
     </div>

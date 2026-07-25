@@ -93,6 +93,7 @@ export interface User {
   push: boolean;
   accBuddy: boolean;
   notifBuddies: boolean;
+  reminderCount: number;       // how many daily reminder pushes the user wants
 }
 
 /** Menu is now a variable-length list of check-ins (1–6). Presets ship 3. */

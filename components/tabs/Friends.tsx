@@ -213,43 +213,64 @@ export function Friends() {
         </div>
       )}
 
-      {/* Buddies strip — quick cheer access */}
+      {/* Your circle — tap a red one to nudge, green = posted today */}
       {friends.length > 0 && (
-        <div className="buddies-row">
-          {friends.map((f) => (
-            <div
-              key={f.id}
-              className={'buddy' + (f.todayEntry ? ' has-note' : ' no-gratitude')}
-            >
-              <div className="buddy-ava-wrap">
-                <div className={'buddy-ava sage' + (f.todayEntry ? ' has-gratitude' : '')}>
-                  {(f.name[0] || '?').toUpperCase()}
-                </div>
-                {f.todayEntry && (
+        <>
+          <div className="circle-head">
+            <div className="section-label">Your circle</div>
+            <div className="circle-legend">
+              <span><i className="cl-dot green" /> posted</span>
+              <span><i className="cl-dot red" /> nudge them</span>
+            </div>
+          </div>
+          <div className="buddies-row">
+            {friends.map((f) => (
+              <div
+                key={f.id}
+                className={'buddy' + (f.todayEntry ? ' has-note' : ' no-gratitude')}
+              >
+                <div className="buddy-ava-wrap">
+                  <button
+                    className={'buddy-ava sage' + (f.todayEntry ? ' has-gratitude' : '')}
+                    onClick={() =>
+                      openUserProfile({
+                        id: f.id,
+                        name: f.name,
+                        bio: f.bio,
+                        avatarUrl: f.avatarUrl,
+                        day: f.day,
+                        streak: f.streak,
+                        isDemo: f.id.startsWith('demo-'),
+                      })
+                    }
+                  >
+                    {(f.name[0] || '?').toUpperCase()}
+                  </button>
                   <button
                     className="nudge-dot"
                     onClick={() => setConfirm({ friendId: f.id, name: f.name })}
+                    title="Send a nudge"
                   >
                     <svg viewBox="0 0 24 24" width={11} height={11} fill="currentColor">
                       <path d="M13 2l-9 12h7l-1 8 9-12h-7z" />
                     </svg>
                   </button>
-                )}
+                </div>
+                <span className="name">{f.name}</span>
+                <span className="streak-mini">
+                  <span>🔥</span>
+                  <span className="mono">{f.streak}d</span>
+                </span>
               </div>
-              <span className="name">{f.name}</span>
-              <span className="streak-mini">
-                <span>🔥</span>
-                <span className="mono">{f.streak}d</span>
-              </span>
+            ))}
+            <div className="buddy" onClick={openInviteSheet}>
+              <div className="buddy-ava-wrap">
+                <div className="buddy-ava add">+</div>
+              </div>
+              <span className="name">Add</span>
             </div>
-          ))}
-          <div className="buddy" onClick={openInviteSheet}>
-            <div className="buddy-ava-wrap">
-              <div className="buddy-ava add">+</div>
-            </div>
-            <span className="name">Add</span>
           </div>
-        </div>
+        </>
       )}
 
       {loading && !demoMode && feed.length === 0 ? (
