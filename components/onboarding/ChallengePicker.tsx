@@ -1,9 +1,14 @@
 'use client';
 
+import { useState } from 'react';
 import { useSpark } from '@/lib/store';
 import { useUi } from '@/lib/storeActions';
 import { PRESETS, CATEGORIES, CHALLENGE_LENGTH } from '@/lib/data';
 import { CustomBuilder } from './CustomBuilder';
+
+// Shown up front — everything else is one tap away behind "See more
+// programs" so a first-timer isn't handed all 8 options at once.
+const SHORTLIST = ['custom', 'all-in-lite', 'move-more'];
 
 export function ChallengePicker() {
   const setScreen = useSpark((s) => s.setScreen);
@@ -13,6 +18,14 @@ export function ChallengePicker() {
   const preset = useSpark((s) => s.user.preset);
   const editingChallenge = useUi((s) => s.editingChallenge);
   const setEditingChallenge = useUi((s) => s.setEditingChallenge);
+
+  // Auto-expand if the current selection lives in the hidden list (e.g.
+  // editing an existing challenge from Settings) so it isn't hidden away.
+  const [showMore, setShowMore] = useState(!SHORTLIST.includes(preset));
+
+  const entries = Object.entries(PRESETS);
+  const visible = showMore ? entries : entries.filter(([id]) => SHORTLIST.includes(id));
+  const hiddenCount = entries.length - SHORTLIST.length;
 
   return (
     <div className="onb-q">
@@ -24,7 +37,7 @@ export function ChallengePicker() {
         pick a starting point below. Change anytime in Settings.
       </p>
 
-      {Object.entries(PRESETS).map(([id, p]) => {
+      {visible.map(([id, p]) => {
         const selected = preset === id;
         return (
           <button
@@ -70,6 +83,16 @@ export function ChallengePicker() {
           </button>
         );
       })}
+
+      {!showMore && (
+        <button
+          className="btn btn-ghost btn-block"
+          style={{ fontSize: 13 }}
+          onClick={() => setShowMore(true)}
+        >
+          See more programs ({hiddenCount})
+        </button>
+      )}
 
       <div style={{ flex: 1, minHeight: 12 }} />
       <div className="onb-stick">
