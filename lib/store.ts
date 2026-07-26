@@ -2,6 +2,7 @@
 
 import { create } from 'zustand';
 import { CATEGORIES, PRESETS, CHALLENGE_LENGTH } from './data';
+import { dateKey } from './helpers';
 import type {
   CheckIn, CustomDraftSlot, DiaryEntry, Menu, Photo, Screen, SlotKey, Tab, User,
   CalendarDay, WorkoutDetails,
@@ -23,7 +24,7 @@ interface SparkState {
   customDraft: CustomDraftSlot[];
 
   // Calendar history
-  calendar: Record<number, CalendarDay>;
+  calendar: Record<string, CalendarDay>;
 
   // Diary (photos / videos / reflections)
   diary: DiaryEntry[];
@@ -96,29 +97,36 @@ function makeDefaultCustomDraft(): CustomDraftSlot[] {
 }
 
 // Empty calendar by default — populated as the user completes days.
-const defaultCalendar: Record<number, CalendarDay> = {};
+// Keyed by real date (YYYY-MM-DD), see dateKey().
+const defaultCalendar: Record<string, CalendarDay> = {};
 
 // Empty by default — populated only when the user posts or loads demo.
 const defaultDiary: DiaryEntry[] = [];
 
+// Records the current per-slot completion state under today's real date, so
+// the calendar reflects exactly what was ticked that day (partial or full).
+function snapshotToday(
+  calendar: SparkState['calendar'],
+  m: Menu,
+): SparkState['calendar'] {
+  return { ...calendar, [dateKey()]: { done: m.map((c) => c.completed) } };
+}
+
 /**
  * Helper used by every "complete a check-in" action. Applies the slot mutation
- * to the menu, and if every slot is completed, bumps the day counter, locks in
- * a calendar entry, and resets all slots for tomorrow.
+ * to the menu, records today's progress on the real calendar date, and if
+ * every slot is completed, bumps the day counter and resets slots for tomorrow.
  */
 function bumpIfAllDone(
   st: SparkState,
   mutate: (m: Menu) => Menu,
 ): Partial<SparkState> {
   const m = mutate(st.menu);
+  const cal = snapshotToday(st.calendar, m);
   const allDone = m.length > 0 && m.every((c) => c.completed);
-  if (!allDone) return { menu: m };
+  if (!allDone) return { menu: m, calendar: cal };
 
   const u = { ...st.user, streak: st.user.streak + 1 };
-  const cal = {
-    ...st.calendar,
-    [u.day]: { done: m.map(() => true) },
-  };
   if (u.day >= CHALLENGE_LENGTH) {
     return { menu: m, user: u, calendar: cal, challengeComplete: true };
   }
@@ -266,9 +274,8 @@ export const useSpark = create<SparkState>((set, get) => ({
   toggleBinary: (key) => set((st) => {
     const cur = st.menu[key];
     if (cur.completed) {
-      return {
-        menu: st.menu.map((c, i) => (i === key ? { ...c, completed: false } : c)),
-      } as Partial<SparkState>;
+      const menu = st.menu.map((c, i) => (i === key ? { ...c, completed: false } : c));
+      return { menu, calendar: snapshotToday(st.calendar, menu) } as Partial<SparkState>;
     }
     return bumpIfAllDone(st, (m) =>
       m.map((c, i) => (i === key ? { ...c, completed: true } : c))
@@ -281,9 +288,8 @@ export const useSpark = create<SparkState>((set, get) => ({
   toggleSlotComplete: (key) => set((st) => {
     const cur = st.menu[key];
     if (cur.completed) {
-      return {
-        menu: st.menu.map((c, i) => (i === key ? { ...c, completed: false } : c)),
-      } as Partial<SparkState>;
+      const menu = st.menu.map((c, i) => (i === key ? { ...c, completed: false } : c));
+      return { menu, calendar: snapshotToday(st.calendar, menu) } as Partial<SparkState>;
     }
     return bumpIfAllDone(st, (m) =>
       m.map((c, i) => (i === key ? { ...c, completed: true } : c)),
@@ -339,16 +345,13 @@ export const useSpark = create<SparkState>((set, get) => ({
   loadDemo: () => set((st) => {
     const slots = st.menu.length || 3;
     // Pre-fill the 6 days BEFORE today on the real calendar so it looks alive.
-    const now = new Date();
-    const today = now.getDate();
-    const completedDays: Record<number, CalendarDay> = {};
+    const completedDays: Record<string, CalendarDay> = {};
     for (let i = 1; i <= 6; i++) {
-      const d = today - i;
-      if (d >= 1) {
-        completedDays[d] = {
-          done: Array.from({ length: slots }, () => true),
-        };
-      }
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      completedDays[dateKey(d)] = {
+        done: Array.from({ length: slots }, () => true),
+      };
     }
     return {
       demoMode: true,
@@ -362,13 +365,12 @@ export const useSpark = create<SparkState>((set, get) => ({
   }),
 
   clearDemo: () => set((st) => {
-    // Clear demo-injected calendar days
-    const now = new Date();
-    const today = now.getDate();
+    // Clear demo-injected calendar days (the 6 dates before today)
     const cal = { ...st.calendar };
     for (let i = 1; i <= 6; i++) {
-      const d = today - i;
-      if (d >= 1) delete cal[d];
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      delete cal[dateKey(d)];
     }
     return {
       demoMode: false,

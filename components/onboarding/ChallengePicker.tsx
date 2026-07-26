@@ -8,7 +8,7 @@ import { CustomBuilder } from './CustomBuilder';
 
 // Shown up front — everything else is one tap away behind "See more
 // programs" so a first-timer isn't handed all 8 options at once.
-const SHORTLIST = ['custom', 'all-in-lite', 'move-more'];
+const SHORTLIST = ['custom', 'balance', 'all-in-lite'];
 
 export function ChallengePicker() {
   const setScreen = useSpark((s) => s.setScreen);

@@ -9,6 +9,18 @@ export function todayLabel(): string {
   });
 }
 
+/**
+ * Local-time YYYY-MM-DD key for the calendar map. We key completions by the
+ * real calendar date they happened on (not the challenge-day counter), so
+ * ticks land on the correct cell and don't collide across months.
+ */
+export function dateKey(d: Date = new Date()): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
 export function greeting(name: string): [string, string] {
   const hr = new Date().getHours();
   const g = hr < 12 ? 'Good morning' : hr < 18 ? 'Good afternoon' : 'Good evening';

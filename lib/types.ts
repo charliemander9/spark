@@ -21,7 +21,7 @@ export interface Category {
 }
 
 export type PresetId =
-  | 'all-in' | 'all-in-lite' | 'runner' | 'endurance' | 'move-more'
+  | 'balance' | 'all-in' | 'all-in-lite' | 'runner' | 'endurance' | 'move-more'
   | 'recomp' | 'reset' | 'recovery' | 'custom';
 
 export interface PresetSlot {

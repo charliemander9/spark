@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useSpark } from '@/lib/store';
 import { CATEGORIES, CHALLENGE_LENGTH } from '@/lib/data';
+import { dateKey } from '@/lib/helpers';
 import type { CalendarDay } from '@/lib/types';
 
 export function Calendar() {
@@ -30,8 +31,12 @@ export function Calendar() {
   const colors = menu.map((c) => CATEGORIES[c.category]?.ringColor || '#999');
   const labels = menu.map((c) => c.label);
 
+  // Today's marks = live menu OR'd with anything already recorded for today's
+  // date. The menu resets when a full day rolls over, so without the merge the
+  // day you just completed would look blank until tomorrow.
+  const storedToday = calendar[dateKey(now)];
   const todayData: CalendarDay = {
-    done: menu.map((c) => c.completed),
+    done: menu.map((c, i) => c.completed || !!storedToday?.done[i]),
   };
 
   const cells: (number | null)[] = [
@@ -55,7 +60,7 @@ export function Calendar() {
           if (d === null) return <div key={i} className="cal-cell empty" />;
           const isToday = d === today;
           const isFuture = d > today;
-          const data = isToday ? todayData : calendar[d];
+          const data = isToday ? todayData : calendar[dateKey(new Date(year, month, d))];
           const hasData = !!data && data.done.some(Boolean);
           const cls = ['cal-cell'];
           if (isFuture) cls.push('future');
@@ -86,7 +91,7 @@ export function Calendar() {
         <DayDetail
           day={openDay}
           date={new Date(year, month, openDay)}
-          data={openDay === today ? todayData : calendar[openDay]}
+          data={openDay === today ? todayData : calendar[dateKey(new Date(year, month, openDay))]}
           labels={labels}
           colors={colors}
           onClose={() => setOpenDay(null)}

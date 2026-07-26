@@ -37,7 +37,7 @@ export const CATEGORIES: Record<CategoryId, Category> = {
   reading: {
     id: 'reading', label: 'Reading', type: 'numeric',
     ringColor: '#F5C842', unit: 'pages', defaultGoal: 10,
-    range: [5, 30], step: 1,
+    range: [2, 30], step: 1,
     fmt: (n) => n + ' pages',
   },
   sleep: {
@@ -57,6 +57,16 @@ export const PRESETS: Record<string, Preset> = {
     label: 'Build my own',
     desc: 'Pick three from the catalog. Mix and match.',
     slots: null,
+  },
+  balance: {
+    label: 'Mind & Body',
+    desc: 'Sleep, movement, posture, reading — a well-rounded reset.',
+    slots: [
+      { cat: 'sleep',   label: 'Sleep',        config: { goal: 8 } },
+      { cat: 'workout', label: 'Workout',      config: { mustBeOutdoors: false, minDuration: 30 } },
+      { cat: 'custom',  label: 'Posture',      config: { label: 'Posture', quantified: false } },
+      { cat: 'reading', label: 'Read 2 Pages', config: { goal: 2 } },
+    ],
   },
   'all-in': {
     label: 'All In',
