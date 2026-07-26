@@ -1,6 +1,6 @@
 # Spark
 
-A 75-day habit-building app. Find your spark — seventy-five days of the habits you choose, held honest by the people who show up with you.
+A 30-day habit-building app. Find your spark — thirty days of the habits you choose, held honest by the people who show up with you.
 
 Built with Next.js 14, deployed on Vercel. Installable on iOS via "Add to Home Screen."
 

@@ -6,6 +6,7 @@ import { signOut } from '@/lib/auth';
 import { updateProfile } from '@/lib/profile';
 import { hasSupabase } from '@/lib/supabase';
 import { enableNotifications, notifState } from '@/lib/notifications';
+import { CHALLENGE_LENGTH } from '@/lib/data';
 
 export function SettingsSheet() {
   const open = useUi((s) => s.settingsOpen);
@@ -15,8 +16,8 @@ export function SettingsSheet() {
   const setUser = useSpark((s) => s.setUser);
   const setScreen = useSpark((s) => s.setScreen);
   const setTab = useSpark((s) => s.setTab);
-  const beginAnother75 = useSpark((s) => s.beginAnother75);
-  const setDay75 = useSpark((s) => s.setDay75);
+  const beginAnotherRound = useSpark((s) => s.beginAnotherRound);
+  const setChallengeComplete = useSpark((s) => s.setChallengeComplete);
   const setEditingChallenge = useUi((s) => s.setEditingChallenge);
 
   if (!open) return null;
@@ -183,16 +184,16 @@ export function SettingsSheet() {
 
         <div className="set-row">
           <div className="body">
-            <b>Test: Day 75 finish</b>
-            <small>Jump to day 75 to preview the celebration</small>
+            <b>Test: Challenge finish</b>
+            <small>Jump to the last day to preview the celebration</small>
           </div>
           <button
             className="btn btn-secondary"
             style={{ padding: '9px 16px', fontSize: 12.5 }}
             onClick={() => {
               close();
-              setUser({ day: 75 });
-              setDay75(true);
+              setUser({ day: CHALLENGE_LENGTH });
+              setChallengeComplete(true);
             }}
           >
             Trigger
@@ -210,7 +211,7 @@ export function SettingsSheet() {
             onClick={() => {
               close();
               setUser({ buddies: [], follows: [], day: 1, streak: 0, dailyEntry: null });
-              beginAnother75();
+              beginAnotherRound();
               setScreen('onb-welcome');
             }}
           >

@@ -840,6 +840,12 @@ p { line-height: 1.55; color: var(--ink-3); font-size: 14.5px; }
 }
 .daily-prompt .tag { color: var(--terracotta); }
 .daily-prompt .serif-quote { margin-top: 8px; }
+.daily-prompt .quote-author {
+  margin-top: 6px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  color: var(--muted);
+}
 
 .home-hero .date {
   font-family: 'Inter', sans-serif;

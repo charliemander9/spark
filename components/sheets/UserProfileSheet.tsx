@@ -9,6 +9,7 @@ import {
   isFollowing,
   getFollowCounts,
 } from '@/lib/friends';
+import { CHALLENGE_LENGTH } from '@/lib/data';
 
 /**
  * Tap-into-someone-else's profile sheet. Shows their avatar, name, bio,
@@ -84,7 +85,7 @@ export function UserProfileSheet() {
         <div className="ups-stats">
           <div className="ups-stat">
             <span className="v">{user.day ?? 1}</span>
-            <span className="l">of 75</span>
+            <span className="l">of {CHALLENGE_LENGTH}</span>
           </div>
           <div className="ups-stat">
             <span className="v">{user.streak ?? 0}</span>

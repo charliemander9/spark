@@ -1,7 +1,7 @@
 'use client';
 
 import { useSpark } from '@/lib/store';
-import { CATEGORIES } from '@/lib/data';
+import { CATEGORIES, CHALLENGE_LENGTH } from '@/lib/data';
 import type { CalendarDay } from '@/lib/types';
 
 export function Calendar() {
@@ -39,7 +39,7 @@ export function Calendar() {
     <div className="profile-calendar">
       <div className="cal-header">
         <div className="cal-month">{monthName}</div>
-        <div className="cal-day-count">Day {user.day} of 75</div>
+        <div className="cal-day-count">Day {user.day} of {CHALLENGE_LENGTH}</div>
       </div>
       <div className="cal-dow">
         {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (

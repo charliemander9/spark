@@ -14,7 +14,7 @@ import { Discover } from './tabs/Discover';
 import { Journal } from './tabs/Journal';
 import { Friends } from './tabs/Friends';
 import { Profile } from './tabs/Profile';
-import { Day75 } from './Day75';
+import { DayComplete } from './DayComplete';
 import { SignIn } from './auth/SignIn';
 import { SettingsSheet } from './sheets/SettingsSheet';
 import { WorkoutSheet } from './sheets/WorkoutSheet';
@@ -30,7 +30,7 @@ type AuthState = 'loading' | 'signedIn' | 'signedOut';
 export function App() {
   const screen = useSpark((s) => s.screen);
   const tab = useSpark((s) => s.tab);
-  const day75 = useSpark((s) => s.day75Celebrate);
+  const challengeComplete = useSpark((s) => s.challengeComplete);
   const setUser = useSpark((s) => s.setUser);
   const setScreen = useSpark((s) => s.setScreen);
   const setDailyEntry = useSpark((s) => s.setDailyEntry);
@@ -184,8 +184,8 @@ export function App() {
     <PhoneFrame>
       {inOnboarding ? (
         <OnboardingFlow />
-      ) : day75 ? (
-        <Day75 />
+      ) : challengeComplete ? (
+        <DayComplete />
       ) : (
         <>
           {tab === 'home' && <Home />}
@@ -195,7 +195,7 @@ export function App() {
           {tab === 'foryou' && <Profile />}
         </>
       )}
-      {!inOnboarding && !day75 && <TabBar />}
+      {!inOnboarding && !challengeComplete && <TabBar />}
       <SettingsSheet />
       <WorkoutSheet />
       <NumericSheet />

@@ -8,6 +8,7 @@ import { updateProfile } from '@/lib/profile';
 import { hasSupabase, supabase } from '@/lib/supabase';
 import { uploadAvatar } from '@/lib/storage';
 import { getFollowCounts } from '@/lib/friends';
+import { CHALLENGE_LENGTH } from '@/lib/data';
 import { Media } from '../Media';
 import type { DiaryEntry } from '@/lib/types';
 
@@ -238,7 +239,7 @@ export function Profile() {
         <div className="prof-streak-chip">
           <span>📅</span>
           <span>
-            Day <b>{user.day}</b> of 75
+            Day <b>{user.day}</b> of {CHALLENGE_LENGTH}
           </span>
         </div>
         <div className="prof-streak-chip">

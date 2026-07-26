@@ -1,7 +1,7 @@
 // Zustand store — all global state for Spark.
 
 import { create } from 'zustand';
-import { CATEGORIES, PRESETS } from './data';
+import { CATEGORIES, PRESETS, CHALLENGE_LENGTH } from './data';
 import type {
   CheckIn, CustomDraftSlot, DiaryEntry, Menu, Photo, Screen, SlotKey, Tab, User,
   CalendarDay, WorkoutDetails,
@@ -11,7 +11,7 @@ interface SparkState {
   // Routing
   screen: Screen;
   tab: Tab;
-  day75Celebrate: boolean;
+  challengeComplete: boolean;
 
   // User
   user: User;
@@ -64,8 +64,8 @@ interface SparkState {
   useFreeze: () => void;
   pushDiary: (e: DiaryEntry) => void;
 
-  setDay75: (v: boolean) => void;
-  beginAnother75: () => void;
+  setChallengeComplete: (v: boolean) => void;
+  beginAnotherRound: () => void;
 
   loadDemo: () => void;
   clearDemo: () => void;
@@ -118,8 +118,8 @@ function bumpIfAllDone(
     ...st.calendar,
     [u.day]: { done: m.map(() => true) },
   };
-  if (u.day >= 75) {
-    return { menu: m, user: u, calendar: cal, day75Celebrate: true };
+  if (u.day >= CHALLENGE_LENGTH) {
+    return { menu: m, user: u, calendar: cal, challengeComplete: true };
   }
   u.day += 1;
   const reset = m.map((c) => ({
@@ -135,7 +135,7 @@ function bumpIfAllDone(
 export const useSpark = create<SparkState>((set, get) => ({
   screen: 'onb-welcome',
   tab: 'home',
-  day75Celebrate: false,
+  challengeComplete: false,
 
   user: {
     name: 'Charlie',
@@ -310,13 +310,13 @@ export const useSpark = create<SparkState>((set, get) => ({
     newestDiaryId: e.id,
   })),
 
-  setDay75: (v) => set({ day75Celebrate: v }),
+  setChallengeComplete: (v) => set({ challengeComplete: v }),
 
-  beginAnother75: () => set((st) => ({
+  beginAnotherRound: () => set((st) => ({
     user: { ...st.user, day: 1, streak: 1 },
     calendar: {},
     menu: makeDefaultMenu(),
-    day75Celebrate: false,
+    challengeComplete: false,
     tab: 'home',
   })),
 

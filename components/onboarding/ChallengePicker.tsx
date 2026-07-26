@@ -2,7 +2,7 @@
 
 import { useSpark } from '@/lib/store';
 import { useUi } from '@/lib/storeActions';
-import { PRESETS, CATEGORIES } from '@/lib/data';
+import { PRESETS, CATEGORIES, CHALLENGE_LENGTH } from '@/lib/data';
 import { CustomBuilder } from './CustomBuilder';
 
 export function ChallengePicker() {
@@ -17,7 +17,7 @@ export function ChallengePicker() {
   return (
     <div className="onb-q">
       <h1>
-        Choose your <em>75</em>
+        Choose your <em>{CHALLENGE_LENGTH}</em>
       </h1>
       <p className="lede">
         Build your own (recommended 3 check-ins — but you can do 1 to 5) or

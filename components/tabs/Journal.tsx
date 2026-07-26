@@ -4,6 +4,7 @@ import { useRef } from 'react';
 import { useSpark } from '@/lib/store';
 import { useUi } from '@/lib/storeActions';
 import { gearSvg } from '@/lib/helpers';
+import { CHALLENGE_LENGTH } from '@/lib/data';
 import { Calendar } from '../Calendar';
 import type { Photo } from '@/lib/types';
 
@@ -60,7 +61,7 @@ export function Journal() {
       </div>
 
       <div className="friends-head">
-        <div className="date">Day {user.day} of 75</div>
+        <div className="date">Day {user.day} of {CHALLENGE_LENGTH}</div>
         <h1>Journal</h1>
       </div>
 

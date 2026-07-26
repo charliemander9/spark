@@ -17,7 +17,7 @@ create table if not exists public.profiles (
   day          int  default 1  not null,
   streak       int  default 0  not null,
   freezes      int  default 2  not null,
-  preset       text default '75-hard-lite' not null,
+  preset       text default 'all-in-lite' not null,
   tone         text default 'balanced' not null check (tone in ('feather','balanced','rock')),
   privacy      text default 'friends'  not null check (privacy in ('private','friends','open')),
   onboarded    boolean default false not null,

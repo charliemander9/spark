@@ -47,7 +47,7 @@ export function SignIn() {
               className="lede"
               style={{ marginTop: 18, maxWidth: 320, textAlign: 'center' }}
             >
-              Seventy-five days, every morning, the habits you choose — held by
+              Thirty days, every morning, the habits you choose — held by
               the community who shows up with you.
             </p>
             <p

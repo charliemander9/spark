@@ -1,6 +1,6 @@
 // Small utilities.
 
-import { CATEGORIES, DAILY_QUOTES } from './data';
+import { CATEGORIES, QUOTES, type Quote } from './data';
 import type { CategoryId, SlotConfig } from './types';
 
 export function todayLabel(): string {
@@ -15,8 +15,15 @@ export function greeting(name: string): [string, string] {
   return [g, name];
 }
 
-export function dailyQuote(): string {
-  return DAILY_QUOTES[new Date().getDate() % DAILY_QUOTES.length];
+// Picks the day's quote from among the ones tagged for what the user
+// actually chose to track — falls back to "general" quotes if nothing
+// matches. Stable across the day (keyed off the date), changes daily.
+export function dailyQuote(categories: CategoryId[] = []): Quote {
+  const pool = QUOTES.filter(
+    (q) => q.tags.includes('general') || categories.some((c) => q.tags.includes(c)),
+  );
+  const list = pool.length > 0 ? pool : QUOTES;
+  return list[new Date().getDate() % list.length];
 }
 
 export function courseGradient(key: 'appetizer' | 'main' | 'treat'): string {

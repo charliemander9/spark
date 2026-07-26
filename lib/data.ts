@@ -2,6 +2,11 @@
 
 import type { Category, CategoryId, Preset } from './types';
 
+// The length of one challenge round. Kept short on purpose — long enough to
+// build a real habit, short enough that starting doesn't feel like a huge
+// commitment.
+export const CHALLENGE_LENGTH = 30;
+
 export const CATEGORIES: Record<CategoryId, Category> = {
   workout: {
     id: 'workout', label: 'Workout', type: 'workout',
@@ -53,9 +58,9 @@ export const PRESETS: Record<string, Preset> = {
     desc: 'Pick three from the catalog. Mix and match.',
     slots: null,
   },
-  '75-hard': {
-    label: '75 Hard',
-    desc: 'The original — 5 rules. Two workouts, gallon of water, 10 pages, diet.',
+  'all-in': {
+    label: 'All In',
+    desc: 'Five rules. Two workouts, gallon of water, 10 pages, diet.',
     slots: [
       { cat: 'workout',     label: 'Workout 1',       config: { mustBeOutdoors: false, minDuration: 45 } },
       { cat: 'workout',     label: 'Outside Workout', config: { mustBeOutdoors: true,  minDuration: 45 } },
@@ -64,8 +69,8 @@ export const PRESETS: Record<string, Preset> = {
       { cat: 'alcohol',     label: 'No Alcohol',      config: {} },
     ],
   },
-  '75-hard-lite': {
-    label: '75 Hard Lite',
+  'all-in-lite': {
+    label: 'All In Lite',
     desc: 'Two workouts, 10K steps. The classic.',
     slots: [
       { cat: 'workout', label: 'Workout 1',       config: { mustBeOutdoors: false, minDuration: 45 } },
@@ -129,17 +134,61 @@ export const PRESETS: Record<string, Preset> = {
   },
 };
 
-export const DAILY_QUOTES = [
-  "Show up. The rest follows.",
-  "The discomfort is the work.",
-  "Strong is built, not given.",
-  "Move first. Think later.",
-  "The ocean doesn't care if you're tired.",
-  "Every step is the long game.",
-  "Hard now, or hard later.",
-  "Your body adapts to what you ask of it.",
-  "Motion creates emotion.",
-  "Done is the new perfect.",
+export interface Quote {
+  text: string;
+  author: string;
+  tags: (CategoryId | 'general')[];
+}
+
+// Real, attributed quotes — tagged so Home can surface one that matches the
+// check-ins the user actually picked, instead of a generic one-liner.
+// "general" quotes are eligible regardless of what the user chose.
+export const QUOTES: Quote[] = [
+  { text: "We are what we repeatedly do. Excellence, then, is not an act, but a habit.",
+    author: "Aristotle", tags: ['general'] },
+  { text: "You do not rise to the level of your goals. You fall to the level of your systems.",
+    author: "James Clear, Atomic Habits", tags: ['general', 'custom'] },
+  { text: "You will never change your life until you change something you do daily.",
+    author: "Mike Murdock", tags: ['general'] },
+  { text: "Almost everything will work again if you unplug it for a few minutes, including you.",
+    author: "Anne Lamott", tags: ['general'] },
+  { text: "Where attention goes, energy flows.",
+    author: "James Clear", tags: ['general'] },
+
+  { text: "Take care of your body. It's the only place you have to live.",
+    author: "Jim Rohn", tags: ['workout', 'cleanEating'] },
+  { text: "The successful warrior is the average man, with laser-like focus.",
+    author: "Bruce Lee", tags: ['workout'] },
+  { text: "The body achieves what the mind believes.",
+    author: "Napoleon Hill", tags: ['workout'] },
+
+  { text: "A journey of a thousand miles begins with a single step.",
+    author: "Lao Tzu", tags: ['steps', 'workout'] },
+  { text: "It's not about having time, it's about making time.",
+    author: "Rachel Hollis", tags: ['steps'] },
+
+  { text: "Water is the driving force of all nature.",
+    author: "Leonardo da Vinci", tags: ['water'] },
+
+  { text: "Let food be thy medicine, and medicine be thy food.",
+    author: "Hippocrates", tags: ['cleanEating'] },
+  { text: "Tell me what you eat, and I will tell you what you are.",
+    author: "Jean Anthelme Brillat-Savarin", tags: ['cleanEating'] },
+
+  { text: "Rock bottom became the solid foundation on which I rebuilt my life.",
+    author: "J.K. Rowling", tags: ['alcohol'] },
+  { text: "The chains of habit are too weak to be felt until they are too strong to be broken.",
+    author: "Samuel Johnson", tags: ['alcohol'] },
+
+  { text: "A reader lives a thousand lives before he dies. The man who never reads lives only one.",
+    author: "George R.R. Martin", tags: ['reading'] },
+  { text: "Once you learn to read, you will be forever free.",
+    author: "Frederick Douglass", tags: ['reading'] },
+
+  { text: "Sleep is the best meditation.",
+    author: "Dalai Lama", tags: ['sleep'] },
+  { text: "A good laugh and a long sleep are the best cures in the doctor's book.",
+    author: "Irish Proverb", tags: ['sleep'] },
 ];
 
 export const MOCK_PHOTOS = [
@@ -237,15 +286,15 @@ export interface DemoFriend {
 }
 
 export const DEMO_FRIENDS: DemoFriend[] = [
-  { id: 'demo-maya', name: 'Maya',  day: 47, streak: 47,
+  { id: 'demo-maya', name: 'Maya',  day: 27, streak: 27,
     todayEntry: { type: 'photo', body: '3h 02m yesterday. Deleted Instagram for the week.' } },
   { id: 'demo-jay',  name: 'Jay',   day: 22, streak: 14,
     todayEntry: { type: 'photo', body: '5h 40m — rough day, too much TikTok. Resetting.' } },
-  { id: 'demo-sam',  name: 'Sam',   day: 61, streak: 61,
+  { id: 'demo-sam',  name: 'Sam',   day: 29, streak: 29,
     todayEntry: { type: 'photo', body: '2h 15m. Best day this month.' } },
   { id: 'demo-rina', name: 'Rina',  day: 9,  streak: 9,
     todayEntry: { type: 'photo', body: 'Day 9. 4h flat. Slowly bringing it down.' } },
-  { id: 'demo-leo',  name: 'Leo',   day: 33, streak: 33,
+  { id: 'demo-leo',  name: 'Leo',   day: 26, streak: 26,
     todayEntry: { type: 'photo', body: '4h 30m. Phone stays in another room after 9pm now.' } },
 ];
 
@@ -275,15 +324,15 @@ export const DISCOVER_FILTERS = [
 ] as const;
 
 export const DEMO_DISCOVER: DemoDiscover[] = [
-  { id:'dd-1', name:'Theo R.',   initials:'TR', bio:'Recomp · two-a-days',       day: 41, streak: 41,
+  { id:'dd-1', name:'Theo R.',   initials:'TR', bio:'Recomp · two-a-days',       day: 24, streak: 24,
     avaGradient: 'linear-gradient(160deg,#1c3548 0%,#2d6a95 60%,#7AB6D8 100%)',
     bg: 'linear-gradient(160deg,#1c3548 0%,#2d6a95 60%,#7AB6D8 100%)',
-    tag: 'Lifting', caption: 'Day 41. Push day done before 7.' },
-  { id:'dd-2', name:'Lena T.',   initials:'LT', bio:'Endurance · half marathon', day: 58, streak: 58,
+    tag: 'Lifting', caption: 'Day 24. Push day done before 7.' },
+  { id:'dd-2', name:'Lena T.',   initials:'LT', bio:'Endurance · half marathon', day: 29, streak: 29,
     avaGradient: 'linear-gradient(160deg,#3a2818 0%,#a05c34 60%,#E8896F 100%)',
     bg: 'linear-gradient(160deg,#3a2818 0%,#a05c34 60%,#E8896F 100%)',
     tag: 'Running', caption: '12 miles at sunrise. Body remembered.', isVideo: true },
-  { id:'dd-3', name:'Diego P.',  initials:'DP', bio:'Strength · 75 Hard',         day: 12, streak: 12,
+  { id:'dd-3', name:'Diego P.',  initials:'DP', bio:'Strength · All In',         day: 12, streak: 12,
     avaGradient: 'linear-gradient(160deg,#2e2a18 0%,#7c6c30 60%,#F5C842 100%)',
     bg: 'linear-gradient(160deg,#2e2a18 0%,#7c6c30 60%,#F5C842 100%)',
     tag: 'Lifting', caption: 'Day 12. Volume up, weight up, no excuses.' },
@@ -299,7 +348,7 @@ export const DEMO_DISCOVER: DemoDiscover[] = [
     avaGradient: 'linear-gradient(160deg,#102838 0%,#1a5878 60%,#5fb0d4 100%)',
     bg: 'linear-gradient(160deg,#102838 0%,#1a5878 60%,#5fb0d4 100%)',
     tag: 'No alcohol', caption: 'Three weeks. Sleep is incredible.' },
-  { id:'dd-7', name:'Kai S.',    initials:'KS', bio:'Move More · long walks',     day: 33, streak: 33,
+  { id:'dd-7', name:'Kai S.',    initials:'KS', bio:'Move More · long walks',     day: 23, streak: 23,
     avaGradient: 'linear-gradient(160deg,#2a3a28 0%,#5a8a55 60%,#a8d090 100%)',
     bg: 'linear-gradient(160deg,#2a3a28 0%,#5a8a55 60%,#a8d090 100%)',
     tag: 'Outdoor', caption: 'Trail loop, 14k steps before noon.' },

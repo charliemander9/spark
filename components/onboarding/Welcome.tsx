@@ -15,7 +15,7 @@ export function Welcome() {
         className="lede"
         style={{ marginTop: 18, maxWidth: 320, textAlign: 'center' }}
       >
-        Seventy-five days of less screen time and better habits — held honest
+        Thirty days of less screen time and better habits — held honest
         by the community who shows up with you.
       </p>
 

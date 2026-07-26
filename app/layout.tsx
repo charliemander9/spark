@@ -3,7 +3,7 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: 'GoodMorning',
-  description: 'Seventy-five days, every morning, the habits you choose — held by the community who shows up with you.',
+  description: 'Thirty days, every morning, the habits you choose — held by the community who shows up with you.',
   manifest: '/manifest.webmanifest',
   appleWebApp: {
     capable: true,

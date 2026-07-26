@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useSparkActions, useUi } from '@/lib/storeActions';
 import { useSpark } from '@/lib/store';
 import { dailyQuote, greeting, gearSvg, todayLabel } from '@/lib/helpers';
-import { TONE_COPY } from '@/lib/data';
+import { TONE_COPY, CHALLENGE_LENGTH } from '@/lib/data';
 import type { DiaryEntry } from '@/lib/types';
 import { CourseCard } from '../CourseCard';
 import { Media } from '../Media';
@@ -16,6 +16,7 @@ export function Home() {
   const useFreeze = useSpark((s) => s.useFreeze);
   const tone = TONE_COPY[user.tone];
   const [g, name] = greeting(user.name);
+  const quote = dailyQuote(menu.map((c) => c.category));
   const openSettings = useSparkActions('openSettings');
   const openDailySheet = useUi((s) => s.openDailySheet);
 
@@ -56,7 +57,8 @@ export function Home() {
 
       <div className="daily-prompt">
         <div className="tag">Today's Motivation</div>
-        <div className="serif-quote">"{dailyQuote()}"</div>
+        <div className="serif-quote">&ldquo;{quote.text}&rdquo;</div>
+        <div className="quote-author">— {quote.author}</div>
       </div>
 
       {/* DAILY ENTRY CARD */}
@@ -85,7 +87,7 @@ export function Home() {
 
       <div className="home-hero">
         <div className="date">
-          Day {user.day} of 75 · {todayLabel()}
+          Day {user.day} of {CHALLENGE_LENGTH} · {todayLabel()}
         </div>
         <h1>
           {g}, <em>{name}</em>
