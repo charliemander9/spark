@@ -57,6 +57,7 @@ interface SparkState {
   pickCheckIn: (key: SlotKey, picked: number | null) => void;
   completeCourse: (key: SlotKey) => void;
   toggleBinary: (key: SlotKey) => void;
+  toggleSlotComplete: (key: SlotKey) => void;
   setCheckInValue: (key: SlotKey, value: number, source: string | null) => void;
   saveWorkoutDetails: (key: SlotKey, details: WorkoutDetails) => void;
 
@@ -271,6 +272,21 @@ export const useSpark = create<SparkState>((set, get) => ({
     }
     return bumpIfAllDone(st, (m) =>
       m.map((c, i) => (i === key ? { ...c, completed: true } : c))
+    );
+  }),
+
+  // Generic quick-complete used by the checkbox on each home card — works for
+  // any slot type. Ticking marks it done immediately (details are optional);
+  // un-ticking clears it. Same all-done streak bump as the detailed loggers.
+  toggleSlotComplete: (key) => set((st) => {
+    const cur = st.menu[key];
+    if (cur.completed) {
+      return {
+        menu: st.menu.map((c, i) => (i === key ? { ...c, completed: false } : c)),
+      } as Partial<SparkState>;
+    }
+    return bumpIfAllDone(st, (m) =>
+      m.map((c, i) => (i === key ? { ...c, completed: true } : c)),
     );
   }),
 

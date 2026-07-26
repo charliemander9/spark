@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useSpark } from '@/lib/store';
 import { useUi } from '@/lib/storeActions';
 import { CATEGORIES } from '@/lib/data';
@@ -11,10 +12,13 @@ export function CourseCard({ slot }: Props) {
   const c = useSpark((s) => s.menu[slot]);
   const dailyEntry = useSpark((s) => s.user.dailyEntry);
   const toggleBinary = useSpark((s) => s.toggleBinary);
+  const toggleSlotComplete = useSpark((s) => s.toggleSlotComplete);
   const setNumericSheetKey = useSpark((s) => s.setNumericSheetKey);
   const setWorkoutSheetCourse = useSpark((s) => s.setWorkoutSheetCourse);
   const openWorkoutSheet = useUi((s) => s.openWorkoutSheet);
   const openNumericSheet = useUi((s) => s.openNumericSheet);
+
+  const [detailPromptOpen, setDetailPromptOpen] = useState(false);
 
   if (!c) return null;
   const cat = CATEGORIES[c.category];
@@ -30,10 +34,47 @@ export function CourseCard({ slot }: Props) {
     fn();
   };
 
+  // Slots that carry extra info worth capturing after a quick check.
+  const hasDetails =
+    cat.type === 'workout' ||
+    cat.type === 'numeric' ||
+    (cat.type === 'custom' && !!c.config.quantified);
+
+  const openDetails = () => {
+    if (cat.type === 'workout') {
+      setWorkoutSheetCourse(slot);
+      openWorkoutSheet();
+    } else {
+      setNumericSheetKey(slot);
+      openNumericSheet();
+    }
+  };
+
+  // The checkbox is the easy path: one tap marks it done. If the slot has
+  // details, ticking it also offers (optionally) to add them.
+  const onCheck = gate(() => {
+    const wasDone = done;
+    toggleSlotComplete(slot);
+    if (!wasDone && hasDetails) setDetailPromptOpen(true);
+  });
+
   return (
     <div className={'course' + (done ? ' done' : '')}>
       <div className="course-head">
         <div className="lead">
+          <button
+            className={'slot-check' + (done ? ' checked' : '')}
+            onClick={onCheck}
+            aria-label={done ? 'Mark not done' : 'Mark done'}
+            aria-pressed={done}
+            style={done ? { background: ringColor, borderColor: ringColor } : undefined}
+          >
+            {done && (
+              <svg viewBox="0 0 24 24" width={14} height={14} fill="none" stroke="#fff" strokeWidth={3}>
+                <path d="M5 12l5 5L19 7" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            )}
+          </button>
           <span
             className="dot ring-dot"
             style={{ background: ringColor }}
@@ -103,6 +144,33 @@ export function CourseCard({ slot }: Props) {
           setNumericSheetKey(slot);
           openNumericSheet();
         })} onToggle={gate(() => toggleBinary(slot))} />
+      )}
+
+      {detailPromptOpen && (
+        <div className="modal-bd open" onClick={() => setDetailPromptOpen(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div style={{ fontSize: 40, textAlign: 'center', marginBottom: 6 }}>✓</div>
+            <h3><em>Logged.</em></h3>
+            <p>Want to add details for <b>{c.label}</b>? Totally optional.</p>
+            <div className="row">
+              <button
+                className="btn btn-secondary"
+                onClick={() => setDetailPromptOpen(false)}
+              >
+                Not now
+              </button>
+              <button
+                className="btn btn-accent"
+                onClick={() => {
+                  setDetailPromptOpen(false);
+                  openDetails();
+                }}
+              >
+                Add details
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

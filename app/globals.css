@@ -929,6 +929,19 @@ p { line-height: 1.55; color: var(--ink-3); font-size: 14.5px; }
   width: 5px; height: 5px; border-radius: 50%;
   background: currentColor;
 }
+.slot-check {
+  flex-shrink: 0;
+  width: 26px; height: 26px;
+  border: 2px solid var(--border-2);
+  border-radius: 8px;
+  background: var(--surface);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: background .18s, border-color .18s, transform .1s;
+  padding: 0;
+}
+.slot-check:active { transform: scale(0.9); }
+.slot-check.checked { border-color: var(--sage); }
 .course-head .lead.appetizer { color: var(--sage); }
 .course-head .lead.main { color: var(--terracotta); }
 .course-head .lead.treat { color: var(--rose); }
@@ -3901,7 +3914,16 @@ p { line-height: 1.55; color: var(--ink-3); font-size: 14.5px; }
   gap: 1px;
   border-radius: 8px;
   padding: 2px 0;
+  border: none;
+  background: transparent;
+  font: inherit;
+  width: 100%;
+  transition: background .15s, transform .1s;
 }
+.cal-cell.has-data { cursor: pointer; }
+.cal-cell.has-data:active { transform: scale(0.92); }
+.cal-cell.has-data:hover { background: var(--surface-2); }
+.cal-cell:disabled { cursor: default; }
 .cal-cell.empty { visibility: hidden; }
 .cal-cell.future { opacity: 0.4; }
 .cal-cell.today {
@@ -3952,6 +3974,57 @@ p { line-height: 1.55; color: var(--ink-3); font-size: 14.5px; }
   border-radius: 50%;
   border: 1.5px solid currentColor;
   display: inline-block;
+}
+
+/* Day-detail popup (tap a calendar day) */
+.day-detail-head {
+  text-align: center;
+  margin-bottom: 16px;
+}
+.day-detail-head .dd-date {
+  font-family: 'Fraunces', serif;
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--ink);
+}
+.day-detail-head .dd-count {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.day-detail-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.dd-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--surface-2);
+  opacity: 0.55;
+}
+.dd-row.on { opacity: 1; }
+.dd-check {
+  flex-shrink: 0;
+  width: 22px; height: 22px;
+  border: 2px solid var(--border-2);
+  border-radius: 6px;
+  background: var(--surface);
+  display: flex; align-items: center; justify-content: center;
+}
+.dd-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
 }
 
 /* ring dot in course-head (replaces solid dot) */

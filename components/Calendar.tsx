@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useSpark } from '@/lib/store';
 import { CATEGORIES, CHALLENGE_LENGTH } from '@/lib/data';
 import type { CalendarDay } from '@/lib/types';
@@ -8,6 +9,9 @@ export function Calendar() {
   const user = useSpark((s) => s.user);
   const calendar = useSpark((s) => s.calendar);
   const menu = useSpark((s) => s.menu);
+
+  // Which day's detail popup is open (day-of-month number), or null.
+  const [openDay, setOpenDay] = useState<number | null>(null);
 
   // Real calendar — current month with today = today's actual date.
   const now = new Date();
@@ -52,14 +56,21 @@ export function Calendar() {
           const isToday = d === today;
           const isFuture = d > today;
           const data = isToday ? todayData : calendar[d];
+          const hasData = !!data && data.done.some(Boolean);
           const cls = ['cal-cell'];
           if (isFuture) cls.push('future');
           if (isToday) cls.push('today');
+          if (hasData) cls.push('has-data');
           return (
-            <div key={i} className={cls.join(' ')}>
+            <button
+              key={i}
+              className={cls.join(' ')}
+              disabled={isFuture || !data}
+              onClick={() => data && setOpenDay(d)}
+            >
               <TallySvg data={data} colors={colors} />
               <div className="cal-day-num">{d}</div>
-            </div>
+            </button>
           );
         })}
       </div>
@@ -69,6 +80,77 @@ export function Calendar() {
             <span className="swatch" style={{ color: colors[i] }} /> {l}
           </div>
         ))}
+      </div>
+
+      {openDay !== null && (
+        <DayDetail
+          day={openDay}
+          date={new Date(year, month, openDay)}
+          data={openDay === today ? todayData : calendar[openDay]}
+          labels={labels}
+          colors={colors}
+          onClose={() => setOpenDay(null)}
+        />
+      )}
+    </div>
+  );
+}
+
+function DayDetail({
+  day,
+  date,
+  data,
+  labels,
+  colors,
+  onClose,
+}: {
+  day: number;
+  date: Date;
+  data: CalendarDay | undefined;
+  labels: string[];
+  colors: string[];
+  onClose: () => void;
+}) {
+  const flags = data?.done ?? [];
+  const doneCount = flags.filter(Boolean).length;
+  const dateLabel = date.toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+  });
+
+  return (
+    <div className="modal-bd open" onClick={onClose}>
+      <div className="modal" onClick={(e) => e.stopPropagation()}>
+        <div className="day-detail-head">
+          <div className="dd-date">{dateLabel}</div>
+          <div className="dd-count">
+            {doneCount} of {labels.length} done
+          </div>
+        </div>
+        <div className="day-detail-list">
+          {labels.map((l, i) => {
+            const on = !!flags[i];
+            return (
+              <div key={i} className={'dd-row' + (on ? ' on' : '')}>
+                <span
+                  className={'dd-check' + (on ? ' checked' : '')}
+                  style={on ? { background: colors[i], borderColor: colors[i] } : undefined}
+                >
+                  {on && (
+                    <svg viewBox="0 0 24 24" width={12} height={12} fill="none" stroke="#fff" strokeWidth={3}>
+                      <path d="M5 12l5 5L19 7" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  )}
+                </span>
+                <span className="dd-label">{l}</span>
+              </div>
+            );
+          })}
+        </div>
+        <button className="btn btn-secondary btn-block" onClick={onClose}>
+          Close
+        </button>
       </div>
     </div>
   );
